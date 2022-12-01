@@ -32,7 +32,6 @@
 
 ### 1.4 Would/Won't Haves
 * The customer can use special coupon codes that will only work with a specific combination of products
-* The customer can use special coupon codes that will only work with a specific combination of products
 
 ## 2. Non-functional Requirements
 * The system should be written in Java programming language (version 11)
