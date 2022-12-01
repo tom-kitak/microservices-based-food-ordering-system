@@ -22,7 +22,6 @@
 * The customer can use an "x% discount" coupon code
 * If the customer submits multiple coupons the cheapest should be applied
 * The coupons can only be used once
-* If the customer submits multiple coupons the cheapest should be applied
 * The regional manager could see all currently places orders and cancel any selection of orders if needed
 
 ### 1.3 Could Haves
