@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="nl.tudelft.sem.group06b.authentication.integration.UsersTests" tests="5" skipped="0" failures="0" errors="0" timestamp="2022-12-02T18:00:55" hostname="Catalins-MacBook-Air.local" time="7.946">
+  <properties/>
+  <testcase name="login_withInvalidPassword_returns403()" classname="nl.tudelft.sem.group06b.authentication.integration.UsersTests" time="1.449"/>
+  <testcase name="login_withValidUser_returnsToken()" classname="nl.tudelft.sem.group06b.authentication.integration.UsersTests" time="1.621"/>
+  <testcase name="register_withValidData_worksCorrectly()" classname="nl.tudelft.sem.group06b.authentication.integration.UsersTests" time="1.702"/>
+  <testcase name="login_withNonexistentUsername_returns403()" classname="nl.tudelft.sem.group06b.authentication.integration.UsersTests" time="1.355"/>
+  <testcase name="register_withExistingUser_throwsException()" classname="nl.tudelft.sem.group06b.authentication.integration.UsersTests" time="1.794"/>
+  <system-out><![CDATA[2022-12-02 19:00:54.468  INFO 2416 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [nl.tudelft.sem.group06b.authentication.integration.UsersTests], using SpringBootContextLoader
+2022-12-02 19:00:54.470  INFO 2416 --- [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [nl.tudelft.sem.group06b.authentication.integration.UsersTests]: no resource found for suffixes {-context.xml, Context.groovy}.
+2022-12-02 19:00:54.470  INFO 2416 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [nl.tudelft.sem.group06b.authentication.integration.UsersTests]: UsersTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2022-12-02 19:00:54.491  INFO 2416 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration nl.tudelft.sem.group06b.authentication.AuthenticationApplication for test class nl.tudelft.sem.group06b.authentication.integration.UsersTests
+2022-12-02 19:00:54.497  INFO 2416 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener, org.springframework.test.context.event.EventPublishingTestExecutionListener]
+2022-12-02 19:00:54.498  INFO 2416 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@5524e471, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@3b6d94fc, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@71c77042, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@665fb1d8, org.springframework.test.context.support.DirtiesContextTestExecutionListener@142ac60e, org.springframework.test.context.transaction.TransactionalTestExecutionListener@43376a03, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@9b84747, org.springframework.test.context.event.EventPublishingTestExecutionListener@1272f6d9, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@50aa482f, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@2835574b, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@63fcbf75, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@663d59ed, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener@64d49e35, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@665902eb]
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.5.RELEASE)
+
+2022-12-02 19:00:54.582  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Starting UsersTests on Catalins-MacBook-Air.local with PID 2416 (started by catalin in /Users/catalin/SEM06b/authentication-microservice)
+2022-12-02 19:00:54.582  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : The following profiles are active: mockAuthenticationManager,mockPasswordEncoder,mockTokenGenerator,test
+2022-12-02 19:00:54.842  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-12-02 19:00:54.863  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 20ms. Found 1 JPA repository interfaces.
+2022-12-02 19:00:55.102  INFO 2416 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-12-02 19:00:55.115  INFO 2416 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+2022-12-02 19:00:55.171  INFO 2416 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-12-02 19:00:55.172  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:00:55.273  WARN 2416 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-12-02 19:00:55.558  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:00:55.802  INFO 2416 --- [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@31741bb6, org.springframework.security.web.context.SecurityContextPersistenceFilter@34b294c4, org.springframework.security.web.header.HeaderWriterFilter@23389e2b, org.springframework.security.web.authentication.logout.LogoutFilter@453d2a55, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7b01f056, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1caff0db, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@64903a20, org.springframework.security.web.session.SessionManagementFilter@1c0cba60, org.springframework.security.web.access.ExceptionTranslationFilter@d884e9a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@57d71569]
+2022-12-02 19:00:55.905  INFO 2416 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2022-12-02 19:00:55.906  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2022-12-02 19:00:55.924  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 17 ms
+2022-12-02 19:00:55.940  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Started UsersTests in 1.436 seconds (JVM running for 22.204)
+2022-12-02 19:00:55.955  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:00:55.955  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:00:55.956  INFO 2416 --- [    Test worker] .SchemaDropperImpl$DelayedDropActionImpl : HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.5.RELEASE)
+
+2022-12-02 19:00:56.036  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Starting UsersTests on Catalins-MacBook-Air.local with PID 2416 (started by catalin in /Users/catalin/SEM06b/authentication-microservice)
+2022-12-02 19:00:56.036  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : The following profiles are active: mockAuthenticationManager,mockPasswordEncoder,mockTokenGenerator,test
+2022-12-02 19:00:56.291  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-12-02 19:00:56.303  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 11ms. Found 1 JPA repository interfaces.
+2022-12-02 19:00:56.499  INFO 2416 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-12-02 19:00:56.511  INFO 2416 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+2022-12-02 19:00:56.612  INFO 2416 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-12-02 19:00:56.613  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:00:56.717  WARN 2416 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-12-02 19:00:56.910  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:00:57.144  INFO 2416 --- [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2523730b, org.springframework.security.web.context.SecurityContextPersistenceFilter@38dde7ec, org.springframework.security.web.header.HeaderWriterFilter@75be3cdf, org.springframework.security.web.authentication.logout.LogoutFilter@6757ed9e, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3bc57af4, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3f19f197, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@25c887ca, org.springframework.security.web.session.SessionManagementFilter@f500481, org.springframework.security.web.access.ExceptionTranslationFilter@1b131102, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@7be29ac4]
+2022-12-02 19:00:57.202  INFO 2416 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2022-12-02 19:00:57.202  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2022-12-02 19:00:57.211  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 9 ms
+2022-12-02 19:00:57.221  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Started UsersTests in 1.256 seconds (JVM running for 23.485)
+Account (SomeUser) was created.
+2022-12-02 19:00:57.409  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:00:57.410  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:00:57.411  INFO 2416 --- [    Test worker] .SchemaDropperImpl$DelayedDropActionImpl : HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.5.RELEASE)
+
+2022-12-02 19:00:57.508  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Starting UsersTests on Catalins-MacBook-Air.local with PID 2416 (started by catalin in /Users/catalin/SEM06b/authentication-microservice)
+2022-12-02 19:00:57.509  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : The following profiles are active: mockAuthenticationManager,mockPasswordEncoder,mockTokenGenerator,test
+2022-12-02 19:00:57.783  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-12-02 19:00:57.794  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 10ms. Found 1 JPA repository interfaces.
+2022-12-02 19:00:57.969  INFO 2416 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-12-02 19:00:57.983  INFO 2416 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+2022-12-02 19:00:58.030  INFO 2416 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-12-02 19:00:58.030  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:00:58.161  WARN 2416 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-12-02 19:00:58.546  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:00:58.802  INFO 2416 --- [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@71b6886, org.springframework.security.web.context.SecurityContextPersistenceFilter@1886e8b9, org.springframework.security.web.header.HeaderWriterFilter@66be0ea, org.springframework.security.web.authentication.logout.LogoutFilter@1f79536b, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4b56971a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1263422a, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7bdab06c, org.springframework.security.web.session.SessionManagementFilter@ac51234, org.springframework.security.web.access.ExceptionTranslationFilter@1f799f4c, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@201a6b7d]
+2022-12-02 19:00:58.851  INFO 2416 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2022-12-02 19:00:58.851  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2022-12-02 19:00:58.858  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 6 ms
+2022-12-02 19:00:58.871  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Started UsersTests in 1.454 seconds (JVM running for 25.135)
+Account (SomeUser) was created.
+2022-12-02 19:00:59.052  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:00:59.058  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:00:59.059  INFO 2416 --- [    Test worker] .SchemaDropperImpl$DelayedDropActionImpl : HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.5.RELEASE)
+
+2022-12-02 19:00:59.221  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Starting UsersTests on Catalins-MacBook-Air.local with PID 2416 (started by catalin in /Users/catalin/SEM06b/authentication-microservice)
+2022-12-02 19:00:59.224  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : The following profiles are active: mockAuthenticationManager,mockPasswordEncoder,mockTokenGenerator,test
+2022-12-02 19:00:59.519  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-12-02 19:00:59.536  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 16ms. Found 1 JPA repository interfaces.
+2022-12-02 19:00:59.907  INFO 2416 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-12-02 19:00:59.936  INFO 2416 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+2022-12-02 19:01:00.034  INFO 2416 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-12-02 19:01:00.035  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:01:00.154  WARN 2416 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-12-02 19:01:00.355  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:01:00.580  INFO 2416 --- [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7bc342f6, org.springframework.security.web.context.SecurityContextPersistenceFilter@7e04af28, org.springframework.security.web.header.HeaderWriterFilter@1fd18007, org.springframework.security.web.authentication.logout.LogoutFilter@38988d78, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@b78dcdf, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@183ab40f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@20c3be4c, org.springframework.security.web.session.SessionManagementFilter@67e3839b, org.springframework.security.web.access.ExceptionTranslationFilter@6e236542, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@57202722]
+2022-12-02 19:01:00.620  INFO 2416 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2022-12-02 19:01:00.620  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2022-12-02 19:01:00.627  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 7 ms
+2022-12-02 19:01:00.637  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Started UsersTests in 1.56 seconds (JVM running for 26.901)
+Account (SomeUser) was created.
+2022-12-02 19:01:00.747  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:01:00.753  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:01:00.754  INFO 2416 --- [    Test worker] .SchemaDropperImpl$DelayedDropActionImpl : HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.5.RELEASE)
+
+2022-12-02 19:01:00.850  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Starting UsersTests on Catalins-MacBook-Air.local with PID 2416 (started by catalin in /Users/catalin/SEM06b/authentication-microservice)
+2022-12-02 19:01:00.850  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : The following profiles are active: mockAuthenticationManager,mockPasswordEncoder,mockTokenGenerator,test
+2022-12-02 19:01:01.163  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-12-02 19:01:01.178  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14ms. Found 1 JPA repository interfaces.
+2022-12-02 19:01:01.358  INFO 2416 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-12-02 19:01:01.371  INFO 2416 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+2022-12-02 19:01:01.419  INFO 2416 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-12-02 19:01:01.420  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:01:01.532  WARN 2416 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-12-02 19:01:01.740  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:01:01.983  INFO 2416 --- [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4c949ff9, org.springframework.security.web.context.SecurityContextPersistenceFilter@15329cf9, org.springframework.security.web.header.HeaderWriterFilter@3bb75054, org.springframework.security.web.authentication.logout.LogoutFilter@eefc1bf, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@43b70cb6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4203d164, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@73f3bf4f, org.springframework.security.web.session.SessionManagementFilter@d980dac, org.springframework.security.web.access.ExceptionTranslationFilter@25a8128, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@ce1c5f3]
+2022-12-02 19:01:02.029  INFO 2416 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2022-12-02 19:01:02.029  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2022-12-02 19:01:02.037  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 8 ms
+2022-12-02 19:01:02.049  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Started UsersTests in 1.287 seconds (JVM running for 28.313)
+2022-12-02 19:01:02.107  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:01:02.108  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:01:02.108  INFO 2416 --- [    Test worker] .SchemaDropperImpl$DelayedDropActionImpl : HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.5.RELEASE)
+
+2022-12-02 19:01:02.200  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Starting UsersTests on Catalins-MacBook-Air.local with PID 2416 (started by catalin in /Users/catalin/SEM06b/authentication-microservice)
+2022-12-02 19:01:02.201  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : The following profiles are active: mockAuthenticationManager,mockPasswordEncoder,mockTokenGenerator,test
+2022-12-02 19:01:02.486  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-12-02 19:01:02.498  INFO 2416 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 9ms. Found 1 JPA repository interfaces.
+2022-12-02 19:01:02.673  INFO 2416 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022-12-02 19:01:02.684  INFO 2416 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+2022-12-02 19:01:02.763  INFO 2416 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-12-02 19:01:02.764  INFO 2416 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-12-02 19:01:02.894  WARN 2416 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-12-02 19:01:03.095  INFO 2416 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-12-02 19:01:03.634  INFO 2416 --- [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3e13f2c8, org.springframework.security.web.context.SecurityContextPersistenceFilter@1cfc616, org.springframework.security.web.header.HeaderWriterFilter@2e07ae6c, org.springframework.security.web.authentication.logout.LogoutFilter@48f7f8cc, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7c83aa9a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6fe40fa8, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@64a16a10, org.springframework.security.web.session.SessionManagementFilter@fbafe38, org.springframework.security.web.access.ExceptionTranslationFilter@95e8df8, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@1d900d84]
+2022-12-02 19:01:03.719  INFO 2416 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2022-12-02 19:01:03.720  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2022-12-02 19:01:03.729  INFO 2416 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 9 ms
+2022-12-02 19:01:03.750  INFO 2416 --- [    Test worker] n.t.s.g.a.integration.UsersTests         : Started UsersTests in 1.627 seconds (JVM running for 30.013)
+Account (SomeUser) was created.
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
