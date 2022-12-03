@@ -79,3 +79,4 @@ fabric.properties
 # DS store for macbook specific documents and all idea folder
 **/.DS_Store
 .idea/*
+build/*

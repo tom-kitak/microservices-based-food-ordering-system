@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="nl.tudelft.sem.group06b.authentication.authentication.JwtTokenGeneratorTests" tests="3" skipped="0" failures="0" errors="0" timestamp="2022-12-02T18:00:35" hostname="Catalins-MacBook-Air.local" time="1.317">
-  <properties/>
-  <testcase name="generatedTokenHasCorrectNetId()" classname="nl.tudelft.sem.group06b.authentication.authentication.JwtTokenGeneratorTests" time="1.293"/>
-  <testcase name="generatedTokenHasCorrectExpirationDate()" classname="nl.tudelft.sem.group06b.authentication.authentication.JwtTokenGeneratorTests" time="0.012"/>
-  <testcase name="generatedTokenHasCorrectIssuanceDate()" classname="nl.tudelft.sem.group06b.authentication.authentication.JwtTokenGeneratorTests" time="0.006"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
