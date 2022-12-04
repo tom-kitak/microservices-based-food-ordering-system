@@ -2,9 +2,11 @@ package nl.tudelft.sem.group06b.authentication.domain.user;
 
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.EntityEvents;
+import nl.tudelft.sem.group06b.authentication.domain.user.events.PasswordWasChangedEvent;
 import nl.tudelft.sem.group06b.authentication.domain.user.events.UserWasCreatedEvent;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * A DDD entity representing an application user in our domain.
@@ -48,4 +50,36 @@ public class User extends EntityEvents {
         this.recordThat(new UserWasCreatedEvent(username));
     }
 
+    public void changePassword(HashedPassword password) {
+        this.password = password;
+        this.recordThat(new PasswordWasChangedEvent(this));
+    }
+
+    public Username getUsername() {
+        return username;
+    }
+
+    public HashedPassword getPassword() {
+        return password;
+    }
+
+    /**
+     * Equality is only based on the identifier.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User appUser = (User) o;
+        return id == (appUser.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
+    }
 }
