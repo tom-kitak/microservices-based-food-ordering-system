@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     /**
-     * Find user by NetID.
+     * Find user by username.
      */
     Optional<User> findByUsername(Username netId);
 
