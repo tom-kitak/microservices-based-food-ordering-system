@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group06b.authentication.domain;
+package nl.tudelft.sem.group06b.authentication.domain.role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,5 +18,4 @@ public class Role {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-
 }
