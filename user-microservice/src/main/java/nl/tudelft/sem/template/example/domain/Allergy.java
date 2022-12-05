@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template.example.domain;
 
-public class Allergy {
+import java.io.Serializable;
+
+public class Allergy implements Serializable {
     /**
      * Class representing the allergy entity
      */
