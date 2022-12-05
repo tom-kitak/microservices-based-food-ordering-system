@@ -1,6 +1,5 @@
 package nl.tudelft.sem.group06b.authentication.api;
 
-import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.user.service.JwtUserDetailsService;
 import nl.tudelft.sem.group06b.authentication.domain.user.service.RegistrationService;
 import nl.tudelft.sem.group06b.authentication.model.AuthenticationRequestModel;
@@ -26,6 +25,13 @@ public class AuthenticationController {
 
     private final transient RegistrationService registrationService;
 
+    /**
+     * Constructor for the authentication controller.
+     *
+     * @param authenticationManager the manager for the authentication
+     * @param jwtUserDetailsService the user details reader for jwt generation
+     * @param registrationService the service that registers new users
+     */
     @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager,
                                     JwtUserDetailsService jwtUserDetailsService,

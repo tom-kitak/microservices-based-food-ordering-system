@@ -1,14 +1,13 @@
 package nl.tudelft.sem.group06b.authentication.repository;
 
+import java.util.Optional;
 import nl.tudelft.sem.group06b.authentication.domain.role.Role;
-import nl.tudelft.sem.group06b.authentication.domain.user.User;
-import nl.tudelft.sem.group06b.authentication.domain.user.Username;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
+/**
+ * A DDD repository for querying and persisting role aggregate roots.
+ */
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
     /**
@@ -22,7 +21,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findById(Long id);
 
     /**
-     * Check if an existing role with the same name
+     * Check if an existing role with the same name.
      */
     boolean existsByName(String roleName);
 }

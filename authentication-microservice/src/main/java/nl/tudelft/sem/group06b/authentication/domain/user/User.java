@@ -1,12 +1,17 @@
 package nl.tudelft.sem.group06b.authentication.domain.user;
 
+import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.EntityEvents;
 import nl.tudelft.sem.group06b.authentication.domain.user.events.PasswordWasChangedEvent;
 import nl.tudelft.sem.group06b.authentication.domain.user.events.UserWasCreatedEvent;
-
-import javax.persistence.*;
-import java.util.Objects;
 
 /**
  * A DDD entity representing an application user in our domain.
@@ -47,6 +52,7 @@ public class User extends EntityEvents {
     public User(Username username, HashedPassword password, Long roleId) {
         this.username = username;
         this.password = password;
+        this.roleId = roleId;
         this.recordThat(new UserWasCreatedEvent(username));
     }
 

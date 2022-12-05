@@ -1,11 +1,10 @@
 package nl.tudelft.sem.group06b.authentication.domain.providers;
 
+import java.time.Instant;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-
 @Component
-public class CurrentTimeProviderImpl implements CurrentTimeProvider{
+public class CurrentTimeProviderImpl implements CurrentTimeProvider {
     /**
      * Gets current time.
      *

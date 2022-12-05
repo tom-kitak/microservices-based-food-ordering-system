@@ -1,7 +1,6 @@
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
 
 import java.util.ArrayList;
-
 import nl.tudelft.sem.group06b.authentication.domain.user.Username;
 import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

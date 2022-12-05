@@ -1,7 +1,5 @@
 package nl.tudelft.sem.group06b.authentication.domain.role.events;
 
-import nl.tudelft.sem.group06b.authentication.domain.user.Username;
-
 /**
  * A DDD domain event that indicated a new role was created.
  */

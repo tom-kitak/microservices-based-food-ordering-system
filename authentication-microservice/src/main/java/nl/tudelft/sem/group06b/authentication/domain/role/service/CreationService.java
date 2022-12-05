@@ -15,16 +15,16 @@ public class CreationService {
     /**
      * Instantiates a new RoleService.
      *
-     * @param roleRepository  the role repository
+     * @param roleRepository the role repository
      */
     public CreationService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
     /**
-     * Created a new role
+     * Created a new role.
      *
-     * @param roleName    The name of the newly added role.
+     * @param roleName The name of the newly added role.
      * @throws Exception if the user already exists
      */
     public Role addRole(String roleName) throws Exception {

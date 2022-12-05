@@ -1,6 +1,10 @@
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
 
-import nl.tudelft.sem.group06b.authentication.domain.user.*;
+import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
+import nl.tudelft.sem.group06b.authentication.domain.user.Password;
+import nl.tudelft.sem.group06b.authentication.domain.user.User;
+import nl.tudelft.sem.group06b.authentication.domain.user.Username;
+import nl.tudelft.sem.group06b.authentication.domain.user.UsernameAlreadyInUseException;
 import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +19,7 @@ public class RegistrationService {
     /**
      * Instantiates a new UserService.
      *
-     * @param userRepository  the user repository
+     * @param userRepository         the user repository
      * @param passwordHashingService the password encoder
      */
     public RegistrationService(UserRepository userRepository, PasswordHashingService passwordHashingService) {
@@ -26,7 +30,7 @@ public class RegistrationService {
     /**
      * Register a new user.
      *
-     * @param username    The username of the user
+     * @param username The username of the user
      * @param password The password of the user
      * @throws Exception if the user already exists
      */

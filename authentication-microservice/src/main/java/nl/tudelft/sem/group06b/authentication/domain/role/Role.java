@@ -1,18 +1,15 @@
 package nl.tudelft.sem.group06b.authentication.domain.role;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.EntityEvents;
 import nl.tudelft.sem.group06b.authentication.domain.role.events.RoleWasCreatedEvent;
-import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.group06b.authentication.domain.user.User;
-import nl.tudelft.sem.group06b.authentication.domain.user.Username;
-import nl.tudelft.sem.group06b.authentication.domain.user.events.PasswordWasChangedEvent;
-import nl.tudelft.sem.group06b.authentication.domain.user.events.UserWasCreatedEvent;
-
-import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "roles")
