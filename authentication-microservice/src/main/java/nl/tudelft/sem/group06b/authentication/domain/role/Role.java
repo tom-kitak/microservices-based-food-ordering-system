@@ -36,6 +36,10 @@ public class Role extends EntityEvents {
         this.recordThat(new RoleWasCreatedEvent(roleName));
     }
 
+    public String getName() {
+        return name;
+    }
+
     /**
      * Equality is only based on the identifier.
      */

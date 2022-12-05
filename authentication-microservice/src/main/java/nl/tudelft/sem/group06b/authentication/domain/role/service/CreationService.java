@@ -2,10 +2,7 @@ package nl.tudelft.sem.group06b.authentication.domain.role.service;
 
 import nl.tudelft.sem.group06b.authentication.domain.role.Role;
 import nl.tudelft.sem.group06b.authentication.domain.role.RoleAlreadyExistsException;
-import nl.tudelft.sem.group06b.authentication.domain.user.*;
-import nl.tudelft.sem.group06b.authentication.domain.user.service.PasswordHashingService;
 import nl.tudelft.sem.group06b.authentication.repository.RoleRepository;
-import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 /**

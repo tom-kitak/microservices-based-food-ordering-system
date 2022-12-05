@@ -21,7 +21,7 @@ public class User extends EntityEvents {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -61,6 +61,10 @@ public class User extends EntityEvents {
 
     public HashedPassword getPassword() {
         return password;
+    }
+
+    public Long getRoleId() {
+        return roleId;
     }
 
     /**
