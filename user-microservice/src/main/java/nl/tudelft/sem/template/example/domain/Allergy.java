@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.example.domain;
 
 import java.io.Serializable;
 
+
 public class Allergy implements Serializable {
     /**
      * Class representing the allergy entity

@@ -2,13 +2,14 @@ package nl.tudelft.sem.template.example.domain;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
-public class User {
+public class User implements Serializable {
     /**
      * Class representing the user entity
      */
@@ -17,7 +18,6 @@ public class User {
     @Column(name = "id", nullable = false, unique = true)
     private int id;
 
-    @Id
     @Column(name = "memberId", nullable = false, unique = true)
     private String memberId;
 

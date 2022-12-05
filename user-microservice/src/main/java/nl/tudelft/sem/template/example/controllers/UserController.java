@@ -2,12 +2,16 @@ package nl.tudelft.sem.template.example.controllers;
 
 import nl.tudelft.sem.template.example.authentication.AuthManager;
 import nl.tudelft.sem.template.example.domain.Allergy;
+import nl.tudelft.sem.template.example.domain.Role;
 import nl.tudelft.sem.template.example.domain.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -53,6 +57,22 @@ public class UserController {
     @GetMapping("/user/{memberId}/allergens")
     public ResponseEntity<List<Allergy>> getAllergens(@PathVariable String memberId) throws Exception {
         return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
+    }
+
+    /**
+     * Gets allergens by memberId.
+     *
+     * @return the example found in the database with the given id
+     */
+    @PostMapping("/register/user")
+    public ResponseEntity registerUser() throws Exception {
+        try {
+            userService.addUser(authManager.getMemberId(), Role.USER_CUSTOMER,null,null);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+
+        return ResponseEntity.ok().build();
     }
 
 
