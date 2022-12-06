@@ -43,7 +43,7 @@ public class StoreController {
      */
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId());
+        return ResponseEntity.ok("Hello " + authManager.getUsername());
 
     }
 
