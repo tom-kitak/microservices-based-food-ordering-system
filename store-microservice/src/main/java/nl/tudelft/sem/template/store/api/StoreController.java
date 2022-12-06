@@ -67,4 +67,16 @@ public class StoreController {
         //TODO: import the stores into database
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * Put a single store in the datavase
+     * @param serialStore the serialized Store object in the form of a JSON in the request body
+     * @return an HTTP response (200 if the store is saved, 400 otherwise)
+     */
+    @PutMapping("/addStore")
+    public ResponseEntity<String> putStore(@RequestBody String serialStore) {
+        //TODO: put a single store into database
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
