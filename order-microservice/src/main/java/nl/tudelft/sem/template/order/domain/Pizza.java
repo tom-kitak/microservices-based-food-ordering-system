@@ -7,12 +7,16 @@ import java.util.Set;
 public class Pizza {
 
     private List<Topping> toppings;
+
     private Set<Integer> allergiesIds;
+
     private BigDecimal price;
+
     private String type;
 
     /**
      * Instantiates a new Pizza. Also adds all the allergens of toppings if they haven't been added already.
+     *
      * @param toppings toppings on the pizza
      * @param allergiesIds all the allergens pizza contains
      * @param price price of the pizza
@@ -32,6 +36,7 @@ public class Pizza {
 
     /**
      * Adds list of toppings to the pizza and also adds the allergies.
+     *
      * @param toppings list of toppings to add to the pizza
      */
     public void addToppings(List<Topping> toppings) {

@@ -1,17 +1,14 @@
 package nl.tudelft.sem.template.order.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-import lombok.NoArgsConstructor;
-
-import javax.persistence.Table;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import java.util.List;
-import java.util.Date;
-import java.math.BigDecimal;
-
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.NoArgsConstructor;
 
 
 @Entity
@@ -62,7 +59,8 @@ public class Order {
      * @param price price of the order
      * @param storeId store of the order
      */
-    public Order(int id, int customerId, int adminId, List<Pizza> pizzas, Date completionTime, Status status, List<Integer> couponsIds, BigDecimal price, int storeId) {
+    public Order(int id, int customerId, int adminId, List<Pizza> pizzas, Date completionTime, Status status,
+                 List<Integer> couponsIds, BigDecimal price, int storeId) {
         this.id = id;
         this.customerId = customerId;
         this.adminId = adminId;

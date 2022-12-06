@@ -5,10 +5,12 @@ import java.util.Set;
 public class Topping {
 
     private String toppingName;
+
     private Set<Integer> allergiesIds;
 
     /**
      * Instantiates a new Topping.
+     *
      * @param toppingName name of the topping
      * @param allergiesIds allergies of the topping
      */
