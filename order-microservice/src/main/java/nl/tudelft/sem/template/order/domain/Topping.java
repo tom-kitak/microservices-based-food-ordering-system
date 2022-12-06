@@ -1,12 +1,15 @@
 package nl.tudelft.sem.template.order.domain;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class Topping {
+public class Topping implements Serializable {
 
-    private String toppingName;
+    static final long serialVersionUID = -3387516993124229945L;
 
-    private Set<Integer> allergiesIds;
+    private transient String toppingName;
+
+    private transient Set<Integer> allergiesIds;
 
     /**
      * Instantiates a new Topping.
