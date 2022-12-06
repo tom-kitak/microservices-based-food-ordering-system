@@ -1,8 +1,5 @@
-<<<<<<<< HEAD:store-microservice/src/main/java/nl/tudelft/sem/group06b/store/config/H2Config.java
 package nl.tudelft.sem.group06b.store.config;
-========
-package nl.tudelft.sem.group06b.user.config;
->>>>>>>> dev:example-microservice/src/main/java/nl/tudelft/sem/group06b/user/config/H2Config.java
+
 
 import javax.sql.DataSource;
 import lombok.Getter;
