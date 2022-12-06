@@ -1,11 +1,27 @@
 package nl.tudelft.sem.group06b.authentication.repository;
 
-import nl.tudelft.sem.group06b.authentication.domain.Role;
+import java.util.Optional;
+import nl.tudelft.sem.group06b.authentication.domain.role.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
- * Stores the different roles that a user can have in the system.
+ * A DDD repository for querying and persisting role aggregate roots.
  */
+@Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    Role findByName(String name);
+    /**
+     * Find role by roleName.
+     */
+    Optional<Role> findByName(String roleName);
+
+    /**
+     * Find role by id.
+     */
+    Optional<Role> findById(Long id);
+
+    /**
+     * Check if an existing role with the same name.
+     */
+    boolean existsByName(String roleName);
 }

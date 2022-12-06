@@ -4,6 +4,7 @@ public interface AuthenticationService {
 
     /**
      * Authenticates a user with his name and password.
+     *
      * @param username provided by the user
      * @param password provided by the user
      * @return the JWT token generated for authenticating the user
@@ -12,6 +13,7 @@ public interface AuthenticationService {
 
     /**
      * Registers a user with this name and password.
+     *
      * @param username provided by the new user
      * @param password provided by the new user
      */

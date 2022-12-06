@@ -1,11 +1,23 @@
 package nl.tudelft.sem.group06b.authentication.repository;
 
-import nl.tudelft.sem.group06b.authentication.domain.User;
+import java.util.Optional;
+import nl.tudelft.sem.group06b.authentication.domain.user.User;
+import nl.tudelft.sem.group06b.authentication.domain.user.Username;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
- * Stores all the users that are in the system with their encrypted authentication credentials.
+ * A DDD repository for querying and persisting user aggregate roots.
  */
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
+    /**
+     * Find user by username.
+     */
+    Optional<User> findByUsername(Username username);
+
+    /**
+     * Check if an existing user already uses a NetID.
+     */
+    boolean existsByUsername(Username username);
 }
