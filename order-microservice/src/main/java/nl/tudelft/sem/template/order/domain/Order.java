@@ -36,15 +36,15 @@ public class Order {
     @Column(name = "status")
     private Status status;
 
-    @Column(name = "coupons")
+    @Column(name = "couponsIds")
     @ElementCollection
-    private List<Coupon> coupons;
+    private List<Integer> couponsIds;
 
     @Column(name = "price")
     private BigDecimal price;
 
-    @Column(name = "store")
-    private Store store;
+    @Column(name = "storeId")
+    private int storeId;
 
     /**
      * Instantiates a new Order.
@@ -55,20 +55,20 @@ public class Order {
      * @param pizzas list of pizzas in the order
      * @param completionTime time when the order is completed
      * @param status current status of the order
-     * @param coupons all the coupons applied to the order
+     * @param couponsIds all the coupons applied to the order
      * @param price price of the order
-     * @param store store of the order
+     * @param storeId store of the order
      */
-    public Order(int id, int customerId, int adminId, List<Pizza> pizzas, Date completionTime, Status status, List<Coupon> coupons, BigDecimal price, Store store) {
+    public Order(int id, int customerId, int adminId, List<Pizza> pizzas, Date completionTime, Status status, List<Integer> couponsIds, BigDecimal price, int storeId) {
         this.id = id;
         this.customerId = customerId;
         this.adminId = adminId;
         this.pizzas = pizzas;
         this.completionTime = completionTime;
         this.status = status;
-        this.coupons = coupons;
+        this.couponsIds = couponsIds;
         this.price = price;
-        this.store = store;
+        this.storeId = storeId;
     }
 
     public int getCustomerId() {
@@ -111,12 +111,12 @@ public class Order {
         this.status = status;
     }
 
-    public List<Coupon> getCoupons() {
-        return coupons;
+    public List<Integer> getCouponsIds() {
+        return couponsIds;
     }
 
-    public void setCoupons(List<Coupon> coupons) {
-        this.coupons = coupons;
+    public void setCouponsIds(List<Integer> couponsIds) {
+        this.couponsIds = couponsIds;
     }
 
     public BigDecimal getPrice() {
@@ -127,11 +127,11 @@ public class Order {
         this.price = price;
     }
 
-    public Store getStore() {
-        return store;
+    public int getStoreId() {
+        return storeId;
     }
 
-    public void setStore(Store store) {
-        this.store = store;
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
     }
 }

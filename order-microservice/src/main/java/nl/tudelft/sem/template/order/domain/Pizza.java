@@ -6,25 +6,25 @@ import java.util.*;
 public class Pizza {
 
     private List<Topping> toppings;
-    private Set<Allergy> allergies;
+    private Set<Integer> allergiesIds;
     private BigDecimal price;
     private String type;
 
     /**
-     * Instantiates a new Pizza.
+     * Instantiates a new Pizza. Also adds all the allergens of toppings if they haven't been added already.
      * @param toppings toppings on the pizza
-     * @param allergies all the allergens pizza contains
+     * @param allergiesIds all the allergens pizza contains
      * @param price price of the pizza
      * @param type type or name of the pizza
      */
-    public Pizza(List<Topping> toppings, Set<Allergy> allergies, BigDecimal price, String type) {
+    public Pizza(List<Topping> toppings, Set<Integer> allergiesIds, BigDecimal price, String type) {
         this.toppings = toppings;
-        this.allergies = allergies;
+        this.allergiesIds = allergiesIds;
         this.price = price;
         this.type = type;
-        for (Topping topping : toppings) {
-            for (Allergy allergy : topping.getAllergies()) {
-                this.allergies.add(allergy);
+        for (Topping t : toppings) {
+            for (Integer allergyId : t.getAllergiesIds()) {
+                allergiesIds.add(allergyId);
             }
         }
     }
@@ -35,9 +35,9 @@ public class Pizza {
      */
     public void addToppings(List<Topping> toppings) {
         this.toppings.addAll(toppings);
-        for (Topping topping : toppings) {
-            for (Allergy allergy : topping.getAllergies()) {
-                this.allergies.add(allergy);
+        for (Topping t : toppings) {
+            for (Integer allergyId : t.getAllergiesIds()) {
+                allergiesIds.add(allergyId);
             }
         }
     }
@@ -50,12 +50,12 @@ public class Pizza {
         this.toppings = toppings;
     }
 
-    public Set<Allergy> getAllergies() {
-        return allergies;
+    public Set<Integer> getAllergiesIds() {
+        return allergiesIds;
     }
 
-    public void setAllergies(Set<Allergy> allergies) {
-        this.allergies = allergies;
+    public void setAllergiesIds(Set<Integer> allergiesIds) {
+        this.allergiesIds = allergiesIds;
     }
 
     public BigDecimal getPrice() {
