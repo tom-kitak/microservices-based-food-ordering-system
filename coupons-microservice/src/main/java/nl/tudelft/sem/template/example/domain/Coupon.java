@@ -1,12 +1,18 @@
 package nl.tudelft.sem.template.example.domain;
 
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  * Class representing a coupon and its effects.
  */
+@Entity
 public class Coupon {
-    private final String code;
-    private final CouponType type;
-    private final double discount;
+    @Id
+    private String code;
+    private CouponType type;
+    private double discount;
 
     /**
      * Instantiates a new Coupon.
@@ -21,16 +27,33 @@ public class Coupon {
         this.discount = discount;
     }
 
+    /**
+     * No args constructor for JPA.
+     */
+    public Coupon() {}
+
     public String getCode() {
         return code;
+    }
+
+    protected void setCode(String code) {
+        this.code = code;
     }
 
     public CouponType getType() {
         return type;
     }
 
+    protected void setType(CouponType type) {
+        this.type = type;
+    }
+
     public double getDiscount() {
         return discount;
+    }
+
+    protected void setDiscount(double discount) {
+        this.discount = discount;
     }
 
     /**
