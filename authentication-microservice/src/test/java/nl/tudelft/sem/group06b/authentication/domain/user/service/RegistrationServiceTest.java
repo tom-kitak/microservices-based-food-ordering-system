@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:authentication-microservice/src/test/java/nl/tudelft/sem/group06b/authentication/domain/user/RegistrationServiceTests.java
+package nl.tudelft.sem.group06b.authentication.domain.user;
+========
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
+>>>>>>>> dev:authentication-microservice/src/test/java/nl/tudelft/sem/group06b/authentication/domain/user/service/RegistrationServiceTest.java
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

@@ -1,6 +1,12 @@
+<<<<<<<< HEAD:example-microservice/src/main/java/nl/tudelft/sem/group06b/example/controllers/DefaultController.java
+package nl.tudelft.sem.group06b.example.controllers;
+
+import nl.tudelft.sem.group06b.example.authentication.AuthManager;
+========
 package nl.tudelft.sem.group06b.user.controllers;
 
 import nl.tudelft.sem.group06b.user.authentication.AuthManager;
+>>>>>>>> dev:example-microservice/src/main/java/nl/tudelft/sem/group06b/user/controllers/DefaultController.java
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:example-microservice/src/test/java/nl/tudelft/sem/group06b/example/authentication/JwtTokenVerifierTests.java
+package nl.tudelft.sem.group06b.example.authentication;
+========
 package nl.tudelft.sem.group06b.user.authentication;
+>>>>>>>> dev:example-microservice/src/test/java/nl/tudelft/sem/group06b/user/authentication/JwtTokenVerifierTests.java
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

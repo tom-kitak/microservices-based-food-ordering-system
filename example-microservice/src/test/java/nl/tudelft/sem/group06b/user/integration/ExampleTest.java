@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:example-microservice/src/test/java/nl/tudelft/sem/group06b/example/integration/ExampleTest.java
+package nl.tudelft.sem.group06b.example.integration;
+========
 package nl.tudelft.sem.group06b.user.integration;
+>>>>>>>> dev:example-microservice/src/test/java/nl/tudelft/sem/group06b/user/integration/ExampleTest.java
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -6,8 +10,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+<<<<<<<< HEAD:example-microservice/src/test/java/nl/tudelft/sem/group06b/example/integration/ExampleTest.java
+import nl.tudelft.sem.group06b.example.authentication.AuthManager;
+import nl.tudelft.sem.group06b.example.authentication.JwtTokenVerifier;
+========
 import nl.tudelft.sem.group06b.user.authentication.AuthManager;
 import nl.tudelft.sem.group06b.user.authentication.JwtTokenVerifier;
+>>>>>>>> dev:example-microservice/src/test/java/nl/tudelft/sem/group06b/user/integration/ExampleTest.java
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

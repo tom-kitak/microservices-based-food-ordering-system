@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:example-microservice/src/test/java/nl/tudelft/sem/group06b/example/authentication/AuthManagerTests.java
+package nl.tudelft.sem.group06b.example.authentication;
+========
 package nl.tudelft.sem.group06b.user.authentication;
+>>>>>>>> dev:example-microservice/src/test/java/nl/tudelft/sem/group06b/user/authentication/AuthManagerTests.java
 
 import static org.assertj.core.api.Assertions.assertThat;
 

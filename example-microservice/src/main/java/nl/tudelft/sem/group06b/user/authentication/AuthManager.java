@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:example-microservice/src/main/java/nl/tudelft/sem/group06b/example/authentication/AuthManager.java
+package nl.tudelft.sem.group06b.example.authentication;
+========
 package nl.tudelft.sem.group06b.user.authentication;
+>>>>>>>> dev:example-microservice/src/main/java/nl/tudelft/sem/group06b/user/authentication/AuthManager.java
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

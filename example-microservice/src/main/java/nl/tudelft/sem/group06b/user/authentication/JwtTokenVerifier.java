@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:example-microservice/src/main/java/nl/tudelft/sem/group06b/example/authentication/JwtTokenVerifier.java
+package nl.tudelft.sem.group06b.example.authentication;
+========
 package nl.tudelft.sem.group06b.user.authentication;
+>>>>>>>> dev:example-microservice/src/main/java/nl/tudelft/sem/group06b/user/authentication/JwtTokenVerifier.java
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

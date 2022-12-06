@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:example-microservice/src/main/java/nl/tudelft/sem/group06b/example/authentication/JwtRequestFilter.java
+package nl.tudelft.sem.group06b.example.authentication;
+========
 package nl.tudelft.sem.group06b.user.authentication;
+>>>>>>>> dev:example-microservice/src/main/java/nl/tudelft/sem/group06b/user/authentication/JwtRequestFilter.java
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -8,6 +12,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import nl.tudelft.sem.group06b.example.authentication.JwtTokenVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

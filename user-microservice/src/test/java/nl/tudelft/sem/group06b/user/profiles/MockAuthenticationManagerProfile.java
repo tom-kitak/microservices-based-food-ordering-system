@@ -1,6 +1,10 @@
 package nl.tudelft.sem.group06b.user.profiles;
 
+<<<<<<<< HEAD:example-microservice/src/test/java/nl/tudelft/sem/group06b/example/profiles/MockAuthenticationManagerProfile.java
+import nl.tudelft.sem.group06b.example.authentication.AuthManager;
+========
 import nl.tudelft.sem.group06b.user.authentication.AuthManager;
+>>>>>>>> dev:user-microservice/src/test/java/nl/tudelft/sem/group06b/user/profiles/MockAuthenticationManagerProfile.java
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
