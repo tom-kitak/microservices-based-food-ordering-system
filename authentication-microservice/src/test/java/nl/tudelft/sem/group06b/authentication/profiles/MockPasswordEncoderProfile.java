@@ -1,6 +1,6 @@
 package nl.tudelft.sem.group06b.authentication.profiles;
 
-import nl.tudelft.sem.group06b.authentication.domain.user.PasswordHashingService;
+import nl.tudelft.sem.group06b.authentication.domain.user.service.PasswordHashingService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,3 +47,4 @@ public class MockPasswordEncoderProfile {
         return Mockito.mock(PasswordHashingService.class);
     }
 }
+

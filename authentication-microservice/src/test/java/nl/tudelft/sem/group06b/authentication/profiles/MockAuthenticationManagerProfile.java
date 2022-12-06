@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.authentication.profiles;
+package nl.tudelft.sem.group06b.authentication.profiles;
 
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;

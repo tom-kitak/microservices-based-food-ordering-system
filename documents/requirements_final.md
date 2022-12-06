@@ -3,7 +3,7 @@
 
 ### 1.1 Must Haves
 * Users must be able to create an account with a username and a password -> Generate a unique ID
-* Users need to have an ID (member ID) associated with their account and the type of subscription.
+* Users need to have an ID (member ID) associated with their account.
 * Users need to authenticate themselves with an ID associated with their account to determine who they are and what they can do on the platform.
 * The store must have a list of pizzas available to order from
 * The customer must be able to make an order

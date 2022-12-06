@@ -2,7 +2,7 @@ package nl.tudelft.sem.group06b.authentication.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import nl.tudelft.sem.group06b.authentication.domain.user.PasswordHashingService;
+import nl.tudelft.sem.group06b.authentication.domain.user.service.PasswordHashingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,3 +58,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 }
+

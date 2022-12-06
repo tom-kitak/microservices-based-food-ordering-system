@@ -19,3 +19,4 @@ public class HashedPassword {
         return hash;
     }
 }
+
