@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.user.controllers;
 
+import java.util.List;
 import nl.tudelft.sem.group06b.user.authentication.AuthManager;
 import nl.tudelft.sem.group06b.user.domain.Allergy;
 import nl.tudelft.sem.group06b.user.domain.Role;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
 @RestController
 public class UserController {
 
@@ -26,6 +25,7 @@ public class UserController {
      *
      * @param authManager Spring Security component used to authenticate and authorize the user
      * @param userService the User Service
+     *
      */
     @Autowired
     public UserController(AuthManager authManager, UserService userService) {
@@ -51,7 +51,7 @@ public class UserController {
     @PostMapping("/register/user")
     public ResponseEntity registerUser() throws Exception {
         try {
-            userService.addUser(authManager.getMemberId(), Role.USER_CUSTOMER,null,null);
+            userService.addUser(authManager.getMemberId(), Role.USER_CUSTOMER, null, null);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

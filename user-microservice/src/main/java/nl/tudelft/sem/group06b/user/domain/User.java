@@ -1,17 +1,23 @@
 package nl.tudelft.sem.group06b.user.domain;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 public class User implements Serializable {
+
+    static final long serialVersionUID = -3387516993124229945L;
+
     /**
-     * Class representing the user entity
+     * Class representing the user entity.
      */
 
     @Id
@@ -32,13 +38,15 @@ public class User implements Serializable {
     private Location preferredLocation;
 
     /**
-     * Instantiates a new User
-     * @param memberId          the username of the user
-     * @param role              the role of the user
-     * @param allergies         the list of allergies of the user
-     * @param preferredLocation the preferred store location of the user
+     * Instantiates a new User.
+     *
+     * @param memberId          the username of the user.
+     * @param role              the role of the user.
+     * @param allergies         the list of allergies of the user.
+     * @param preferredLocation the preferred store location of the user.
+     *
      */
-    public User(String memberId, Role role, List<Allergy>allergies, Location preferredLocation){
+    public User(String memberId, Role role, List<Allergy> allergies, Location preferredLocation) {
         this.memberId = memberId;
         this.role = role;
         this.allergies = allergies;

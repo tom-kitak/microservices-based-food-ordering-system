@@ -1,8 +1,6 @@
-<<<<<<<< HEAD:authentication-microservice/src/main/java/nl/tudelft/sem/group06b/authentication/domain/user/RegistrationService.java
-package nl.tudelft.sem.group06b.authentication.domain.user;
-========
+
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
->>>>>>>> dev:authentication-microservice/src/main/java/nl/tudelft/sem/group06b/authentication/domain/user/service/RegistrationService.java
+
 
 import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.group06b.authentication.domain.user.Password;

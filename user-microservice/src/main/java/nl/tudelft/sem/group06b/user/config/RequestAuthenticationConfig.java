@@ -1,14 +1,8 @@
-<<<<<<<< HEAD:example-microservice/src/main/java/nl/tudelft/sem/group06b/example/config/RequestAuthenticationConfig.java
-package nl.tudelft.sem.group06b.example.config;
 
-import nl.tudelft.sem.group06b.example.authentication.JwtAuthenticationEntryPoint;
-import nl.tudelft.sem.group06b.example.authentication.JwtRequestFilter;
-========
 package nl.tudelft.sem.group06b.user.config;
 
 import nl.tudelft.sem.group06b.user.authentication.JwtAuthenticationEntryPoint;
 import nl.tudelft.sem.group06b.user.authentication.JwtRequestFilter;
->>>>>>>> dev:user-microservice/src/main/java/nl/tudelft/sem/group06b/user/config/RequestAuthenticationConfig.java
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
