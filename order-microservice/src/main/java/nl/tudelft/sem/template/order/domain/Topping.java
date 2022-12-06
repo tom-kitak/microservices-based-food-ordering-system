@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.order.domain;
 
-import java.util.*;
+import java.util.Set;
 
 public class Topping {
 

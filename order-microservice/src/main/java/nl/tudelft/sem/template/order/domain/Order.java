@@ -5,9 +5,12 @@ import javax.persistence.Id;
 
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.*;
-import java.math.*;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import java.util.List;
+import java.util.Date;
+import java.math.BigDecimal;
 
 
 
