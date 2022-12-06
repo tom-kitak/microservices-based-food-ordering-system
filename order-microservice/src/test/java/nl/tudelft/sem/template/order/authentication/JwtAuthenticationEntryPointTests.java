@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package nl.tudelft.sem.template.order.authentication;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;

@@ -47,7 +47,7 @@ public class Order {
     private Store store;
 
     /**
-     * Instantiates a new Order
+     * Instantiates a new Order.
      *
      * @param id ID of the order
      * @param customerId ID of the customer
