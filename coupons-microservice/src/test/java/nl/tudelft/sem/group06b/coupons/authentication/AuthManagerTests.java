@@ -1,10 +1,8 @@
-package nl.tudelft.sem.template.example.authentication;
+package nl.tudelft.sem.group06b.coupons.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-
-import nl.tudelft.sem.template.example.authentication.AuthManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
