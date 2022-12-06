@@ -6,6 +6,4 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface StoreRepository extends JpaRepository<Store, String> {
 
-    @Query("SELECT a FROM Store a")
-    Store[] queryAll();
 }

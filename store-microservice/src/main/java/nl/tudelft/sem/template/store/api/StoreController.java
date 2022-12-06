@@ -1,10 +1,17 @@
 package nl.tudelft.sem.template.store.api;
 
 import nl.tudelft.sem.template.store.authentication.AuthManager;
+import nl.tudelft.sem.template.store.database.StoreRepository;
+import nl.tudelft.sem.template.store.domain.Store;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Hello World example controller.
@@ -16,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreController {
 
     private final transient AuthManager authManager;
+    private final transient StoreRepository storeRepository;
 
     /**
      * Instantiates a new controller.
@@ -23,8 +31,9 @@ public class StoreController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public StoreController(AuthManager authManager) {
+    public StoreController(AuthManager authManager, StoreRepository storeRepository) {
         this.authManager = authManager;
+        this.storeRepository = storeRepository;
     }
 
     /**
@@ -38,4 +47,24 @@ public class StoreController {
 
     }
 
+    /**
+     * Get a list of all pizza stores.
+     *
+     * @return A list of pizza stores.
+     */
+    @GetMapping("/stores")
+    public ResponseEntity<List<Store>> queryAllStores() {
+        return ResponseEntity.ok(storeRepository.findAll());
+    }
+
+    /**
+     * Imports all stores to the database locally
+     * @param path An override to the default directory for activities
+     * @return A response to the request
+     */
+    @PutMapping("/import")
+    public ResponseEntity<Void> importStores(@RequestBody String path) {
+        //TODO: import the stores into database
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

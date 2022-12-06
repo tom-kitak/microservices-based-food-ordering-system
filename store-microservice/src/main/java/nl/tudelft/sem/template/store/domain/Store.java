@@ -25,25 +25,39 @@ public class Store {
     @JsonProperty("location")
     private String location;
 
-
+    /**
+     * Stores information in a single store
+     * @param id the ID of the store
+     * @param name the name of the store
+     * @param location the loation of the store
+     */
     public Store(String id, String name, String location) {
         this.id = id;
         this.name = name;
         this.location = location;
     }
 
-    public String getId() {
-        return id;
-    }
-
+    /**
+     * Returns the name of the store
+     * @return The name of the store
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the location of the store
+     * @return The location of the store
+     */
     public String getLocation() {
         return location;
     }
 
+    /**
+     * Returns ture if two stores are equal
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,6 +66,10 @@ public class Store {
         return id.equals(store.id) && name.equals(store.name) && location.equals(store.location);
     }
 
+    /**
+     * Generate a hash code for an object
+     * @return
+     */
     @Override
     public int hashCode() {
         return Objects.hash(name, location);
