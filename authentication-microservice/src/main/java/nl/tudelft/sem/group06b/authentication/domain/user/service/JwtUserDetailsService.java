@@ -1,16 +1,8 @@
-<<<<<<<< HEAD:authentication-microservice/src/main/java/nl/tudelft/sem/group06b/authentication/authentication/JwtUserDetailsService.java
-package nl.tudelft.sem.group06b.authentication.authentication;
-
-import java.util.ArrayList;
-import nl.tudelft.sem.group06b.authentication.domain.user.NetId;
-import nl.tudelft.sem.group06b.authentication.domain.user.UserRepository;
-========
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
 
 import java.util.ArrayList;
 import nl.tudelft.sem.group06b.authentication.domain.user.Username;
 import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
->>>>>>>> dev:authentication-microservice/src/main/java/nl/tudelft/sem/group06b/authentication/domain/user/service/JwtUserDetailsService.java
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

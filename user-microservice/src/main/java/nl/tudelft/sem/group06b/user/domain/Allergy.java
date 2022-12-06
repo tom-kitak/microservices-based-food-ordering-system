@@ -4,16 +4,21 @@ import java.io.Serializable;
 
 
 public class Allergy implements Serializable {
-    /**
-     * Class representing the allergy entity
-     */
-    private String allergen;
+
+    static final long serialVersionUID = -3387516993124229945L;
 
     /**
-     * Instantiates a new allergy
-     * @param allergen
+     * Class representing the allergy entity.
      */
-    public Allergy(String allergen){
+    private transient String allergen;
+
+    /**
+     * Instantiates a new allergy.
+     *
+     * @param allergen the allergen component
+     *
+     */
+    public Allergy(String allergen) {
         this.allergen = allergen;
     }
 

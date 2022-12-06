@@ -23,11 +23,11 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class MockTokenGeneratorProfile {
 
-    /**
-     * Mocks the TokenGenerator.
-     *
-     * @return A mocked TokenGenerator.
-     */
+//    /**
+//     * Mocks the TokenGenerator.
+//     *
+//     * @return A mocked TokenGenerator.
+//     */
 //    @Bean
 //    @Primary  // marks this bean as the first bean to use when trying to inject a TokenGenerator
 //    public JwtTokenGenerator getMockTokenGenerator() {

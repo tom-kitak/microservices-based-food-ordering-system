@@ -1,9 +1,9 @@
 package nl.tudelft.sem.group06b.user.domain;
 
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
+
 
 /**
  * A DDD service for registering a new user.
@@ -11,6 +11,7 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final transient UserRepository userRepository;
+
     /**
      * Instantiates a new UserService.
      *

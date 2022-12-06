@@ -1,8 +1,5 @@
-<<<<<<<< HEAD:example-microservice/src/test/java/nl/tudelft/sem/group06b/example/authentication/JwtAuthenticationEntryPointTests.java
-package nl.tudelft.sem.group06b.example.authentication;
-========
+
 package nl.tudelft.sem.group06b.user.authentication;
->>>>>>>> dev:user-microservice/src/test/java/nl/tudelft/sem/group06b/user/authentication/JwtAuthenticationEntryPointTests.java
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;

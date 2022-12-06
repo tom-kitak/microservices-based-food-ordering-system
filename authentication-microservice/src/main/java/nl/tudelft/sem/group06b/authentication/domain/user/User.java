@@ -85,7 +85,7 @@ public class User extends EntityEvents {
             return false;
         }
         User appUser = (User) o;
-        return id == (appUser.id);
+        return Objects.equals(id, appUser.id);
     }
 
     @Override

@@ -1,12 +1,7 @@
-<<<<<<<< HEAD:example-microservice/src/test/java/nl/tudelft/sem/group06b/example/profiles/MockTokenVerifierProfile.java
-package nl.tudelft.sem.group06b.example.profiles;
 
-import nl.tudelft.sem.group06b.example.authentication.JwtTokenVerifier;
-========
 package nl.tudelft.sem.group06b.user.profiles;
 
 import nl.tudelft.sem.group06b.user.authentication.JwtTokenVerifier;
->>>>>>>> dev:user-microservice/src/test/java/nl/tudelft/sem/group06b/user/profiles/MockTokenVerifierProfile.java
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
