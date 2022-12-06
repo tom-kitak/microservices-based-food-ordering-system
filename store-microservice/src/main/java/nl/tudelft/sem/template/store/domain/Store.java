@@ -17,11 +17,11 @@ public class Store {
     @JsonProperty("id")
     private String id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "name", nullable = false)
     @JsonProperty("name")
     private String name;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "location", nullable = false)
     @JsonProperty("location")
     private String location;
 
