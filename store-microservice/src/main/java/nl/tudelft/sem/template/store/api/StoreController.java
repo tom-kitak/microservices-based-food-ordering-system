@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.store.controllers;
+package nl.tudelft.sem.template.store.api;
 
 import nl.tudelft.sem.template.store.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  */
 @RestController
-public class DefaultController {
+public class StoreController {
 
     private final transient AuthManager authManager;
 
@@ -23,7 +23,7 @@ public class DefaultController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public DefaultController(AuthManager authManager) {
+    public StoreController(AuthManager authManager) {
         this.authManager = authManager;
     }
 
