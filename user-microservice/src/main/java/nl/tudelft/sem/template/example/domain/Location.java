@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class Location implements Serializable {
     /**
-     * Class representing the allergy entity
+     * Class representing the location entity
      */
     private String location;
 
     /**
-     * Instantiates a new allergy
+     * Instantiates a new location
      * @param location
      */
     public Location(String location){

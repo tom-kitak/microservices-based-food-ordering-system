@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     /**
-     * Find user by ID.
+     * Find user by memberId.
      */
     Optional<User> findByMemberId(String memberId);
 
     /**
-     * Check if an existing user already uses a ID.
+     * Check if an existing user already uses a memberId.
      */
     boolean existsByMemberId(String memberId);
 }

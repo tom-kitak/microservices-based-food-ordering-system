@@ -33,9 +33,10 @@ public class User implements Serializable {
 
     /**
      * Instantiates a new User
-     * @param memberId      the username of the user
-     * @param role          the role of the user
-     * @param allergies     the list of allergies of the user
+     * @param memberId          the username of the user
+     * @param role              the role of the user
+     * @param allergies         the list of allergies of the user
+     * @param preferredLocation the preferred store location of the user
      */
     public User(String memberId, Role role, List<Allergy>allergies, Location preferredLocation){
         this.memberId = memberId;
