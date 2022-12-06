@@ -6,6 +6,7 @@ buildscript {
 	}
 	dependencies {
 		classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
+		classpath 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
 	}
 }
 
@@ -100,6 +101,8 @@ checkstyle {
 }
 
 pmd {
+	ruleSetConfig = resources.text.fromFile("config/pmd/updatedRuleSet.xml")
+	ruleSets = []
 	incrementalAnalysis = true
 	sourceSets = [sourceSets.main]
 }
