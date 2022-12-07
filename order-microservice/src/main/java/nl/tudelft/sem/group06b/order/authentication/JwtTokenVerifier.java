@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.order.authentication;
+package nl.tudelft.sem.group06b.order.authentication;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -22,7 +22,7 @@ public class JwtTokenVerifier {
         return !isTokenExpired(token);
     }
 
-    public String getNetIdFromToken(String token) {
+    public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.order.domain;
+package nl.tudelft.sem.group06b.order.domain;
 
 import java.io.Serializable;
 import java.util.Set;

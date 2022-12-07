@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.order.domain;
+package nl.tudelft.sem.group06b.order.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -72,18 +72,38 @@ public class Order {
         this.storeId = storeId;
     }
 
+    /**
+     * Returns the ID of the customer that placed the order.
+     *
+     * @return ID of the costumer
+     */
     public int getCustomerId() {
         return customerId;
     }
 
+    /**
+     * Changes the costumer ID to another costumer.
+     *
+     * @param customerId ID of the new customer
+     */
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 
+    /**
+     * Returns the ID of the admin.
+     *
+     * @return ID of the admin
+     */
     public int getAdminId() {
         return adminId;
     }
 
+    /**
+     * Changes the ID of the admin of the order.
+     *
+     * @param adminId ID of the new admin
+     */
     public void setAdminId(int adminId) {
         this.adminId = adminId;
     }

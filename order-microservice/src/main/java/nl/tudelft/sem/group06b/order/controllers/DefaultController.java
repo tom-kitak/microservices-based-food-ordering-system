@@ -1,6 +1,6 @@
-package nl.tudelft.sem.template.order.controllers;
+package nl.tudelft.sem.group06b.order.controllers;
 
-import nl.tudelft.sem.template.order.authentication.AuthManager;
+import nl.tudelft.sem.group06b.order.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +34,7 @@ public class DefaultController {
      */
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId());
+        return ResponseEntity.ok("Hello " + authManager.getUsername());
 
     }
 

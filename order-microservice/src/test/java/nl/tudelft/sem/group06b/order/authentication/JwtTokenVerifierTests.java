@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.order.authentication;
+package nl.tudelft.sem.group06b.order.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import nl.tudelft.sem.template.order.authentication.JwtTokenVerifier;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,7 +85,7 @@ public class JwtTokenVerifierTests {
         String token = generateToken(secret, expected, -10_000_000, 10_000_000);
 
         // Act
-        String actual = jwtTokenVerifier.getNetIdFromToken(token);
+        String actual = jwtTokenVerifier.getUsernameFromToken(token);
 
         // Assert
         assertThat(actual).isEqualTo(expected);

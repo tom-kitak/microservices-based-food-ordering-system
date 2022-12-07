@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.order.authentication;
+package nl.tudelft.sem.group06b.order.authentication;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -63,9 +63,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                 try {
                     if (jwtTokenVerifier.validateToken(token)) {
-                        String netId = jwtTokenVerifier.getNetIdFromToken(token);
+                        String username = jwtTokenVerifier.getUsernameFromToken(token);
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
-                                netId,
+                                username,
                                 null, List.of() // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
@@ -89,3 +89,4 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+

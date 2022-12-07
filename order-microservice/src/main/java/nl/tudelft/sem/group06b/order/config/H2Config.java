@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.order.config;
+package nl.tudelft.sem.group06b.order.config;
 
 import javax.sql.DataSource;
 import lombok.Getter;
