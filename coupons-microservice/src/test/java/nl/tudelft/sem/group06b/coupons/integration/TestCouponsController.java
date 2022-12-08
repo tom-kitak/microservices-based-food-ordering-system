@@ -5,6 +5,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.sql.Date;
+import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import nl.tudelft.sem.group06b.coupons.authentication.AuthManager;
 import nl.tudelft.sem.group06b.coupons.authentication.JwtTokenVerifier;
@@ -47,9 +50,12 @@ public class TestCouponsController {
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
 
         when(couponRepository.findAllById(List.of("1", "2", "3"))).thenReturn(List.of(
-                new Coupon("1", CouponType.DISCOUNT, 0.5),
-                new Coupon("2", CouponType.ONE_OFF, 0.5),
-                new Coupon("3", CouponType.DISCOUNT, 0.4)
+                new Coupon("1", CouponType.DISCOUNT, 0.5,
+                        Date.from(Instant.now().plusSeconds(30)), new HashSet<>()),
+                new Coupon("2", CouponType.ONE_OFF, 0.5,
+                        Date.from(Instant.now().plusSeconds(30)), new HashSet<>()),
+                new Coupon("3", CouponType.DISCOUNT, 0.4,
+                        Date.from(Instant.now().plusSeconds(30)), new HashSet<>())
         ));
 
         ResultActions result = mockMvc.perform(get("/calculateMinPrice?prices=100,20,10&coupons=1,2,3")
