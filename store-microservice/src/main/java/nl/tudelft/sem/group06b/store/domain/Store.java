@@ -2,10 +2,8 @@ package nl.tudelft.sem.group06b.store.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.NoArgsConstructor;
 
 
@@ -15,15 +13,13 @@ import lombok.NoArgsConstructor;
 public class Store {
     @Id
     @Column(name = "id", nullable = false, unique = true)
-    @JsonProperty("id")
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name", nullable = false)
-    @JsonProperty("name")
     private String name;
 
     @Column(name = "location", nullable = false)
-    @JsonProperty("location")
     private String location;
 
     /**
@@ -33,7 +29,7 @@ public class Store {
      * @param name the name of the store.
      * @param location the loation of the store.
      */
-    public Store(int id, String name, String location) {
+    public Store(Long id, String name, String location) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -72,7 +68,7 @@ public class Store {
             return false;
         }
         Store store = (Store) o;
-        return id == store.id && name.equals(store.name) && location.equals(store.location);
+        return Objects.equals(id, store.id) && name.equals(store.name) && location.equals(store.location);
     }
 
     /**
