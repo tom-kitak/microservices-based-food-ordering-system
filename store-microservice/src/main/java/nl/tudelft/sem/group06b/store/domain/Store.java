@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(name = "stores")
+@Table(name = "STORES")
 @NoArgsConstructor
 public class Store {
     @Id
     @Column(name = "id", nullable = false, unique = true)
     @JsonProperty("id")
-    private String id;
+    private int id;
 
     @Column(name = "name", nullable = false)
     @JsonProperty("name")
@@ -33,7 +33,7 @@ public class Store {
      * @param name the name of the store.
      * @param location the loation of the store.
      */
-    public Store(String id, String name, String location) {
+    public Store(int id, String name, String location) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -72,7 +72,7 @@ public class Store {
             return false;
         }
         Store store = (Store) o;
-        return id.equals(store.id) && name.equals(store.name) && location.equals(store.location);
+        return id == store.id && name.equals(store.name) && location.equals(store.location);
     }
 
     /**

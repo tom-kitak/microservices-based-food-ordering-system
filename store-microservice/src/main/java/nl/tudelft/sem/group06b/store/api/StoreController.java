@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  */
 @RestController
+@RequestMapping("/api/stores")
 public class StoreController {
 
     private final transient AuthManager authManager;
@@ -44,7 +46,6 @@ public class StoreController {
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
         return ResponseEntity.ok("Hello " + authManager.getUsername());
-
     }
 
     /**
@@ -55,18 +56,6 @@ public class StoreController {
     @GetMapping("/stores")
     public ResponseEntity<List<Store>> queryAllStores() {
         return ResponseEntity.ok(storeRepository.findAll());
-    }
-
-    /**
-     * Imports all stores to the database locally.
-     *
-     * @param path An override to the default directory for activities.
-     * @return A response to the request.
-     */
-    @PutMapping("/import")
-    public ResponseEntity<Void> importStores(@RequestBody String path) {
-        //TODO: import the stores into database
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
