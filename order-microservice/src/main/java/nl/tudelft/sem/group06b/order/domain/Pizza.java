@@ -1,8 +1,8 @@
 package nl.tudelft.sem.group06b.order.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
@@ -86,8 +86,12 @@ public class Pizza implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Pizza)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Pizza)) {
+            return false;
+        }
         Pizza pizza = (Pizza) o;
         return Objects.equals(nameId, pizza.nameId);
     }
