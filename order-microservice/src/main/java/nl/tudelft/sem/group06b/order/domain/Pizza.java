@@ -2,34 +2,38 @@ package nl.tudelft.sem.group06b.order.domain;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
-public class Pizza {
+public class Pizza implements Serializable {
+
+    static final long serialVersionUID = -3387516993124229945L;
+
+    private String nameId;
 
     private List<Topping> toppings;
 
-    private Set<Integer> allergiesIds;
+    private Set<String> allergenIds;
 
     private BigDecimal price;
 
-    private String type;
-
     /**
-     * Instantiates a new Pizza. Also adds all the allergens of toppings if they haven't been added already.
+     * Instantiates a new Pizza. Allergens from toppings are automatically added to allergens set.
      *
-     * @param toppings toppings on the pizza
-     * @param allergiesIds all the allergens pizza contains
-     * @param price price of the pizza
-     * @param type type or name of the pizza
+     * @param nameId name or type of the pizza, serves as an ID
+     * @param toppings list of all toppings
+     * @param allergenIds set of all allergens
+     * @param price price
      */
-    public Pizza(List<Topping> toppings, Set<Integer> allergiesIds, BigDecimal price, String type) {
+    public Pizza(String nameId, List<Topping> toppings, Set<String> allergenIds, BigDecimal price) {
+        this.nameId = nameId;
         this.toppings = toppings;
-        this.allergiesIds = allergiesIds;
+        this.allergenIds = allergenIds;
         this.price = price;
-        this.type = type;
         for (Topping t : toppings) {
-            for (Integer allergyId : t.getAllergiesIds()) {
-                allergiesIds.add(allergyId);
+            for (String allergen : t.getAllergenIds()) {
+                allergenIds.add(allergen);
             }
         }
     }
@@ -42,10 +46,18 @@ public class Pizza {
     public void addToppings(List<Topping> toppings) {
         this.toppings.addAll(toppings);
         for (Topping t : toppings) {
-            for (Integer allergyId : t.getAllergiesIds()) {
-                allergiesIds.add(allergyId);
+            for (String allergen : t.getAllergenIds()) {
+                allergenIds.add(allergen);
             }
         }
+    }
+
+    public String getNameId() {
+        return nameId;
+    }
+
+    public void setNameId(String nameId) {
+        this.nameId = nameId;
     }
 
     public List<Topping> getToppings() {
@@ -56,12 +68,12 @@ public class Pizza {
         this.toppings = toppings;
     }
 
-    public Set<Integer> getAllergiesIds() {
-        return allergiesIds;
+    public Set<String> getAllergenIds() {
+        return allergenIds;
     }
 
-    public void setAllergiesIds(Set<Integer> allergiesIds) {
-        this.allergiesIds = allergiesIds;
+    public void setAllergenIds(Set<String> allergenIds) {
+        this.allergenIds = allergenIds;
     }
 
     public BigDecimal getPrice() {
@@ -72,11 +84,16 @@ public class Pizza {
         this.price = price;
     }
 
-    public String getType() {
-        return type;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pizza)) return false;
+        Pizza pizza = (Pizza) o;
+        return Objects.equals(nameId, pizza.nameId);
     }
 
-    public void setType(String type) {
-        this.type = type;
+    @Override
+    public int hashCode() {
+        return Objects.hash(nameId);
     }
 }

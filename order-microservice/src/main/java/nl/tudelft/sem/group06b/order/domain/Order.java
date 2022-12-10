@@ -3,9 +3,12 @@ package nl.tudelft.sem.group06b.order.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
@@ -17,14 +20,12 @@ import lombok.NoArgsConstructor;
 public class Order {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
-    private int id;
+    private Long id;
 
     @Column(name = "customerId")
-    private int customerId;
-
-    @Column(name = "adminId")
-    private int adminId;
+    private Long customerId;
 
     @Column(name = "pizzas")
     @ElementCollection
@@ -38,20 +39,18 @@ public class Order {
 
     @Column(name = "couponsIds")
     @ElementCollection
-    private List<Integer> couponsIds;
+    private List<String> couponsIds;
 
     @Column(name = "price")
     private BigDecimal price;
 
     @Column(name = "storeId")
-    private int storeId;
+    private String storeId;
 
     /**
      * Instantiates a new Order.
      *
-     * @param id ID of the order
      * @param customerId ID of the customer
-     * @param adminId ID of the admin
      * @param pizzas list of pizzas in the order
      * @param completionTime time when the order is completed
      * @param status current status of the order
@@ -59,11 +58,9 @@ public class Order {
      * @param price price of the order
      * @param storeId store of the order
      */
-    public Order(int id, int customerId, int adminId, List<Pizza> pizzas, Date completionTime, Status status,
-                 List<Integer> couponsIds, BigDecimal price, int storeId) {
-        this.id = id;
+    public Order(Long customerId, List<Pizza> pizzas, Date completionTime, Status status,
+                 List<String> couponsIds, BigDecimal price, String storeId) {
         this.customerId = customerId;
-        this.adminId = adminId;
         this.pizzas = pizzas;
         this.completionTime = completionTime;
         this.status = status;
@@ -77,7 +74,7 @@ public class Order {
      *
      * @return ID of the costumer
      */
-    public int getCustomerId() {
+    public Long getCustomerId() {
         return customerId;
     }
 
@@ -86,26 +83,8 @@ public class Order {
      *
      * @param customerId ID of the new customer
      */
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(Long customerId) {
         this.customerId = customerId;
-    }
-
-    /**
-     * Returns the ID of the admin.
-     *
-     * @return ID of the admin
-     */
-    public int getAdminId() {
-        return adminId;
-    }
-
-    /**
-     * Changes the ID of the admin of the order.
-     *
-     * @param adminId ID of the new admin
-     */
-    public void setAdminId(int adminId) {
-        this.adminId = adminId;
     }
 
     public List<Pizza> getPizzas() {
@@ -132,11 +111,11 @@ public class Order {
         this.status = status;
     }
 
-    public List<Integer> getCouponsIds() {
+    public List<String> getCouponsIds() {
         return couponsIds;
     }
 
-    public void setCouponsIds(List<Integer> couponsIds) {
+    public void setCouponsIds(List<String> couponsIds) {
         this.couponsIds = couponsIds;
     }
 
@@ -148,11 +127,24 @@ public class Order {
         this.price = price;
     }
 
-    public int getStoreId() {
+    public String getStoreId() {
         return storeId;
     }
 
-    public void setStoreId(int storeId) {
+    public void setStoreId(String storeId) {
         this.storeId = storeId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Order)) return false;
+        Order order = (Order) o;
+        return id.equals(order.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
