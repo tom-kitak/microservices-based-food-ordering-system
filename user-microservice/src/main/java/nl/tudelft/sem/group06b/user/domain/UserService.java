@@ -2,6 +2,7 @@ package nl.tudelft.sem.group06b.user.domain;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 
@@ -57,6 +58,33 @@ public class UserService {
 
         throw new Exception("MemberId does not exist");
     }
+
+    /**
+     * Add a new allergy.
+     *
+     * @param memberId  memberId of user
+     * @param allergy   allergen to be added to the user's list of allergies
+     * @return          the updated User
+     * @throws Exception if the allergen is already in the list
+     */
+    public User addAllergy(String memberId, Allergy allergy) throws Exception {
+        Optional<User> user = userRepository.findByMemberId(memberId);
+        if (user.isPresent()) {
+            // Get existing user
+            List<Allergy> allergies = user.get().getAllergies();
+            if (allergies.stream().map(Allergy::getAllergen).collect(Collectors.toList())
+                    .contains(allergy.getAllergen())) {
+                throw new Exception("Allergy is already there");
+            }
+            allergies.add(allergy);
+            user.get().setAllergies(allergies);
+            userRepository.save(user.get());
+            return user.get();
+        }
+        throw new Exception("MemberId does not exist");
+    }
+
+
 
     public boolean checkMemberIdIsUnique(String memberId) {
         return !userRepository.existsByMemberId(memberId);

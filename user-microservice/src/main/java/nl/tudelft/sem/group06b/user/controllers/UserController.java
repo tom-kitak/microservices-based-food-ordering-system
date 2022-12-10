@@ -45,24 +45,18 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
     }
 
+
     /**
-     * Gets allergens by memberId.
+     * Adds an allergen to the user's list of allergies.
      *
-     * @return the list of allergens found in the database with the given memberId
+     * @return the list of allergens after adding the new allergen
      */
     @PutMapping("/user/{memberId}/{allergen}/addAllergen")
     public ResponseEntity<List<Allergy>> addAllergens(@PathVariable String memberId,
                                                       @PathVariable String allergen) throws Exception {
         Allergy allergy = new Allergy(allergen);
-        User user = userService.getUser(memberId);
-        List<Allergy> userAllergies = user.getAllergies();
-        if (userAllergies.contains(allergy)) {
-            return ResponseEntity.badRequest().build();
-        }
         try {
-            userAllergies.add(allergy);
-            userService.addUser(authManager.getMemberId(), authManager.getRole(),
-                    userAllergies, user.getPreferredLocation());
+            userService.addAllergy(memberId, allergy);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
