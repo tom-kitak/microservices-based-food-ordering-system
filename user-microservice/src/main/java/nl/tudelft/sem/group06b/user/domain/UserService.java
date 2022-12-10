@@ -102,8 +102,9 @@ public class UserService {
                     .contains(allergy.getAllergen())) {
                 throw new Exception("Allergy is not there");
             }
-            allergies.remove(allergy);
-            user.get().setAllergies(allergies);
+            user.get().setAllergies(allergies.stream()
+                    .filter(x -> !x.getAllergen().equals(allergy.getAllergen()))
+                    .collect(Collectors.toList()));
             userRepository.save(user.get());
             return user.get();
         }
