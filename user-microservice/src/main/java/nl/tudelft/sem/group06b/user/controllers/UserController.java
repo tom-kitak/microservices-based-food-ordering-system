@@ -52,7 +52,7 @@ public class UserController {
      * @return the list of allergens after adding the new allergen
      */
     @PutMapping("/user/{memberId}/{allergen}/addAllergen")
-    public ResponseEntity<List<Allergy>> addAllergens(@PathVariable String memberId,
+    public ResponseEntity<List<Allergy>> addAllergen(@PathVariable String memberId,
                                                       @PathVariable String allergen) throws Exception {
         Allergy allergy = new Allergy(allergen);
         try {
@@ -64,23 +64,31 @@ public class UserController {
     }
 
     /**
-     * Gets allergens by memberId.
+     * Removes allergen from the user's list of allergies.
      *
-     * @return the list of allergens found in the database with the given memberId
+     * @return the list of allergens after removing the existing allergen
      */
-    @DeleteMapping("/user/{memberId}/removeAllergen")
-    public ResponseEntity<List<Allergy>> removeAllergens(@PathVariable String memberId,
+    @DeleteMapping("/user/{memberId}/{allergen}/removeAllergen")
+    public ResponseEntity<List<Allergy>> removeAllergen(@PathVariable String memberId,
                                                          @PathVariable String allergen) throws Exception {
         Allergy allergy = new Allergy(allergen);
-        User user = userService.getUser(memberId);
-        List<Allergy> userAllergies = user.getAllergies();
-        if (!userAllergies.contains(allergy)) {
-            return ResponseEntity.badRequest().build();
-        }
         try {
-            userAllergies.remove(allergy);
-            userService.addUser(authManager.getMemberId(), authManager.getRole(),
-                    userAllergies, user.getPreferredLocation());
+            userService.removeAllergy(memberId, allergy);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
+    }
+
+    /**
+     * Removes allergen from the user's list of allergies.
+     *
+     * @return the list of allergens after removing the existing allergen
+     */
+    @DeleteMapping("/user/{memberId}/removeAllAllergens")
+    public ResponseEntity<List<Allergy>> removeAllergens(@PathVariable String memberId) throws Exception {
+        try {
+            userService.removeAllAllergies(memberId);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
