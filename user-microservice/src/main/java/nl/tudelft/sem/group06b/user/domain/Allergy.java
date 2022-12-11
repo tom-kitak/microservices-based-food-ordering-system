@@ -11,7 +11,7 @@ public class Allergy implements Serializable {
     /**
      * Class representing the allergy entity.
      */
-    private transient String allergen;
+    private String allergen;
 
     /**
      * Instantiates a new allergy.
@@ -25,6 +25,10 @@ public class Allergy implements Serializable {
 
     public String getAllergen() {
         return allergen;
+    }
+
+    public void setAllergen(String allergen) {
+        this.allergen = allergen;
     }
 
     @Override

@@ -22,9 +22,6 @@ public class User implements Serializable {
      */
 
     @Id
-    @Column(name = "id", nullable = false, unique = true)
-    private int id;
-
     @Column(name = "memberId", nullable = false, unique = true)
     private String memberId;
 
@@ -82,7 +79,7 @@ public class User implements Serializable {
             return false;
         }
         User user = (User) o;
-        return id == user.id && Objects.equals(memberId, user.memberId)
+        return Objects.equals(memberId, user.memberId)
                 && Objects.equals(allergies, user.allergies)
                 && Objects.equals(preferredLocation, user.preferredLocation);
     }

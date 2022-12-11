@@ -7,10 +7,11 @@ public class Location implements Serializable {
 
     static final long serialVersionUID = -3387516993124229945L;
 
+
     /**
      * Class representing the location entity.
      */
-    private transient String address;
+    private String address;
 
     /**
      * Instantiates a new location.
@@ -22,8 +23,12 @@ public class Location implements Serializable {
         this.address = address;
     }
 
-    public String getLocation() {
+    public String getAddress() {
         return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Override

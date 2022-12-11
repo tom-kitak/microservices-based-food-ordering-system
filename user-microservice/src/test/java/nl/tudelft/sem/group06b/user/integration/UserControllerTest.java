@@ -1,14 +1,16 @@
 package nl.tudelft.sem.group06b.user.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import nl.tudelft.sem.group06b.user.authentication.AuthManager;
 import nl.tudelft.sem.group06b.user.authentication.JwtTokenVerifier;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -39,7 +42,7 @@ public class UserControllerTest {
 
 
     @Test
-    public void getAllergensTest() throws Exception {
+    public void registerUserTest() throws Exception {
         when(mockAuthenticationManager.getMemberId()).thenReturn("kevin12");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin12");
@@ -50,10 +53,114 @@ public class UserControllerTest {
 
         // Assert
         result.andExpect(status().isOk());
-        //
-        //        String response = result.andReturn().getResponse().getContentAsString();
-        //
-        //        assertThat(response).isEqualTo("Hello ExampleUser");
+    }
 
+    @Test
+    public void getAllergensTest() throws Exception {
+        when(mockAuthenticationManager.getMemberId()).thenReturn("kevin12");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin12");
+
+        //Firstly register the user
+        mockMvc.perform(post("/register/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        mockMvc.perform(put("/user/kevin12/lactose/addAllergen")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        mockMvc.perform(put("/user/kevin12/fruit/addAllergen")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        ResultActions result = mockMvc.perform(get("/user/kevin12/getAllergens")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        String response = result.andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+
+        Assertions.assertEquals(response, "[{\"allergen\":\"lactose\"},{\"allergen\":\"fruit\"}]");
+
+        // Assert
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    public void addAllergenTest() throws Exception {
+        when(mockAuthenticationManager.getMemberId()).thenReturn("kevin1");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin1");
+
+        //Firstly register the user
+        mockMvc.perform(post("/register/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        ResultActions result = mockMvc.perform(put("/user/kevin1/lactose/addAllergen")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        String response = result.andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+
+        Assertions.assertEquals(response, "[{\"allergen\":\"lactose\"}]");
+
+        // Assert
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    public void removeAllergenTest() throws Exception {
+        when(mockAuthenticationManager.getMemberId()).thenReturn("kevin123");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin123");
+
+        //Firstly register the user
+        mockMvc.perform(post("/register/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        mockMvc.perform(put("/user/kevin123/lactose/addAllergen")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        ResultActions result = mockMvc.perform(delete("/user/kevin123/lactose/removeAllergen")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        String response = result.andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+
+        Assertions.assertEquals(response, "[]");
+
+        // Assert
+        result.andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void removeAllAllergensTest() throws Exception {
+        when(mockAuthenticationManager.getMemberId()).thenReturn("kevin12");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin12");
+
+        //Firstly register the user
+        mockMvc.perform(post("/register/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        ResultActions result = mockMvc.perform(delete("/user/kevin12/removeAllAllergens")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        String response = result.andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+
+        Assertions.assertEquals(response, "[]");
+
+        // Assert
+        result.andExpect(status().isOk());
     }
 }

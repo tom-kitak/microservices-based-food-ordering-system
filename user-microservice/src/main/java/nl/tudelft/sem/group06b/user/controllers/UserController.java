@@ -3,7 +3,6 @@ package nl.tudelft.sem.group06b.user.controllers;
 import java.util.List;
 import nl.tudelft.sem.group06b.user.authentication.AuthManager;
 import nl.tudelft.sem.group06b.user.domain.Allergy;
-import nl.tudelft.sem.group06b.user.domain.User;
 import nl.tudelft.sem.group06b.user.domain.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

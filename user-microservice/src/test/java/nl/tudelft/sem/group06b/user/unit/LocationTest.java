@@ -23,7 +23,13 @@ public class LocationTest {
 
     @Test
     void getLocation() {
-        assertEquals(location.getLocation(), "Drebbelweg");
+        assertEquals(location.getAddress(), "Drebbelweg");
+    }
+
+    @Test
+    void setLocation() {
+        location.setAddress("EWI");
+        assertEquals(location.getAddress(), "EWI");
     }
 
     @Test

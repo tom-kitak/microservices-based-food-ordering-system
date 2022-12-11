@@ -26,6 +26,12 @@ public class AllergyTest {
     }
 
     @Test
+    void setAllergen() {
+        allergy.setAllergen("Crackers");
+        assertEquals(allergy.getAllergen(), "Crackers");
+    }
+
+    @Test
     void equalsAllergy() {
         Allergy allergy1 = new Allergy("Lactose");
         Allergy allergy2 = new Allergy("Gluten");
