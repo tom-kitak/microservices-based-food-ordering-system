@@ -1,14 +1,24 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
-import lombok.AllArgsConstructor;
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@AllArgsConstructor
-public class Allergy {
+@NoArgsConstructor
+@ToString
+@Entity
+@Table(name = "Allergies")
+public class Allergy implements Serializable {
+    static final long serialVersionUID = 42L;
     /**
      * id for the allergy.
      */
-    private @Getter int id;
+    @Id
+    private @Getter Long id;
     /**
      * name for the allergy.
      */
