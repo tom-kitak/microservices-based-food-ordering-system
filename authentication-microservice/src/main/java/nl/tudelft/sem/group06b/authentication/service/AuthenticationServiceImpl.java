@@ -1,12 +1,14 @@
 package nl.tudelft.sem.group06b.authentication.service;
 
 import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
+import nl.tudelft.sem.group06b.authentication.domain.role.service.RoleCreationService;
 import nl.tudelft.sem.group06b.authentication.domain.role.service.RoleCreationServiceImpl;
 import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
 import nl.tudelft.sem.group06b.authentication.domain.user.Password;
+import nl.tudelft.sem.group06b.authentication.domain.user.service.JwtTokenGenerator;
 import nl.tudelft.sem.group06b.authentication.domain.user.service.JwtTokenGeneratorImpl;
 import nl.tudelft.sem.group06b.authentication.domain.user.service.JwtUserDetailsService;
-import nl.tudelft.sem.group06b.authentication.domain.user.service.RegistrationServiceImpl;
+import nl.tudelft.sem.group06b.authentication.domain.user.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,11 +24,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final transient JwtUserDetailsService jwtUserDetailsService;
 
-    private final transient JwtTokenGeneratorImpl jwtTokenGenerator;
+    private final transient JwtTokenGenerator jwtTokenGenerator;
 
-    private final transient RegistrationServiceImpl registrationService;
+    private final transient RegistrationService registrationService;
 
-    private final transient RoleCreationServiceImpl roleCreationService;
+    private final transient RoleCreationService roleCreationService;
 
     /**
      * Constructor for the authentication controller.
@@ -38,8 +40,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     public AuthenticationServiceImpl(AuthenticationManager authenticationManager,
                                      JwtUserDetailsService jwtUserDetailsService,
-                                     JwtTokenGeneratorImpl jwtTokenGenerator,
-                                     RegistrationServiceImpl registrationService,
+                                     JwtTokenGenerator jwtTokenGenerator,
+                                     RegistrationService registrationService,
                                      RoleCreationServiceImpl roleCreationService) {
         this.authenticationManager = authenticationManager;
         this.jwtUserDetailsService = jwtUserDetailsService;

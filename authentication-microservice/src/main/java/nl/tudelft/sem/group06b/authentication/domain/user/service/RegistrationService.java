@@ -3,7 +3,6 @@ package nl.tudelft.sem.group06b.authentication.domain.user.service;
 import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
 import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
 import nl.tudelft.sem.group06b.authentication.domain.user.Password;
-import nl.tudelft.sem.group06b.authentication.domain.user.User;
 
 public interface RegistrationService {
 
@@ -14,7 +13,7 @@ public interface RegistrationService {
      * @param password The password of the user
      * @throws Exception if the user already exists
      */
-    User registerUser(MemberId memberId, Password password) throws Exception;
+    void registerUser(MemberId memberId, Password password) throws Exception;
 
     /**
      * Changes the role of a user given their memberId.

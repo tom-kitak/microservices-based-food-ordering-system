@@ -30,7 +30,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class RegistrationServiceTest {
 
     @Autowired
-    private transient RegistrationServiceImpl registrationService;
+    private transient RegistrationService registrationService;
 
     @Autowired
     private transient PasswordHashingService mockPasswordEncoder;
