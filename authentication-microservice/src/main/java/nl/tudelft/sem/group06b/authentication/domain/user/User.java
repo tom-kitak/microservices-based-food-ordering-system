@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.EntityEvents;
 import nl.tudelft.sem.group06b.authentication.domain.user.events.PasswordWasChangedEvent;
+import nl.tudelft.sem.group06b.authentication.domain.user.events.RoleWasChangedEvent;
 import nl.tudelft.sem.group06b.authentication.domain.user.events.UserWasCreatedEvent;
 
 /**
@@ -23,15 +24,14 @@ public class User extends EntityEvents {
     /**
      * Identifier for the application user.
      */
-
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "memberId", nullable = false, unique = true)
-    @Convert(converter = MemberIDAttributeConverter.class)
-    private MemberID memberID;
+    @Column(name = "memberID", nullable = false, unique = true)
+    @Convert(converter = MemberIdAttributeConverter.class)
+    private MemberId memberId;
 
     @Column(name = "password", nullable = false)
     @Convert(converter = HashedPasswordAttributeConverter.class)
@@ -46,14 +46,14 @@ public class User extends EntityEvents {
     /**
      * Create new application user.
      *
-     * @param memberID The name for the new user
+     * @param memberId The name for the new user
      * @param password The password for the new user
      */
-    public User(MemberID memberID, HashedPassword password, Long roleId) {
-        this.memberID = memberID;
+    public User(MemberId memberId, HashedPassword password, Long roleId) {
+        this.memberId = memberId;
         this.password = password;
         this.roleId = roleId;
-        this.recordThat(new UserWasCreatedEvent(memberID));
+        this.recordThat(new UserWasCreatedEvent(memberId));
     }
 
     public void changePassword(HashedPassword password) {
@@ -61,16 +61,17 @@ public class User extends EntityEvents {
         this.recordThat(new PasswordWasChangedEvent(this));
     }
 
-    public MemberID getMemberID() {
-        return memberID;
+    public void changeRole(Long newRoleId) {
+        this.roleId = newRoleId;
+        this.recordThat(new RoleWasChangedEvent(this));
+    }
+
+    public MemberId getMemberId() {
+        return memberId;
     }
 
     public HashedPassword getPassword() {
         return password;
-    }
-
-    public Long getRoleId() {
-        return roleId;
     }
 
     /**
@@ -90,6 +91,6 @@ public class User extends EntityEvents {
 
     @Override
     public int hashCode() {
-        return Objects.hash(memberID);
+        return Objects.hash(memberId);
     }
 }

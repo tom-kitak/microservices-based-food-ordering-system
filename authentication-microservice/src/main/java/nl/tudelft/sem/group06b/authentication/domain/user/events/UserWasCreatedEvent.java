@@ -1,18 +1,18 @@
 package nl.tudelft.sem.group06b.authentication.domain.user.events;
 
-import nl.tudelft.sem.group06b.authentication.domain.user.MemberID;
+import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
 
 /**
  * A DDD domain event that indicated a user was created.
  */
 public class UserWasCreatedEvent {
-    private final MemberID username;
+    private final MemberId memberId;
 
-    public UserWasCreatedEvent(MemberID username) {
-        this.username = username;
+    public UserWasCreatedEvent(MemberId memberId) {
+        this.memberId = memberId;
     }
 
-    public MemberID getUsername() {
-        return username;
+    public MemberId getMemberId() {
+        return memberId;
     }
 }

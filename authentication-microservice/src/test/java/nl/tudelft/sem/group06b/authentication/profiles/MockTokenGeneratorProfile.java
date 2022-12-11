@@ -1,6 +1,6 @@
 package nl.tudelft.sem.group06b.authentication.profiles;
 
-import nl.tudelft.sem.group06b.authentication.domain.user.service.JwtTokenGenerator;
+import nl.tudelft.sem.group06b.authentication.domain.user.service.JwtTokenGeneratorImpl;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +31,8 @@ public class MockTokenGeneratorProfile {
      */
     @Bean
     @Primary  // marks this bean as the first bean to use when trying to inject a TokenGenerator
-    public JwtTokenGenerator getMockTokenGenerator() {
-        return Mockito.mock(JwtTokenGenerator.class);
+    public JwtTokenGeneratorImpl getMockTokenGenerator() {
+        return Mockito.mock(JwtTokenGeneratorImpl.class);
     }
 }
 

@@ -1,10 +1,9 @@
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
 
 import java.util.ArrayList;
-import nl.tudelft.sem.group06b.authentication.domain.user.MemberID;
+import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
 import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,16 +22,17 @@ public class JwtUserDetailsService implements UserDetailsService {
     public JwtUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
     /**
      * Loads user information required for authentication from the DB.
      *
-     * @param memberIDValue The username of the user we want to authenticate
+     * @param memberIdValue The username of the user we want to authenticate
      * @return The authentication user information of that user
      * @throws UsernameNotFoundException Username was not found
      */
     @Override
-    public UserDetails loadUserByUsername(String memberIDValue) throws UsernameNotFoundException {
-        var optionalUser = userRepository.findByMemberID(new MemberID(memberIDValue));
+    public UserDetails loadUserByUsername(String memberIdValue) throws UsernameNotFoundException {
+        var optionalUser = userRepository.findByMemberId(new MemberId(memberIdValue));
 
         if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User does not exist");
@@ -40,7 +40,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         var user = optionalUser.get();
 
-        return new User(user.getMemberID().getMemberIDValue(), user.getPassword().toString(), new ArrayList<>());
+        return new User(user.getMemberId().getMemberIdValue(), user.getPassword().toString(), new ArrayList<>());
     }
 }
 

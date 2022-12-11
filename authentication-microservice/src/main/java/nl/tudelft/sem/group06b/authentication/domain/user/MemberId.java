@@ -1,27 +1,25 @@
 package nl.tudelft.sem.group06b.authentication.domain.user;
 
-import lombok.EqualsAndHashCode;
-
 import java.util.Objects;
 
 /**
  * A DDD value object representing a username in our domain.
  */
-public class MemberID {
-    private final transient String memberIDValue;
+public class MemberId {
+    private final transient String memberIdValue;
 
-    public MemberID(String memberIDValue) {
+    public MemberId(String memberIdValue) {
         // validate username
-        this.memberIDValue = memberIDValue;
+        this.memberIdValue = memberIdValue;
     }
 
-    public String getMemberIDValue() {
-        return memberIDValue;
+    public String getMemberIdValue() {
+        return memberIdValue;
     }
 
     @Override
     public String toString() {
-        return memberIDValue;
+        return memberIdValue;
     }
 
     /**
@@ -35,12 +33,12 @@ public class MemberID {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        MemberID otherMemberID = (MemberID) o;
-        return Objects.equals(memberIDValue, otherMemberID.memberIDValue);
+        MemberId otherMemberId = (MemberId) o;
+        return Objects.equals(memberIdValue, otherMemberId.memberIdValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(memberIDValue);
+        return Objects.hash(memberIdValue);
     }
 }

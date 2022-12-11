@@ -9,16 +9,19 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import nl.tudelft.sem.group06b.authentication.domain.role.Role;
+import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
 import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.group06b.authentication.domain.user.MemberID;
+import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
 import nl.tudelft.sem.group06b.authentication.domain.user.Password;
 import nl.tudelft.sem.group06b.authentication.domain.user.User;
-import nl.tudelft.sem.group06b.authentication.domain.user.service.JwtTokenGenerator;
+import nl.tudelft.sem.group06b.authentication.domain.user.service.JwtTokenGeneratorImpl;
 import nl.tudelft.sem.group06b.authentication.domain.user.service.PasswordHashingService;
 import nl.tudelft.sem.group06b.authentication.integration.utils.JsonUtil;
 import nl.tudelft.sem.group06b.authentication.model.AuthenticationRequestModel;
 import nl.tudelft.sem.group06b.authentication.model.AuthenticationResponseModel;
 import nl.tudelft.sem.group06b.authentication.model.RegistrationRequestModel;
+import nl.tudelft.sem.group06b.authentication.repository.RoleRepository;
 import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +53,7 @@ public class UsersTests {
     private transient PasswordHashingService mockPasswordEncoder;
 
     @Autowired
-    private transient JwtTokenGenerator mockJwtTokenGenerator;
+    private transient JwtTokenGeneratorImpl mockJwtTokenGenerator;
 
     @Autowired
     private transient AuthenticationManager mockAuthenticationManager;
@@ -58,16 +61,20 @@ public class UsersTests {
     @Autowired
     private transient UserRepository userRepository;
 
+    @Autowired
+    private transient RoleRepository roleRepository;
+
     @Test
     public void register_withValidData_worksCorrectly() throws Exception {
         // Arrange
-        final MemberID testUser = new MemberID("SomeUser");
+        final MemberId testUser = new MemberId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
+        roleRepository.save(new Role(new RoleName("customer")));
 
         RegistrationRequestModel model = new RegistrationRequestModel();
-        model.setMemberID(testUser.toString());
+        model.setMemberId(testUser.toString());
         model.setPassword(testPassword.toString());
 
         // Act
@@ -78,16 +85,16 @@ public class UsersTests {
         // Assert
         resultActions.andExpect(status().isOk());
 
-        User savedUser = userRepository.findByMemberID(testUser).orElseThrow();
+        User savedUser = userRepository.findByMemberId(testUser).orElseThrow();
 
-        assertThat(savedUser.getMemberID()).isEqualTo(testUser);
+        assertThat(savedUser.getMemberId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
     }
 
     @Test
     public void register_withExistingUser_throwsException() throws Exception {
         // Arrange
-        final MemberID testUser = new MemberID("SomeUser");
+        final MemberId testUser = new MemberId("SomeUser");
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
 
@@ -95,7 +102,7 @@ public class UsersTests {
         userRepository.save(existingAppUser);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
-        model.setMemberID(testUser.toString());
+        model.setMemberId(testUser.toString());
         model.setPassword(newTestPassword.toString());
 
         // Act
@@ -106,16 +113,16 @@ public class UsersTests {
         // Assert
         resultActions.andExpect(status().isBadRequest());
 
-        User savedUser = userRepository.findByMemberID(testUser).orElseThrow();
+        User savedUser = userRepository.findByMemberId(testUser).orElseThrow();
 
-        assertThat(savedUser.getMemberID()).isEqualTo(testUser);
+        assertThat(savedUser.getMemberId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
     }
 
     @Test
     public void login_withValidUser_returnsToken() throws Exception {
         // Arrange
-        final MemberID testUser = new MemberID("SomeUser");
+        final MemberId testUser = new MemberId("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
@@ -127,14 +134,14 @@ public class UsersTests {
 
         final String testToken = "testJWTToken";
         when(mockJwtTokenGenerator.generateToken(
-            argThat(userDetails -> userDetails.getUsername().equals(testUser.getMemberIDValue())))
+            argThat(userDetails -> userDetails.getUsername().equals(testUser.getMemberIdValue())))
         ).thenReturn(testToken);
 
         User appUser = new User(testUser, testHashedPassword, 2L);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
-        model.setMemberID(testUser.toString());
+        model.setMemberId(testUser.toString());
         model.setPassword(testPassword.toString());
 
         // Act
@@ -170,7 +177,7 @@ public class UsersTests {
         ))).thenThrow(new UsernameNotFoundException("User not found"));
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
-        model.setMemberID(testUser);
+        model.setMemberId(testUser);
         model.setPassword(testPassword);
 
         // Act
@@ -201,12 +208,11 @@ public class UsersTests {
                     && wrongPassword.equals(authentication.getCredentials().toString())
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
-        User appUser = new User(new MemberID(testUser), testHashedPassword, 2L);
+        User appUser = new User(new MemberId(testUser), testHashedPassword, 2L);
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
-        model.setMemberID(testUser);
-        model.setMemberID(testUser);
+        model.setMemberId(testUser);
         model.setPassword(wrongPassword);
 
         // Act

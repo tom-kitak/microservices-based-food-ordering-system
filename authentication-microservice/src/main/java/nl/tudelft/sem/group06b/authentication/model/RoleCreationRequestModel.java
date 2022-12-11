@@ -6,7 +6,7 @@ import lombok.Data;
  * Model representing an authentication response.
  */
 @Data
-public class RegistrationRequestModel {
-    private String memberId;
-    private String password;
+public class RoleCreationRequestModel {
+    private String roleName;
 }
+
