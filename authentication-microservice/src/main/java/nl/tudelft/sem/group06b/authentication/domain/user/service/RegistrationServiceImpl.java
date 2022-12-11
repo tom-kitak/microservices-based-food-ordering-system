@@ -67,6 +67,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         var user = optionalUser.get();
         Role role = roleRepository.findByRoleName(roleName).orElseThrow();
         user.changeRole(role.getId());
+        userRepository.save(user);
     }
 
     private boolean checkMemberIdIsUnique(MemberId memberId) {

@@ -74,6 +74,10 @@ public class User extends EntityEvents {
         return password;
     }
 
+    public Long getRoleId() {
+        return roleId;
+    }
+
     /**
      * Equality is only based on the identifier.
      */

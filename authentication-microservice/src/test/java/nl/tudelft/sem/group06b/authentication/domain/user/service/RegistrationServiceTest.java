@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 import nl.tudelft.sem.group06b.authentication.domain.role.Role;
 import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
 import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.group06b.authentication.domain.user.Password;
 import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
+import nl.tudelft.sem.group06b.authentication.domain.user.Password;
 import nl.tudelft.sem.group06b.authentication.domain.user.User;
 import nl.tudelft.sem.group06b.authentication.repository.RoleRepository;
 import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
@@ -61,13 +61,15 @@ public class RegistrationServiceTest {
     }
 
     @Test
-    public void createUser_withExistingUser_throwsException() {
+    public void createUser_withExistingUser_throwsException() throws Exception {
         // Arrange
         final MemberId testUser = new MemberId("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
+        roleRepository.save(new Role(new RoleName("customer")));
 
-        User existingAppUser = new User(testUser, existingTestPassword, 2L);
+        User existingAppUser = new User(testUser, existingTestPassword,
+                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
         userRepository.save(existingAppUser);
 
         // Act
@@ -81,5 +83,48 @@ public class RegistrationServiceTest {
 
         assertThat(savedUser.getMemberId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
+        assertThat(savedUser.getRoleId()).
+                isEqualTo(roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
+    }
+
+    @Test
+    public void changeRole_withExistingUser_worksCorrectly() throws Exception {
+        // Arrange
+        final MemberId testUser = new MemberId("SomeUser");
+        final HashedPassword testPassword = new HashedPassword("password123");
+        final RoleName newRoleName = new RoleName("store_owner");
+        roleRepository.save(new Role(new RoleName("customer")));
+        roleRepository.save(new Role(newRoleName));
+
+        User existingAppUser = new User(testUser, testPassword,
+                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
+        System.out.println(existingAppUser.getRoleId());
+        userRepository.save(existingAppUser);
+
+        // Act
+        registrationService.changeRole(testUser, newRoleName);
+
+        // Assert
+        User savedUser = userRepository.findByMemberId(testUser).orElseThrow();
+
+        assertThat(savedUser.getMemberId()).isEqualTo(testUser);
+        assertThat(savedUser.getPassword()).isEqualTo(testPassword);
+        assertThat(savedUser.getRoleId()).isEqualTo(roleRepository.findByRoleName(newRoleName).orElseThrow().getId());
+    }
+
+    @Test
+    public void changeRole_withoutExistingUser_throwsException() {
+        // Arrange
+        final MemberId testUser = new MemberId("SomeUser");
+        final HashedPassword testPassword = new HashedPassword("password123");
+        final RoleName newRoleName = new RoleName("store_owner");
+        roleRepository.save(new Role(new RoleName("customer")));
+
+        // Act
+        ThrowingCallable action = () -> registrationService.changeRole(testUser, newRoleName);
+
+        // Assert
+        assertThatExceptionOfType(Exception.class)
+                .isThrownBy(action);
     }
 }
