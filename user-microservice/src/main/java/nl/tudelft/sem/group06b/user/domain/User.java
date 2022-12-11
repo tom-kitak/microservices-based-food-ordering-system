@@ -2,6 +2,7 @@ package nl.tudelft.sem.group06b.user.domain;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -27,9 +28,6 @@ public class User implements Serializable {
     @Column(name = "memberId", nullable = false, unique = true)
     private String memberId;
 
-    @Column(name = "role", nullable = false)
-    private Role role;
-
     @Column(name = "allergies")
     @ElementCollection
     private List<Allergy> allergies;
@@ -41,14 +39,12 @@ public class User implements Serializable {
      * Instantiates a new User.
      *
      * @param memberId          the username of the user.
-     * @param role              the role of the user.
      * @param allergies         the list of allergies of the user.
      * @param preferredLocation the preferred store location of the user.
      *
      */
-    public User(String memberId, Role role, List<Allergy> allergies, Location preferredLocation) {
+    public User(String memberId, List<Allergy> allergies, Location preferredLocation) {
         this.memberId = memberId;
-        this.role = role;
         this.allergies = allergies;
         this.preferredLocation = preferredLocation;
     }
@@ -59,14 +55,6 @@ public class User implements Serializable {
 
     public void setMemberId(String memberId) {
         this.memberId = memberId;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     public List<Allergy> getAllergies() {
@@ -83,5 +71,24 @@ public class User implements Serializable {
 
     public void setPreferredLocation(Location preferredLocation) {
         this.preferredLocation = preferredLocation;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return id == user.id && Objects.equals(memberId, user.memberId)
+                && Objects.equals(allergies, user.allergies)
+                && Objects.equals(preferredLocation, user.preferredLocation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(memberId, allergies, preferredLocation);
     }
 }

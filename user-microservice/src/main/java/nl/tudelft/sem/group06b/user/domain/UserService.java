@@ -31,11 +31,11 @@ public class UserService {
      * @param memberId    The memberId of the user
      * @throws Exception if the user already exists
      */
-    public User addUser(String memberId, Role role, List<Allergy> allergies, Location preferredLocation) throws Exception {
+    public User addUser(String memberId, List<Allergy> allergies, Location preferredLocation) throws Exception {
 
         if (checkMemberIdIsUnique(memberId)) {
             // Create new account
-            User user = new User(memberId, role, allergies, preferredLocation);
+            User user = new User(memberId, allergies, preferredLocation);
             userRepository.save(user);
 
             return user;
@@ -78,8 +78,9 @@ public class UserService {
                     .contains(allergy.getAllergen())) {
                 throw new Exception("Allergy is already there");
             }
-            allergies.add(allergy);
-            user.get().setAllergies(allergies);
+            List<Allergy> newAllergies = new ArrayList<>(allergies);
+            newAllergies.add(allergy);
+            user.get().setAllergies(newAllergies);
             userRepository.save(user.get());
             return user.get();
         }

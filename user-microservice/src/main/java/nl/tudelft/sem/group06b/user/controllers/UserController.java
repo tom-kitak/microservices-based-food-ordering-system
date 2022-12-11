@@ -104,7 +104,7 @@ public class UserController {
     @PostMapping("/register/user")
     public ResponseEntity registerUser() throws Exception {
         try {
-            userService.addUser(authManager.getMemberId(), authManager.getRole(), null, null);
+            userService.addUser(authManager.getMemberId(), null, null);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
