@@ -2,17 +2,9 @@ package nl.tudelft.sem.group06b.authentication.domain.role.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.group06b.authentication.domain.role.Role;
-import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.group06b.authentication.domain.user.Password;
-import nl.tudelft.sem.group06b.authentication.domain.user.User;
-import nl.tudelft.sem.group06b.authentication.domain.user.Username;
-import nl.tudelft.sem.group06b.authentication.domain.user.service.PasswordHashingService;
-import nl.tudelft.sem.group06b.authentication.domain.user.service.RegistrationService;
 import nl.tudelft.sem.group06b.authentication.repository.RoleRepository;
-import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

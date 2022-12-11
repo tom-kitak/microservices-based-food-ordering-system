@@ -1,9 +1,10 @@
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
 
 import java.util.ArrayList;
-import nl.tudelft.sem.group06b.authentication.domain.user.Username;
+import nl.tudelft.sem.group06b.authentication.domain.user.MemberID;
 import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,17 +23,16 @@ public class JwtUserDetailsService implements UserDetailsService {
     public JwtUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
     /**
      * Loads user information required for authentication from the DB.
      *
-     * @param username The username of the user we want to authenticate
+     * @param memberIDValue The username of the user we want to authenticate
      * @return The authentication user information of that user
      * @throws UsernameNotFoundException Username was not found
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var optionalUser = userRepository.findByUsername(new Username(username));
+    public UserDetails loadUserByUsername(String memberIDValue) throws UsernameNotFoundException {
+        var optionalUser = userRepository.findByMemberID(new MemberID(memberIDValue));
 
         if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User does not exist");
@@ -40,10 +40,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         var user = optionalUser.get();
 
-        ArrayList list = new ArrayList<>();
-        list.add(user.getRoleId());
-
-        return new User(user.getUsername().toString(), user.getPassword().toString(), list);
+        return new User(user.getMemberID().getMemberIDValue(), user.getPassword().toString(), new ArrayList<>());
     }
 }
 

@@ -2,7 +2,7 @@ package nl.tudelft.sem.group06b.authentication.repository;
 
 import java.util.Optional;
 import nl.tudelft.sem.group06b.authentication.domain.user.User;
-import nl.tudelft.sem.group06b.authentication.domain.user.Username;
+import nl.tudelft.sem.group06b.authentication.domain.user.MemberID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,10 +14,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Find user by username.
      */
-    Optional<User> findByUsername(Username username);
+    Optional<User> findByMemberID(MemberID username);
 
     /**
      * Check if an existing user already uses a NetID.
      */
-    boolean existsByUsername(Username username);
+    boolean existsByMemberID(MemberID username);
 }

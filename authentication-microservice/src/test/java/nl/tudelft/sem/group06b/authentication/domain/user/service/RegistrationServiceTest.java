@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.group06b.authentication.domain.user.Password;
 import nl.tudelft.sem.group06b.authentication.domain.user.User;
-import nl.tudelft.sem.group06b.authentication.domain.user.Username;
+import nl.tudelft.sem.group06b.authentication.domain.user.MemberID;
 import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ public class RegistrationServiceTest {
     @Test
     public void createUser_withValidData_worksCorrectly() throws Exception {
         // Arrange
-        final Username testUser = new Username("SomeUser");
+        final MemberID testUser = new MemberID("SomeUser");
         final Password testPassword = new Password("password123");
         final HashedPassword testHashedPassword = new HashedPassword("hashedTestPassword");
         when(mockPasswordEncoder.hash(testPassword)).thenReturn(testHashedPassword);
@@ -47,16 +47,16 @@ public class RegistrationServiceTest {
         registrationService.registerUser(testUser, testPassword);
 
         // Assert
-        User savedUser = userRepository.findByUsername(testUser).orElseThrow();
+        User savedUser = userRepository.findByMemberID(testUser).orElseThrow();
 
-        assertThat(savedUser.getUsername()).isEqualTo(testUser);
+        assertThat(savedUser.getMemberID()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
     }
 
     @Test
     public void createUser_withExistingUser_throwsException() {
         // Arrange
-        final Username testUser = new Username("SomeUser");
+        final MemberID testUser = new MemberID("SomeUser");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
         final Password newTestPassword = new Password("password456");
 
@@ -70,9 +70,9 @@ public class RegistrationServiceTest {
         assertThatExceptionOfType(Exception.class)
                 .isThrownBy(action);
 
-        User savedUser = userRepository.findByUsername(testUser).orElseThrow();
+        User savedUser = userRepository.findByMemberID(testUser).orElseThrow();
 
-        assertThat(savedUser.getUsername()).isEqualTo(testUser);
+        assertThat(savedUser.getMemberID()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
     }
 }

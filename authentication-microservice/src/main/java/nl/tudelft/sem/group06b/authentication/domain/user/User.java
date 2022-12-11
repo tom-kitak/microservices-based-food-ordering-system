@@ -29,9 +29,9 @@ public class User extends EntityEvents {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true)
-    @Convert(converter = UsernameAttributeConverter.class)
-    private Username username;
+    @Column(name = "memberId", nullable = false, unique = true)
+    @Convert(converter = MemberIDAttributeConverter.class)
+    private MemberID memberID;
 
     @Column(name = "password", nullable = false)
     @Convert(converter = HashedPasswordAttributeConverter.class)
@@ -46,14 +46,14 @@ public class User extends EntityEvents {
     /**
      * Create new application user.
      *
-     * @param username The name for the new user
+     * @param memberID The name for the new user
      * @param password The password for the new user
      */
-    public User(Username username, HashedPassword password, Long roleId) {
-        this.username = username;
+    public User(MemberID memberID, HashedPassword password, Long roleId) {
+        this.memberID = memberID;
         this.password = password;
         this.roleId = roleId;
-        this.recordThat(new UserWasCreatedEvent(username));
+        this.recordThat(new UserWasCreatedEvent(memberID));
     }
 
     public void changePassword(HashedPassword password) {
@@ -61,8 +61,8 @@ public class User extends EntityEvents {
         this.recordThat(new PasswordWasChangedEvent(this));
     }
 
-    public Username getUsername() {
-        return username;
+    public MemberID getMemberID() {
+        return memberID;
     }
 
     public HashedPassword getPassword() {
@@ -90,6 +90,6 @@ public class User extends EntityEvents {
 
     @Override
     public int hashCode() {
-        return Objects.hash(username);
+        return Objects.hash(memberID);
     }
 }
