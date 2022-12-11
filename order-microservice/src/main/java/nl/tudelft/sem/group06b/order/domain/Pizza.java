@@ -10,13 +10,13 @@ public class Pizza implements Serializable {
 
     static final long serialVersionUID = -3387516993124229945L;
 
-    private transient String nameId;
+    private String nameId;
 
-    private transient List<Topping> toppings;
+    private List<Topping> toppings;
 
-    private transient Set<String> allergenIds;
+    private Set<String> allergenIds;
 
-    private transient BigDecimal price;
+    private BigDecimal price;
 
     /**
      * Instantiates a new Pizza. Allergens from toppings are automatically added to allergens set.

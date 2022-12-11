@@ -22,7 +22,7 @@ public class JwtTokenVerifier {
         return !isTokenExpired(token);
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getMemberIdFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 

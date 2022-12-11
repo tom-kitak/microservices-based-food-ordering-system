@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.order.controllers;
 
 import nl.tudelft.sem.group06b.order.authentication.AuthManager;
+import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,18 +14,22 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  */
 @RestController
-public class DefaultController {
+public class OrderController {
 
     private final transient AuthManager authManager;
+
+    private final transient OrderRepository orderRepository;
 
     /**
      * Instantiates a new controller.
      *
      * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param orderRepository order repository
      */
     @Autowired
-    public DefaultController(AuthManager authManager) {
+    public OrderController(AuthManager authManager, OrderRepository orderRepository) {
         this.authManager = authManager;
+        this.orderRepository = orderRepository;
     }
 
     /**
@@ -34,7 +39,7 @@ public class DefaultController {
      */
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getUsername());
+        return ResponseEntity.ok("Hello " + authManager.getMemberId());
 
     }
 

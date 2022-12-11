@@ -7,9 +7,9 @@ public class Topping implements Serializable {
 
     static final long serialVersionUID = -3387516993124229945L;
 
-    private transient String toppingName;
+    private String toppingName;
 
-    private transient Set<String> allergenIds;
+    private Set<String> allergenIds;
 
     /**
      * Instantiates a new Topping.
@@ -26,7 +26,15 @@ public class Topping implements Serializable {
         return toppingName;
     }
 
+    public void setToppingName(String toppingName) {
+        this.toppingName = toppingName;
+    }
+
     public Set<String> getAllergenIds() {
         return allergenIds;
+    }
+
+    public void setAllergenIds(Set<String> allergenIds) {
+        this.allergenIds = allergenIds;
     }
 }
