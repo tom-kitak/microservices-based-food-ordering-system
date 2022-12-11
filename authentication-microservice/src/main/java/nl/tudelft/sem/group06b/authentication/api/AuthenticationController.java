@@ -39,10 +39,10 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     private ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request) {
-        String jwtToken;
         try {
-            jwtToken = authenticationService.authenticate(new MemberId(request.getMemberId()),
+            String jwtToken = authenticationService.authenticate(new MemberId(request.getMemberId()),
                                                           new Password(request.getPassword()));
+            return ResponseEntity.ok(new AuthenticationResponseModel(jwtToken));
         } catch (DisabledException disabledException) {
             System.out.println("Disabled exception");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "USER_DISABLED", disabledException);
@@ -50,7 +50,7 @@ public class AuthenticationController {
             System.out.println("Bad credentials exception");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", badCredentialsException);
         }
-        return ResponseEntity.ok(new AuthenticationResponseModel(jwtToken));
+
     }
 
     @PostMapping("/register")
