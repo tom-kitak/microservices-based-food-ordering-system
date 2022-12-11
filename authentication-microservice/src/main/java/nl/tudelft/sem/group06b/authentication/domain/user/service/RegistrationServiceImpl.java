@@ -38,6 +38,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         this.passwordHashingService = passwordHashingService;
     }
 
+    @Override
     public void registerUser(MemberId memberId, Password password) throws Exception {
 
         if (checkMemberIdIsUnique(memberId)) {
@@ -55,6 +56,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         throw new MemberIdAlreadyInUseException(memberId);
     }
 
+    @Override
     public void changeRole(MemberId memberId, RoleName roleName) {
         var optionalUser = userRepository.findByMemberId(memberId);
 
