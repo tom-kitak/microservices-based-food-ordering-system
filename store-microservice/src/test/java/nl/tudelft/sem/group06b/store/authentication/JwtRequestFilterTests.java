@@ -13,7 +13,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import nl.tudelft.sem.group06b.store.authentication.JwtRequestFilter;
 import nl.tudelft.sem.group06b.store.authentication.JwtTokenVerifier;
 import org.junit.jupiter.api.AfterEach;
