@@ -83,8 +83,8 @@ public class RegistrationServiceTest {
 
         assertThat(savedUser.getMemberId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
-        assertThat(savedUser.getRoleId()).
-                isEqualTo(roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
+        assertThat(savedUser.getRoleId())
+                .isEqualTo(roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
     }
 
     @Test
