@@ -188,8 +188,9 @@ public class UsersTests {
         // Assert
         resultActions.andExpect(status().isForbidden());
 
-        verify(mockAuthenticationManager).authenticate(argThat(authentication -> testUser.equals(authentication.getPrincipal().toString())
-                            && testPassword.equals(authentication.getCredentials().toString())));
+        verify(mockAuthenticationManager).authenticate(argThat(authentication ->
+                           testUser.equals(authentication.getPrincipal().toString())
+                        && testPassword.equals(authentication.getCredentials().toString())));
 
         verify(mockJwtTokenGenerator, times(0)).generateToken(any());
     }
