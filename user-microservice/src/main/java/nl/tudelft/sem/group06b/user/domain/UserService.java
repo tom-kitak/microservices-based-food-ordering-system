@@ -129,6 +129,40 @@ public class UserService {
         throw new Exception(nonexistentMemberId);
     }
 
+    /**
+     * Updates the location of the user's preferred store.
+     *
+     * @param memberId  memberId of user
+     * @param location   the new store location
+     * @return          the updated User
+     * @throws Exception if the memberId is not present
+     */
+    public User updateLocation(String memberId, Location location) throws Exception {
+        Optional<User> user = userRepository.findByMemberId(memberId);
+        if (user.isPresent()) {
+            user.get().setPreferredLocation(location);
+            userRepository.save(user.get());
+            return user.get();
+        }
+        throw new Exception(nonexistentMemberId);
+    }
+
+    /**
+     * Resets the location of the user's preferred store.
+     *
+     * @param memberId  memberId of user
+     * @return          the updated User
+     * @throws Exception if the memberId is not present
+     */
+    public User resetLocation(String memberId) throws Exception {
+        Optional<User> user = userRepository.findByMemberId(memberId);
+        if (user.isPresent()) {
+            user.get().setPreferredLocation(null);
+            userRepository.save(user.get());
+            return user.get();
+        }
+        throw new Exception(nonexistentMemberId);
+    }
 
 
     public boolean checkMemberIdIsUnique(String memberId) {

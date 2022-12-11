@@ -3,6 +3,7 @@ package nl.tudelft.sem.group06b.user.controllers;
 import java.util.List;
 import nl.tudelft.sem.group06b.user.authentication.AuthManager;
 import nl.tudelft.sem.group06b.user.domain.Allergy;
+import nl.tudelft.sem.group06b.user.domain.Location;
 import nl.tudelft.sem.group06b.user.domain.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -92,6 +93,39 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
+    }
+
+    /**
+     * Updates the location of the user's preferred store.
+     *
+     * @return the location of the new preferred store
+     */
+    @PutMapping("/user/{memberId}/{address}/updateLocation")
+    public ResponseEntity<Location> updateLocation(@PathVariable String memberId,
+                                                @PathVariable String address) throws Exception {
+        Location location = new Location(address);
+        try {
+            userService.updateLocation(memberId, location);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok(userService.getUser(memberId).getPreferredLocation());
+    }
+
+    /**
+     * Resets the location of the user's preferred store.
+     *
+     * @return 200 OK response
+     */
+    @DeleteMapping("/user/{memberId}/resetLocation")
+    public ResponseEntity resetLocation(@PathVariable String memberId)
+            throws Exception {
+        try {
+            userService.resetLocation(memberId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
     }
 
 
