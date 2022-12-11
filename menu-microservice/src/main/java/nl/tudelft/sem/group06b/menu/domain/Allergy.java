@@ -5,6 +5,12 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public class Allergy {
+    /**
+     * id for the allergy.
+     */
     private @Getter int id;
+    /**
+     * name for the allergy.
+     */
     private @Getter String name;
 }

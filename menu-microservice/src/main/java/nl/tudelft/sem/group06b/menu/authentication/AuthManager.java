@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.menu.authentication;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,7 +14,6 @@ public class AuthManager {
      * @return The name of the user.
      */
     public String getNetId() {
-//        return SecurityContextHolder.getContext().getAuthentication().getName();
-        return "test";
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }
