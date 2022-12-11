@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.store.api;
 
+import java.util.List;
 import nl.tudelft.sem.group06b.store.authentication.AuthManager;
 import nl.tudelft.sem.group06b.store.database.StoreRepository;
 import nl.tudelft.sem.group06b.store.domain.Store;
@@ -9,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 /**
  * Hello World example controller.
@@ -20,6 +21,7 @@ import java.util.List;
  * </p>
  */
 @RestController
+@RequestMapping("/api/stores")
 public class StoreController {
 
     private final transient AuthManager authManager;
@@ -44,7 +46,6 @@ public class StoreController {
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
         return ResponseEntity.ok("Hello " + authManager.getUsername());
-
     }
 
     /**
@@ -58,18 +59,8 @@ public class StoreController {
     }
 
     /**
-     * Imports all stores to the database locally
-     * @param path An override to the default directory for activities
-     * @return A response to the request
-     */
-    @PutMapping("/import")
-    public ResponseEntity<Void> importStores(@RequestBody String path) {
-        //TODO: import the stores into database
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * Put a single store in the datavase
+     * Put a single store in the database.
+     *
      * @param serialStore the serialized Store object in the form of a JSON in the request body
      * @return an HTTP response (200 if the store is saved, 400 otherwise)
      */
