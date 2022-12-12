@@ -35,7 +35,7 @@ public class MenuService {
      * @return list of all pizzas in repository.
      */
     public List<Pizza> getAllPizzas() {
-        return this.pizzaRepository.getAllPizzas();
+        return this.pizzaRepository.findAll();
     }
 
     /**
@@ -44,7 +44,7 @@ public class MenuService {
      * @return list of all toppings in repository.
      */
     public List<Topping> getAllToppings() {
-        return this.toppingRepository.getAllToppings();
+        return this.toppingRepository.findAll();
     }
 
     /**
