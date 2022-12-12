@@ -23,19 +23,17 @@ public class Store {
     private String name;
 
     @Column(name = "location", nullable = false)
-    private String location;
+    private Location storeLocation;
 
     /**
      * Stores information in a single store.
      *
-     * @param id the ID of the store.
      * @param name the name of the store.
-     * @param location the loation of the store.
+     * @param storeLocation the loation of the store.
      */
-    public Store(Long id, String name, String location) {
-        this.id = id;
+    public Store(String name, Location storeLocation) {
         this.name = name;
-        this.location = location;
+        this.storeLocation = storeLocation;
     }
 
     /**
@@ -48,12 +46,30 @@ public class Store {
     }
 
     /**
+     * Sets the store name.
+     *
+     * @param name The input name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Returns the location of the store.
      *
      * @return The location of the store.
      */
-    public String getLocation() {
-        return location;
+    public Location getStoreLocation() {
+        return storeLocation;
+    }
+
+    /**
+     * Sets the store location.
+     *
+     * @param storeLocation The input location.
+     */
+    public void setStoreLocation(Location storeLocation) {
+        this.storeLocation = storeLocation;
     }
 
     /**
@@ -71,7 +87,7 @@ public class Store {
             return false;
         }
         Store store = (Store) o;
-        return Objects.equals(id, store.id) && name.equals(store.name) && location.equals(store.location);
+        return Objects.equals(id, store.id) && name.equals(store.name) && storeLocation.equals(store.storeLocation);
     }
 
     /**
@@ -81,6 +97,6 @@ public class Store {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, location);
+        return Objects.hash(id, name, storeLocation);
     }
 }
