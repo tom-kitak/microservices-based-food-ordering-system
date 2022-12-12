@@ -137,7 +137,10 @@ public class UsersTests {
             argThat(userDetails -> userDetails.getUsername().equals(testUser.getMemberIdValue())))
         ).thenReturn(testToken);
 
-        User appUser = new User(testUser, testHashedPassword, 2L);
+        roleRepository.save(new Role(new RoleName("customer")));
+
+        User appUser = new User(testUser, testHashedPassword,
+                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
