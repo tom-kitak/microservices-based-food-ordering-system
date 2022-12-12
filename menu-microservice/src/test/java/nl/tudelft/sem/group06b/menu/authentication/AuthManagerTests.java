@@ -17,7 +17,7 @@ public class AuthManagerTests {
     }
 
     @Test
-    public void getMemberIDTest() {
+    public void getMemberIdTest() {
         // Arrange
         String expected = "user123";
         var authenticationToken = new UsernamePasswordAuthenticationToken(
