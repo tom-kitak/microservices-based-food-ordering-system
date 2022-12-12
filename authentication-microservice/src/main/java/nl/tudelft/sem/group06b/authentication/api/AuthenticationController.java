@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,13 @@ public class AuthenticationController {
 
     private final transient AuthenticationService authenticationService;
 
+    /**
+     * This endpoint will authenticate the user given their credentials and if valid it will generate a JWT token that
+     * contains their authorities.
+     *
+     * @param request the credentials used for authentication
+     * @return a jwtToken represented as a String
+     */
     @PostMapping("/authenticate")
     private ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request) {
         try {
@@ -44,8 +52,14 @@ public class AuthenticationController {
 
     }
 
+    /**
+     * This method will create a new account for a user if possible and return ok if succeeds.
+     *
+     * @param request the credentials of that account
+     * @return an empty response with message which indicate success
+     */
     @PostMapping("/register")
-    private ResponseEntity register(@RequestBody RegistrationRequestModel request) {
+    private ResponseEntity<?> register(@RequestBody RegistrationRequestModel request) {
         try {
             authenticationService.register(new MemberId(request.getMemberId()), new Password(request.getPassword()));
         } catch (MemberIdAlreadyInUseException e) {
@@ -56,8 +70,14 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Creating a new role for the user if the person sending the request is authorized to perform this action.
+     *
+     * @param request the new name of the role
+     * @return an empty response with message which indicate success
+     */
     @PostMapping("/create_role")
-    private ResponseEntity createRole(@RequestBody RoleCreationRequestModel request) {
+    private ResponseEntity<?> createRole(@RequestBody RoleCreationRequestModel request) {
         //TODO: add authorization for this endpoint so that only the regional manager can query this.
         try {
             authenticationService.createRole(new RoleName(request.getRoleName()));
@@ -67,8 +87,14 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/change_role")
-    private ResponseEntity changeRole(@RequestBody ChangeRoleRequestModel request) {
+    /**
+     * This method changes the role of a user if the person requesting it is authorized to perform this type of action.
+     *
+     * @param request the user identifier (memberId) and the new role of that user
+     * @return an empty response with message which indicate success
+     */
+    @PutMapping("/change_role")
+    private ResponseEntity<?> changeRole(@RequestBody ChangeRoleRequestModel request) {
         //TODO: add authorization for this endpoint so that only the regional manager can query this.
         try {
             authenticationService.changeRole(new MemberId(request.getMemberId()), new RoleName(request.getNewRoleName()));
