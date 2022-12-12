@@ -2,6 +2,7 @@
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
 
 
+import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.role.Role;
 import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
 import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
@@ -18,25 +19,12 @@ import org.springframework.stereotype.Service;
  * A DDD service for registering a new user.
  */
 @Service
+@AllArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
 
     private final transient UserRepository userRepository;
     private final transient RoleRepository roleRepository;
     private final transient PasswordHashingService passwordHashingService;
-
-    /**
-     * Instantiates a new UserService.
-     *
-     * @param userRepository         the user repository
-     * @param roleRepository         the role repository
-     * @param passwordHashingService the password encoder
-     */
-    public RegistrationServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
-                                   PasswordHashingService passwordHashingService) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordHashingService = passwordHashingService;
-    }
 
     @Override
     public void registerUser(MemberId memberId, Password password) throws Exception {

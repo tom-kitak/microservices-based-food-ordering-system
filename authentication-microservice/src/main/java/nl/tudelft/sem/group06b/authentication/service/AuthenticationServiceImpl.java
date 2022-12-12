@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.authentication.service;
 
+import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
 import nl.tudelft.sem.group06b.authentication.domain.role.service.RoleCreationService;
 import nl.tudelft.sem.group06b.authentication.domain.role.service.RoleCreationServiceImpl;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@AllArgsConstructor
 @Transactional
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -29,26 +31,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final transient RegistrationService registrationService;
 
     private final transient RoleCreationService roleCreationService;
-
-    /**
-     * Constructor for the authentication controller.
-     *
-     * @param authenticationManager the manager for the authentication
-     * @param jwtUserDetailsService the user details reader for jwt generation
-     * @param registrationService the service that registers new users
-     */
-    @Autowired
-    public AuthenticationServiceImpl(AuthenticationManager authenticationManager,
-                                     JwtUserDetailsService jwtUserDetailsService,
-                                     JwtTokenGenerator jwtTokenGenerator,
-                                     RegistrationService registrationService,
-                                     RoleCreationServiceImpl roleCreationService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUserDetailsService = jwtUserDetailsService;
-        this.jwtTokenGenerator = jwtTokenGenerator;
-        this.registrationService = registrationService;
-        this.roleCreationService = roleCreationService;
-    }
 
     @Override
     public String authenticate(MemberId memberId, Password password) {

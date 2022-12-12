@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.authentication.api;
 
+import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
 import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
 import nl.tudelft.sem.group06b.authentication.domain.user.MemberIdAlreadyInUseException;
@@ -10,7 +11,6 @@ import nl.tudelft.sem.group06b.authentication.model.ChangeRoleRequestModel;
 import nl.tudelft.sem.group06b.authentication.model.RegistrationRequestModel;
 import nl.tudelft.sem.group06b.authentication.model.RoleCreationRequestModel;
 import nl.tudelft.sem.group06b.authentication.service.AuthenticationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,20 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/authentication")
 public class AuthenticationController {
 
     private final transient AuthenticationService authenticationService;
-
-    /**
-     * Constructor for the authentication controller.
-     *
-     * @param authenticationService the service that contains the authentication business logic
-     */
-    @Autowired
-    public AuthenticationController(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
 
     @PostMapping("/authenticate")
     private ResponseEntity<AuthenticationResponseModel> authenticate(@RequestBody AuthenticationRequestModel request) {

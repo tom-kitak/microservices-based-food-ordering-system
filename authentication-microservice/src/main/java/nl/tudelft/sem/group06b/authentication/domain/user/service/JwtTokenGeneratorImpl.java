@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import nl.tudelft.sem.group06b.authentication.domain.providers.CurrentTimeProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -29,8 +28,7 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
      */
     private final transient CurrentTimeProvider currentTimeProvider;
 
-    @Autowired
-    public JwtTokenGeneratorImpl(CurrentTimeProvider currentTimeProvider) {
+    JwtTokenGeneratorImpl(CurrentTimeProvider currentTimeProvider) {
         this.currentTimeProvider = currentTimeProvider;
     }
 
