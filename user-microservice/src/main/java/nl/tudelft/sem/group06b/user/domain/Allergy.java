@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.user.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 
 public class Allergy implements Serializable {
@@ -10,7 +11,7 @@ public class Allergy implements Serializable {
     /**
      * Class representing the allergy entity.
      */
-    private transient String allergen;
+    private String allergen;
 
     /**
      * Instantiates a new allergy.
@@ -24,5 +25,26 @@ public class Allergy implements Serializable {
 
     public String getAllergen() {
         return allergen;
+    }
+
+    public void setAllergen(String allergen) {
+        this.allergen = allergen;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Allergy allergy = (Allergy) o;
+        return Objects.equals(allergen, allergy.allergen);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(allergen);
     }
 }

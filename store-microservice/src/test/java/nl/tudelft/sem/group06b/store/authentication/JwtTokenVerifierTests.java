@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import nl.tudelft.sem.group06b.store.authentication.JwtTokenVerifier;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
