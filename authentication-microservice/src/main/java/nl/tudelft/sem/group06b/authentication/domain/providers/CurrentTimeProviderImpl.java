@@ -5,11 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CurrentTimeProviderImpl implements CurrentTimeProvider {
-    /**
-     * Gets current time.
-     *
-     * @return The current time
-     */
+
     public Instant getCurrentTime() {
         return Instant.now();
     }
