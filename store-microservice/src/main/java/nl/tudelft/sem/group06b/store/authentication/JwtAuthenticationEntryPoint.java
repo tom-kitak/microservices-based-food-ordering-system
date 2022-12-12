@@ -24,7 +24,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             throws IOException, ServletException {
 
         // Return an unauthorized response code
-        response.addHeader(nl.tudelft.sem.group06b.store.authentication.JwtRequestFilter.WWW_AUTHENTICATE_HEADER, nl.tudelft.sem.group06b.store.authentication.JwtRequestFilter.AUTHORIZATION_AUTH_SCHEME);
+        response.addHeader(JwtRequestFilter.WWW_AUTHENTICATE_HEADER, JwtRequestFilter.AUTHORIZATION_AUTH_SCHEME);
         response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
     }
 }

@@ -52,6 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //TODO: add authorization for the 2 role related endpoints
         http.csrf().disable()
                 .authorizeRequests().anyRequest().permitAll()
                 .and()

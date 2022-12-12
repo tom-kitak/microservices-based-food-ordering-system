@@ -6,7 +6,7 @@ package nl.tudelft.sem.group06b.authentication.domain.role;
 public class RoleAlreadyExistsException extends Exception {
     static final long serialVersionUID = -3387516993124229945L;
 
-    public RoleAlreadyExistsException(String roleName) {
-        super(roleName);
+    public RoleAlreadyExistsException(RoleName roleName) {
+        super(roleName.getRoleNameValue());
     }
 }
