@@ -1,10 +1,10 @@
 package nl.tudelft.sem.group06b.menu.controllers;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
 import nl.tudelft.sem.group06b.menu.domain.MenuService;
 import nl.tudelft.sem.group06b.menu.domain.Pizza;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,22 +19,11 @@ import org.springframework.web.server.ResponseStatusException;
  * </p>
  */
 @RestController
+@AllArgsConstructor
 public class MenuController {
 
     private final transient AuthManager authManager;
     private final transient MenuService menuService;
-
-    /**
-     * Instantiates a new controller.
-     *
-     * @param authManager Spring Security component used to authenticate and authorize the user
-     * @param menuService menu service
-     */
-    @Autowired
-    public MenuController(AuthManager authManager, nl.tudelft.sem.group06b.menu.domain.MenuService menuService) {
-        this.authManager = authManager;
-        this.menuService = menuService;
-    }
 
     /**
      * Gets example by id.

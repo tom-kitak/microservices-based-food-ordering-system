@@ -79,7 +79,7 @@ public class JwtTokenVerifierTests {
     }
 
     @Test
-    public void parseNetid() {
+    public void parseMemberId() {
         // Arrange
         String expected = "user123";
         String token = generateToken(secret, expected, -10_000_000, 10_000_000);

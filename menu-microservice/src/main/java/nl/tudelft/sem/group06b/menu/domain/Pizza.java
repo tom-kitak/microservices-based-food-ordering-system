@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,11 +22,20 @@ public class Pizza implements Serializable {
      * id for the pizza.
      */
     @Id
-    public @Getter @Setter Long id;
+    private @Getter Long id;
     /**
      * list of toppings that the pizza has.
      */
     @OneToMany
-    public @Getter @Setter List<Topping> toppings;
+    private @Getter @Setter List<Topping> toppings;
+    /**
+     * The name of the pizza.
+     */
+    private @Getter @Setter String name;
+
+    /**
+     * The total price of the pizza.
+     */
+    private @Getter @Setter BigDecimal price;
 
 }
