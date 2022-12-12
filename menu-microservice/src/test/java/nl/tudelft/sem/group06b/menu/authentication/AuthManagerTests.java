@@ -17,12 +17,12 @@ public class AuthManagerTests {
     }
 
     @Test
-    public void getMemberIdTest() {
+    public void getMemberIDTest() {
         // Arrange
         String expected = "user123";
         var authenticationToken = new UsernamePasswordAuthenticationToken(
-                expected,
-                null, List.of() // no credentials and no authorities
+            expected,
+            null, List.of() // no credentials and no authorities
         );
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
