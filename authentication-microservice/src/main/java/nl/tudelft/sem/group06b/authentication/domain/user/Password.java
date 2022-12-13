@@ -14,6 +14,10 @@ public class Password {
         this.passwordValue = password;
     }
 
+    public String getPasswordValue() {
+        return passwordValue;
+    }
+
     @Override
     public String toString() {
         return passwordValue;

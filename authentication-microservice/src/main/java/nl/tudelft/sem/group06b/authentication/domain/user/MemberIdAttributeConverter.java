@@ -7,16 +7,16 @@ import javax.persistence.Converter;
  * JPA Converter for the Username value object.
  */
 @Converter
-public class UsernameAttributeConverter implements AttributeConverter<Username, String> {
+public class MemberIdAttributeConverter implements AttributeConverter<MemberId, String> {
 
     @Override
-    public String convertToDatabaseColumn(Username attribute) {
+    public String convertToDatabaseColumn(MemberId attribute) {
         return attribute.toString();
     }
 
     @Override
-    public Username convertToEntityAttribute(String dbData) {
-        return new Username(dbData);
+    public MemberId convertToEntityAttribute(String dbData) {
+        return new MemberId(dbData);
     }
 
 }
