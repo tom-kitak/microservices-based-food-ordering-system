@@ -1,6 +1,9 @@
 package nl.tudelft.sem.group06b.coupons.controllers;
 
+import java.time.Instant;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import nl.tudelft.sem.group06b.coupons.authentication.AuthManager;
 import nl.tudelft.sem.group06b.coupons.domain.Coupon;
@@ -9,6 +12,7 @@ import nl.tudelft.sem.group06b.coupons.repository.CouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,13 +41,37 @@ public class CouponsController {
     }
 
     /**
-     * Checks if the user has used a coupon.
+     * Adds a new coupon to the database if the user is admin
+     *
+     * @param couponId the id of the coupon
+     * @param couponType the type of the coupon
+     * @param discount the discount of the coupon
+     * @param expirationDate the expiration date of the coupon
+     * @return if the coupon has been added
+     */
+    @PostMapping("/addCoupon")
+    public ResponseEntity<Boolean> addCoupon(@RequestParam String couponId, @RequestParam CouponType couponType,
+                                             @RequestParam double discount, @RequestParam Date expirationDate) {
+        //TODO: check if the coupon already exists and if the user is admin
+        Coupon coupon = new Coupon(couponId, couponType, discount, expirationDate, new HashSet<>());
+        couponRepository.save(coupon);
+        return ResponseEntity.ok(true);
+    }
+
+    /**
+     * Checks if the user has used the coupon and if the coupon is available.
      *
      * @return whether the user can use the coupon
      */
     @GetMapping("/couponAvailable")
     public ResponseEntity<Boolean> isCouponAvailable(@RequestParam String code) {
-        return ResponseEntity.ok(couponRepository.existsById(code));
+        //TODO: extract user id from token and check it
+        if(!couponRepository.existsById(code)) return ResponseEntity.ok(false);
+        if(couponRepository.getOne(code).getExpirationDate().after(Date.from(Instant.now()))) {
+            couponRepository.deleteById(code);
+            return ResponseEntity.ok(false);
+        }
+        return ResponseEntity.ok(true);
     }
 
     /**
@@ -88,6 +116,12 @@ public class CouponsController {
         } else {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @PostMapping("/useCoupon")
+    public ResponseEntity<Boolean> useCoupon(@RequestParam String code) {
+        //TODO: extract user id from token and add it to the relevant coupon as used
+        return ResponseEntity.ok(false);
     }
 
 }
