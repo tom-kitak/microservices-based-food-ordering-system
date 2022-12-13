@@ -2,6 +2,7 @@ package nl.tudelft.sem.group06b.authentication.domain.role;
 
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,30 +12,39 @@ import lombok.NoArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.EntityEvents;
 import nl.tudelft.sem.group06b.authentication.domain.role.events.RoleWasCreatedEvent;
 
+
 @Entity
 @Table(name = "roles")
 @NoArgsConstructor
 public class Role extends EntityEvents {
+    /**
+     * Identifier for the application role.
+     */
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+    @Column(name = "roleName", nullable = false, unique = true)
+    @Convert(converter = RoleNameAttributeConverter.class)
+    private RoleName roleName;
 
     /**
-     * Create new application user.
+     * Create new application role.
      *
      * @param roleName The name of the new application role
      */
-    public Role(String roleName) {
-        this.name = roleName;
+    public Role(RoleName roleName) {
+        this.roleName = roleName;
         this.recordThat(new RoleWasCreatedEvent(roleName));
     }
 
-    public String getName() {
-        return name;
+    public Long getId() {
+        return id;
+    }
+
+    public RoleName getName() {
+        return roleName;
     }
 
     /**
@@ -54,6 +64,6 @@ public class Role extends EntityEvents {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(roleName);
     }
 }

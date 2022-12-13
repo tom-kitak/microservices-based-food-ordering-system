@@ -2,17 +2,10 @@ package nl.tudelft.sem.group06b.authentication.domain.role.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.when;
 
 import nl.tudelft.sem.group06b.authentication.domain.role.Role;
-import nl.tudelft.sem.group06b.authentication.domain.user.HashedPassword;
-import nl.tudelft.sem.group06b.authentication.domain.user.Password;
-import nl.tudelft.sem.group06b.authentication.domain.user.User;
-import nl.tudelft.sem.group06b.authentication.domain.user.Username;
-import nl.tudelft.sem.group06b.authentication.domain.user.service.PasswordHashingService;
-import nl.tudelft.sem.group06b.authentication.domain.user.service.RegistrationService;
+import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
 import nl.tudelft.sem.group06b.authentication.repository.RoleRepository;
-import nl.tudelft.sem.group06b.authentication.repository.UserRepository;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,10 +20,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 // activate profiles to have spring use mocks during auto-injection of certain beans.
 @ActiveProfiles({"test"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CreationServiceTest {
+public class RoleCreationServiceTest {
 
     @Autowired
-    private transient CreationService creationService;
+    private transient RoleCreationServiceImpl roleCreationService;
 
     @Autowired
     private transient RoleRepository roleRepository;
@@ -38,13 +31,13 @@ public class CreationServiceTest {
     @Test
     public void createRole_withValidData_worksCorrectly() throws Exception {
         // Arrange
-        final String roleName = "member";
+        final RoleName roleName = new RoleName("member");
 
         // Act
-        creationService.addRole(roleName);
+        roleCreationService.addRole(roleName);
 
         // Assert
-        Role savedRole = roleRepository.findByName(roleName).orElseThrow();
+        Role savedRole = roleRepository.findByRoleName(roleName).orElseThrow();
 
         assertThat(savedRole.getName()).isEqualTo(roleName);
     }
@@ -52,18 +45,18 @@ public class CreationServiceTest {
     @Test
     public void createRole_withExistingRole_throwsException() {
         // Arrange
-        final String roleName = "member";
+        final RoleName roleName = new RoleName("member");
         final Role role = new Role(roleName);
         roleRepository.save(role);
 
         // Act
-        ThrowingCallable action = () -> creationService.addRole(roleName);
+        ThrowingCallable action = () -> roleCreationService.addRole(roleName);
 
         // Assert
         assertThatExceptionOfType(Exception.class)
                 .isThrownBy(action);
 
-        Role savedRole = roleRepository.findByName(roleName).orElseThrow();
+        Role savedRole = roleRepository.findByRoleName(roleName).orElseThrow();
 
         assertThat(savedRole.getName()).isEqualTo(roleName);
 
