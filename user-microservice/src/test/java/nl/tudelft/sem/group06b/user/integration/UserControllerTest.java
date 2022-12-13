@@ -141,24 +141,43 @@ public class UserControllerTest {
     }
 
     @Test
-    public void removeAllAllergensTest() throws Exception {
-        when(mockAuthenticationManager.getMemberId()).thenReturn("kevin12");
+    public void updateLocationTest() throws Exception {
+        when(mockAuthenticationManager.getMemberId()).thenReturn("kevin124");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin12");
+        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin124");
 
         //Firstly register the user
         mockMvc.perform(post("/register/user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 
-        ResultActions result = mockMvc.perform(delete("/user/kevin12/removeAllAllergens")
+        ResultActions result = mockMvc.perform(put("/user/kevin124/drebbelweg/updateLocation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 
         String response = result.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
-        Assertions.assertEquals(response, "[]");
+        Assertions.assertEquals(response, "{\"address\":\"drebbelweg\"}");
+
+        // Assert
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    public void resetLocationTest() throws Exception {
+        when(mockAuthenticationManager.getMemberId()).thenReturn("kevin125");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin125");
+
+        //Firstly register the user
+        mockMvc.perform(post("/register/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        ResultActions result = mockMvc.perform(delete("/user/kevin125/resetLocation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
 
         // Assert
         result.andExpect(status().isOk());
