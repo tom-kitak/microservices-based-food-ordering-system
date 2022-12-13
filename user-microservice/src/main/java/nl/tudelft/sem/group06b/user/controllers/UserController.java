@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.user.controllers;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.user.authentication.AuthManager;
 import nl.tudelft.sem.group06b.user.domain.Allergy;
 import nl.tudelft.sem.group06b.user.domain.Location;
@@ -17,23 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@AllArgsConstructor
 public class UserController {
 
     private final transient AuthManager authManager;
     private final transient UserService userService;
-
-    /**
-     * Instantiates a new controller.
-     *
-     * @param authManager Spring Security component used to authenticate and authorize the user
-     * @param userService the User Service
-     *
-     */
-    @Autowired
-    public UserController(AuthManager authManager, UserService userService) {
-        this.authManager = authManager;
-        this.userService = userService;
-    }
 
     /**
      * Gets allergens by memberId.
@@ -54,13 +43,12 @@ public class UserController {
     @PutMapping("/user/{memberId}/{allergen}/addAllergen")
     public ResponseEntity<List<Allergy>> addAllergen(@PathVariable String memberId,
                                                       @PathVariable String allergen) throws Exception {
-        Allergy allergy = new Allergy(allergen);
         try {
-            userService.addAllergy(memberId, allergy);
+            userService.addAllergy(memberId, new Allergy(allergen));
+            return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
     }
 
     /**
@@ -71,13 +59,12 @@ public class UserController {
     @DeleteMapping("/user/{memberId}/{allergen}/removeAllergen")
     public ResponseEntity<List<Allergy>> removeAllergen(@PathVariable String memberId,
                                                          @PathVariable String allergen) throws Exception {
-        Allergy allergy = new Allergy(allergen);
         try {
-            userService.removeAllergy(memberId, allergy);
+            userService.removeAllergy(memberId, new Allergy(allergen));
+            return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
     }
 
     /**
@@ -89,10 +76,10 @@ public class UserController {
     public ResponseEntity<List<Allergy>> removeAllergens(@PathVariable String memberId) throws Exception {
         try {
             userService.removeAllAllergies(memberId);
+            return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok(userService.getUser(memberId).getAllergies());
     }
 
     /**
@@ -103,13 +90,12 @@ public class UserController {
     @PutMapping("/user/{memberId}/{address}/updateLocation")
     public ResponseEntity<Location> updateLocation(@PathVariable String memberId,
                                                 @PathVariable String address) throws Exception {
-        Location location = new Location(address);
         try {
-            userService.updateLocation(memberId, location);
+            userService.updateLocation(memberId, new Location(address));
+            return ResponseEntity.ok(userService.getUser(memberId).getPreferredLocation());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok(userService.getUser(memberId).getPreferredLocation());
     }
 
     /**
@@ -122,10 +108,10 @@ public class UserController {
             throws Exception {
         try {
             userService.resetLocation(memberId);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
 
 
@@ -138,12 +124,9 @@ public class UserController {
     public ResponseEntity registerUser() throws Exception {
         try {
             userService.addUser(authManager.getMemberId(), null, null);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-
-        return ResponseEntity.ok().build();
     }
-
-
 }
