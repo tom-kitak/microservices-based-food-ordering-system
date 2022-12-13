@@ -71,18 +71,19 @@ public class UserService {
      * @throws Exception if the allergen is already in the list or if the memberId is not present
      */
     public User addAllergy(String memberId, Allergy allergy) throws Exception {
-        Optional<User> user = userRepository.findByMemberId(memberId);
-        if (user.isPresent()) {
-            List<Allergy> allergies = user.get().getAllergies();
+        Optional<User> userOptional = userRepository.findByMemberId(memberId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            List<Allergy> allergies = user.getAllergies();
             if (allergies.stream().map(Allergy::getAllergen).collect(Collectors.toList())
                     .contains(allergy.getAllergen())) {
                 throw new Exception("Allergy is already there");
             }
             List<Allergy> newAllergies = new ArrayList<>(allergies);
             newAllergies.add(allergy);
-            user.get().setAllergies(newAllergies);
-            userRepository.save(user.get());
-            return user.get();
+            user.setAllergies(newAllergies);
+            userRepository.save(user);
+            return user;
         }
         throw new Exception(nonexistentMemberId);
     }
@@ -96,18 +97,19 @@ public class UserService {
      * @throws Exception if the allergen is not in the list or if the memberId is not present
      */
     public User removeAllergy(String memberId, Allergy allergy) throws Exception {
-        Optional<User> user = userRepository.findByMemberId(memberId);
-        if (user.isPresent()) {
-            List<Allergy> allergies = user.get().getAllergies();
+        Optional<User> userOptional = userRepository.findByMemberId(memberId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            List<Allergy> allergies = user.getAllergies();
             if (!allergies.stream().map(Allergy::getAllergen).collect(Collectors.toList())
                     .contains(allergy.getAllergen())) {
                 throw new Exception("Allergy is not there");
             }
-            user.get().setAllergies(allergies.stream()
+            user.setAllergies(allergies.stream()
                     .filter(x -> !x.getAllergen().equals(allergy.getAllergen()))
                     .collect(Collectors.toList()));
-            userRepository.save(user.get());
-            return user.get();
+            userRepository.save(user);
+            return user;
         }
         throw new Exception(nonexistentMemberId);
     }
@@ -120,15 +122,52 @@ public class UserService {
      * @throws Exception if the memberId is not present
      */
     public User removeAllAllergies(String memberId) throws Exception {
-        Optional<User> user = userRepository.findByMemberId(memberId);
-        if (user.isPresent()) {
-            user.get().setAllergies(new ArrayList<Allergy>());
-            userRepository.save(user.get());
-            return user.get();
+        Optional<User> userOptional = userRepository.findByMemberId(memberId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setAllergies(new ArrayList<Allergy>());
+            userRepository.save(user);
+            return user;
         }
         throw new Exception(nonexistentMemberId);
     }
 
+    /**
+     * Updates the location of the user's preferred store.
+     *
+     * @param memberId  memberId of user
+     * @param location   the new store location
+     * @return          the updated User
+     * @throws Exception if the memberId is not present
+     */
+    public User updateLocation(String memberId, Location location) throws Exception {
+        Optional<User> userOptional = userRepository.findByMemberId(memberId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setPreferredLocation(location);
+            userRepository.save(user);
+            return user;
+        }
+        throw new Exception(nonexistentMemberId);
+    }
+
+    /**
+     * Resets the location of the user's preferred store.
+     *
+     * @param memberId  memberId of user
+     * @return          the updated User
+     * @throws Exception if the memberId is not present
+     */
+    public User resetLocation(String memberId) throws Exception {
+        Optional<User> userOptional = userRepository.findByMemberId(memberId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setPreferredLocation(null);
+            userRepository.save(user);
+            return user;
+        }
+        throw new Exception(nonexistentMemberId);
+    }
 
 
     public boolean checkMemberIdIsUnique(String memberId) {
