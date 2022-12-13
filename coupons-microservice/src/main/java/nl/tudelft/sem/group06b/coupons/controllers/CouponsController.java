@@ -74,7 +74,7 @@ public class CouponsController {
         if (!couponRepository.existsById(code)) {
             return ResponseEntity.ok(false);
         }
-        if (couponRepository.getOne(code).getExpirationDate().after(Date.from(Instant.now()))) {
+        if (couponRepository.getOne(code).getExpirationDate() != null && couponRepository.getOne(code).getExpirationDate().after(Date.from(Instant.now()))) {
             couponRepository.deleteById(code);
             return ResponseEntity.ok(false);
         }
