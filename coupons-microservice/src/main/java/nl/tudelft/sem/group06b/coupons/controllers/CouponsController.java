@@ -41,11 +41,11 @@ public class CouponsController {
     }
 
     /**
-     * Adds a new coupon to the database if the user is admin
+     * Adds a new coupon to the database if the user is admin.
      *
-     * @param couponId the id of the coupon
-     * @param couponType the type of the coupon
-     * @param discount the discount of the coupon
+     * @param couponId       the id of the coupon
+     * @param couponType     the type of the coupon
+     * @param discount       the discount of the coupon
      * @param expirationDate the expiration date of the coupon
      * @return if the coupon has been added
      */
@@ -53,9 +53,14 @@ public class CouponsController {
     public ResponseEntity<Boolean> addCoupon(@RequestParam String couponId, @RequestParam CouponType couponType,
                                              @RequestParam double discount, @RequestParam Date expirationDate) {
         //TODO: check if the coupon already exists and if the user is admin
-        Coupon coupon = new Coupon(couponId, couponType, discount, expirationDate, new HashSet<>());
-        couponRepository.save(coupon);
-        return ResponseEntity.ok(true);
+        //Check if the coupon id is in the following format: (([a-z]|[A-Z]){4}[0-9]{2})
+        if (couponId.matches("(([a-z]|[A-Z]){4}[0-9]{2})")) {
+            Coupon coupon = new Coupon(couponId, couponType, discount, expirationDate, new HashSet<>());
+            couponRepository.save(coupon);
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.ok(false);
+        }
     }
 
     /**
@@ -66,8 +71,10 @@ public class CouponsController {
     @GetMapping("/couponAvailable")
     public ResponseEntity<Boolean> isCouponAvailable(@RequestParam String code) {
         //TODO: extract user id from token and check it
-        if(!couponRepository.existsById(code)) return ResponseEntity.ok(false);
-        if(couponRepository.getOne(code).getExpirationDate().after(Date.from(Instant.now()))) {
+        if (!couponRepository.existsById(code)) {
+            return ResponseEntity.ok(false);
+        }
+        if (couponRepository.getOne(code).getExpirationDate().after(Date.from(Instant.now()))) {
             couponRepository.deleteById(code);
             return ResponseEntity.ok(false);
         }
