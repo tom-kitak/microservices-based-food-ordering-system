@@ -1,10 +1,13 @@
 package nl.tudelft.sem.group06b.order.controllers;
 
 import nl.tudelft.sem.group06b.order.authentication.AuthManager;
-import nl.tudelft.sem.group06b.order.repository.OrderRepository;
+import nl.tudelft.sem.group06b.order.domain.Order;
+import nl.tudelft.sem.group06b.order.domain.OrderProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -16,21 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrderController {
 
-    private final transient AuthManager authManager;
-
-    private final transient OrderRepository orderRepository;
+//    private final transient AuthManager authManager;
+//
+//    private final transient OrderProcessor orderProcessor;
 
     /**
      * Instantiates a new controller.
      *
      * @param authManager Spring Security component used to authenticate and authorize the user
-     * @param orderRepository order repository
+     * @param orderProcessor order processor
      */
-    @Autowired
-    public OrderController(AuthManager authManager, OrderRepository orderRepository) {
-        this.authManager = authManager;
-        this.orderRepository = orderRepository;
-    }
+//    @Autowired
+//    public OrderController(AuthManager authManager, OrderProcessor orderProcessor) {
+//        this.authManager = authManager;
+//        this.orderProcessor = orderProcessor;
+//    }
 
     /**
      * Gets example by id.
@@ -39,8 +42,13 @@ public class OrderController {
      */
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getMemberId());
+        return ResponseEntity.ok("Hello");
 
     }
+
+//    @PostMapping("/placeOrder")
+//    public ResponseEntity<String> placeOrder(@RequestBody Order order) {
+//
+//    }
 
 }
