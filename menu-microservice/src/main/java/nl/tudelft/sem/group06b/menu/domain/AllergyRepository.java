@@ -14,5 +14,5 @@ public interface AllergyRepository extends JpaRepository<Allergy, Long> {
      * @param id of the allergy.
      * @return the allergy with the id or empty optional if doesn't exist.
      */
-    Optional<Allergy> getAllergyById(Long id);
+    Optional<Allergy> findAllergyById(Long id);
 }

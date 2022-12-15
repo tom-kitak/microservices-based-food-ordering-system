@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,17 @@ public class MenuService {
     }
 
     /**
+     * filters the pizzas by all the allergens of a user.
+     *
+     * @param allergyList list of allergies to filter out.
+     * @return list of pizzas without the allergens in the list.
+     */
+    public List<Pizza> filterPizzasByAllergens(List<Allergy> allergyList){
+        //TODO
+        return new ArrayList<Pizza>();
+    }
+
+    /**
      * returns specific topping with the given id.
      *
      * @param id of the topping.
@@ -59,7 +71,7 @@ public class MenuService {
      * @throws NoSuchElementException if no topping is found with that id.
      */
     public Topping getToppingById(Long id) throws NoSuchElementException {
-        return this.toppingRepository.getToppingById(id).orElseThrow();
+        return this.toppingRepository.findToppingById(id).orElseThrow();
     }
 
     /**
@@ -70,11 +82,11 @@ public class MenuService {
      * @throws NoSuchElementException if no pizza is found.
      */
     public Pizza getPizzaById(Long id) throws NoSuchElementException {
-        return this.pizzaRepository.getPizzaById(id).orElseThrow();
+        return this.pizzaRepository.findPizzaById(id).orElseThrow();
     }
 
     public Allergy getAllergyById(Long id) throws NoSuchElementException {
-        return this.allergyRepository.getAllergyById(id).orElseThrow();
+        return this.allergyRepository.findAllergyById(id).orElseThrow();
     }
 }
 

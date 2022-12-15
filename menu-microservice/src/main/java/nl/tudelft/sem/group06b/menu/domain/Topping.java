@@ -33,4 +33,11 @@ public class Topping implements Serializable {
      */
     @OneToMany
     private @Getter @Setter List<Allergy> allergies;
+
+    public boolean containsAllergy(Allergy a){
+        for(Allergy allergy : this.getAllergies()){
+            if(a.getId().equals(allergy.getId())) return true;
+        }
+        return false;
+    }
 }
