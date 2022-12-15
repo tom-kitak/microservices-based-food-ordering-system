@@ -4,11 +4,11 @@ import nl.tudelft.sem.group06b.order.authentication.AuthManager;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.OrderProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Hello World example controller.
@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrderController {
 
-//    private final transient AuthManager authManager;
-//
-//    private final transient OrderProcessor orderProcessor;
+    private final transient AuthManager authManager;
+
+    private final transient OrderProcessor orderProcessor;
 
     /**
      * Instantiates a new controller.
@@ -29,26 +29,58 @@ public class OrderController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      * @param orderProcessor order processor
      */
-//    @Autowired
-//    public OrderController(AuthManager authManager, OrderProcessor orderProcessor) {
-//        this.authManager = authManager;
-//        this.orderProcessor = orderProcessor;
-//    }
-
-    /**
-     * Gets example by id.
-     *
-     * @return the example found in the database with the given id
-     */
-    @GetMapping("/hello")
-    public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello");
-
+    @Autowired
+    public OrderController(AuthManager authManager, OrderProcessor orderProcessor) {
+        this.authManager = authManager;
+        this.orderProcessor = orderProcessor;
     }
 
-//    @PostMapping("/placeOrder")
-//    public ResponseEntity<String> placeOrder(@RequestBody Order order) {
-//
-//    }
+    @PostMapping("/startOrder")
+    public ResponseEntity<String> startOrder(@RequestBody Order order) {
+        String selectedTime = order.getSelectedTime();
+        Long storeId = order.getStoreId();
+        String response = orderProcessor.startOrder(selectedTime, storeId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/addPizzas")
+    public ResponseEntity<String> addPizzas(@RequestBody Order order) {
+        Long orderId = order.getId();
+        List<Long> pizzasIds = order.getPizzasIds();
+        String response = orderProcessor.addPizzas(orderId, pizzasIds);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/addCoupons")
+    public ResponseEntity<String> addCoupons(@RequestBody Order order) {
+        Long orderId = order.getId();
+        List<String> couponsIds = order.getCouponsIds();
+        String response = orderProcessor.addCoupons(orderId, couponsIds);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/placeOrder")
+    public ResponseEntity<String> placeOrder(@RequestBody Order order) {
+        Long orderId = order.getId();
+        String response = orderProcessor.placeOrder(orderId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/allOrders")
+    public ResponseEntity<List<Order>> getAllOrders() {
+
+        // TODO
+        // authentication: make sure only admin can get a valid response
+
+        List<Order> ordersInRepository = orderProcessor.getOrderRepository().findAll();
+
+        return new ResponseEntity<>(ordersInRepository, HttpStatus.OK);
+    }
 
 }
+
+

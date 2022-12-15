@@ -1,7 +1,7 @@
 package nl.tudelft.sem.group06b.order.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -27,11 +27,11 @@ public class Order {
     @Column(name = "memberId")
     private String memberId;
 
-    @Column(name = "pizzas")
+    @Column(name = "pizzasIds")
     @ElementCollection
-    private List<String> pizzasIds;
+    private List<Long> pizzasIds;
 
-    @Column(name = "selectedTime")
+    @Column(name = "selectedTime", nullable = false)
     private String selectedTime;
 
     @Column(name = "status")
@@ -44,7 +44,7 @@ public class Order {
     @Column(name = "price")
     private BigDecimal price;
 
-    @Column(name = "storeId")
+    @Column(name = "storeId", nullable = false)
     private Long storeId;
 
     /**
@@ -58,7 +58,7 @@ public class Order {
      * @param price price of the order
      * @param storeId ID of the store of the order
      */
-    public Order(String memberId, List<String> pizzasIds, String selectedTime, Status status, List<String> couponsIds, BigDecimal price, Long storeId) {
+    public Order(String memberId, List<Long> pizzasIds, String selectedTime, Status status, List<String> couponsIds, BigDecimal price, Long storeId) {
         this.memberId = memberId;
         this.pizzasIds = pizzasIds;
         this.selectedTime = selectedTime;
@@ -66,6 +66,10 @@ public class Order {
         this.couponsIds = couponsIds;
         this.price = price;
         this.storeId = storeId;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getMemberId() {
@@ -76,11 +80,11 @@ public class Order {
         this.memberId = memberId;
     }
 
-    public List<String> getPizzasIds() {
+    public List<Long> getPizzasIds() {
         return pizzasIds;
     }
 
-    public void setPizzasIds(List<String> pizzasIds) {
+    public void setPizzasIds(List<Long> pizzasIds) {
         this.pizzasIds = pizzasIds;
     }
 
