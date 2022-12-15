@@ -51,7 +51,7 @@ public class MenuController {
      *
      * @return list of pizzas
      */
-    @GetMapping("menu/pizzas")
+    @GetMapping("getAllPizzas")
     public ResponseEntity<List<Pizza>> getAll() {
         //TODO
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);

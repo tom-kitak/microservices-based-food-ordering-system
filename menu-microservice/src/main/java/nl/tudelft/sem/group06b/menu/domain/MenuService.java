@@ -18,15 +18,19 @@ public class MenuService {
      */
     private final transient ToppingRepository toppingRepository;
 
+    private final transient AllergyRepository allergyRepository;
+
     /**
      * constructor for menuservice.
      *
+     * @param ar repository for allergies
      * @param pr repository for pizzas.
      * @param tr repository for toppings.
      */
-    public MenuService(PizzaRepository pr, ToppingRepository tr) {
+    public MenuService(PizzaRepository pr, ToppingRepository tr, AllergyRepository ar) {
         this.pizzaRepository = pr;
         this.toppingRepository = tr;
+        this.allergyRepository = ar;
     }
 
     /**
@@ -67,6 +71,10 @@ public class MenuService {
      */
     public Pizza getPizzaById(Long id) throws NoSuchElementException {
         return this.pizzaRepository.getPizzaById(id).orElseThrow();
+    }
+
+    public Allergy getAllergyById(Long id) throws NoSuchElementException {
+        return this.allergyRepository.getAllergyById(id).orElseThrow();
     }
 }
 
