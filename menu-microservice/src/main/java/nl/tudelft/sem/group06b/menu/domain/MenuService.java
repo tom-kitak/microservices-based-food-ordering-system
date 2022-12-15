@@ -1,7 +1,7 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 
@@ -58,14 +58,18 @@ public class MenuService {
      * @param allergyList list of allergies to filter out.
      * @return list of pizzas without the allergens in the list.
      */
-    public List<Pizza> filterPizzasByAllergens(List<Allergy> allergyList){
+    public List<Pizza> filterPizzasByAllergens(List<Allergy> allergyList) {
         ArrayList<Pizza> ret = new ArrayList<>();
-        for(Pizza p : getAllPizzas()){
+        for (Pizza p : getAllPizzas()) {
             boolean add = true;
-            for(Allergy a : allergyList){
-                if(p.containsAllergen(a)) add = false;
+            for (Allergy a : allergyList) {
+                if (p.containsAllergen(a)) {
+                    add = false;
+                }
             }
-            if(add) ret.add(p);
+            if (add) {
+                ret.add(p);
+            }
         }
         return ret;
     }

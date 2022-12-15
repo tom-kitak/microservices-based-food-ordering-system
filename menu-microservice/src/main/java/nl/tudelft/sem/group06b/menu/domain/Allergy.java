@@ -25,11 +25,16 @@ public class Allergy implements Serializable {
     private @Getter String name;
 
     @Override
-    public boolean equals(Object other){
-        if(other instanceof Allergy){
+    public boolean equals(Object other) {
+        if (other instanceof Allergy) {
             Allergy that = (Allergy) other;
             return this.getId().equals(that.getId());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
