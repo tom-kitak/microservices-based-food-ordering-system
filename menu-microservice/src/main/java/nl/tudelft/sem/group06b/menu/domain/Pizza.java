@@ -38,6 +38,13 @@ public class Pizza implements Serializable {
      */
     private @Getter @Setter BigDecimal price;
 
+    public Pizza(Long id, List<Topping> toppings, String name, BigDecimal price) {
+        this.id = id;
+        this.toppings = toppings;
+        this.name = name;
+        this.price = price;
+    }
+
     /**
      * checks if the pizza contains a given allergen.
      *

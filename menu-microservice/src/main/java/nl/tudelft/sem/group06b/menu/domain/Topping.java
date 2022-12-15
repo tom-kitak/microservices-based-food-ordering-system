@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,6 +34,15 @@ public class Topping implements Serializable {
      */
     @OneToMany
     private @Getter @Setter List<Allergy> allergies;
+
+    private @Getter @Setter BigDecimal price;
+
+    public Topping(Long id, String name, List<Allergy> allergies, BigDecimal price){
+        this.id = id;
+        this.name = name;
+        this.allergies = allergies;
+        this.price = price;
+    }
 
     /**
      * checks if a topping has a given allergen.

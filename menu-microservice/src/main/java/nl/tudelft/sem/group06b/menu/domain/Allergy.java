@@ -24,6 +24,11 @@ public class Allergy implements Serializable {
      */
     private @Getter String name;
 
+    public Allergy(long id, String allergen) {
+        this.id = id;
+        this.name = allergen;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Allergy) {
