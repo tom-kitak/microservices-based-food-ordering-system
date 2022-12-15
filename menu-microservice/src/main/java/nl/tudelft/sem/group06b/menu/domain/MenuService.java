@@ -59,8 +59,15 @@ public class MenuService {
      * @return list of pizzas without the allergens in the list.
      */
     public List<Pizza> filterPizzasByAllergens(List<Allergy> allergyList){
-        //TODO
-        return new ArrayList<Pizza>();
+        ArrayList<Pizza> ret = new ArrayList<>();
+        for(Pizza p : getAllPizzas()){
+            boolean add = true;
+            for(Allergy a : allergyList){
+                if(p.containsAllergen(a)) add = false;
+            }
+            if(add) ret.add(p);
+        }
+        return ret;
     }
 
     /**
