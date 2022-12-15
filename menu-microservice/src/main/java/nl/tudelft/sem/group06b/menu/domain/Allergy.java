@@ -23,4 +23,13 @@ public class Allergy implements Serializable {
      * name for the allergy.
      */
     private @Getter String name;
+
+    @Override
+    public boolean equals(Object other){
+        if(other instanceof Allergy){
+            Allergy that = (Allergy) other;
+            return this.getId().equals(that.getId());
+        }
+        return false;
+    }
 }
