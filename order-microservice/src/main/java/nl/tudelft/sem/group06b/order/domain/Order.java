@@ -24,15 +24,15 @@ public class Order {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "customerId")
-    private Long customerId;
+    @Column(name = "memberId")
+    private String memberId;
 
     @Column(name = "pizzas")
     @ElementCollection
-    private List<Pizza> pizzas;
+    private List<String> pizzasIds;
 
-    @Column(name = "completionTime")
-    private Date completionTime;
+    @Column(name = "selectedTime")
+    private String selectedTime;
 
     @Column(name = "status")
     private Status status;
@@ -45,62 +45,51 @@ public class Order {
     private BigDecimal price;
 
     @Column(name = "storeId")
-    private String storeId;
+    private Long storeId;
 
     /**
      * Instantiates a new Order.
      *
-     * @param customerId ID of the customer
-     * @param pizzas list of pizzas in the order
-     * @param completionTime time when the order is completed
+     * @param memberId ID of the member placing the order
+     * @param pizzasIds IDs of pizzas in the order
+     * @param selectedTime selected time of the order
      * @param status current status of the order
-     * @param couponsIds all the coupons applied to the order
+     * @param couponsIds IDs of the coupons of the order
      * @param price price of the order
-     * @param storeId store of the order
+     * @param storeId ID of the store of the order
      */
-    public Order(Long customerId, List<Pizza> pizzas, Date completionTime, Status status,
-                 List<String> couponsIds, BigDecimal price, String storeId) {
-        this.customerId = customerId;
-        this.pizzas = pizzas;
-        this.completionTime = completionTime;
+    public Order(String memberId, List<String> pizzasIds, String selectedTime, Status status, List<String> couponsIds, BigDecimal price, Long storeId) {
+        this.memberId = memberId;
+        this.pizzasIds = pizzasIds;
+        this.selectedTime = selectedTime;
         this.status = status;
         this.couponsIds = couponsIds;
         this.price = price;
         this.storeId = storeId;
     }
 
-    /**
-     * Returns the ID of the customer that placed the order.
-     *
-     * @return ID of the costumer
-     */
-    public Long getCustomerId() {
-        return customerId;
+    public String getMemberId() {
+        return memberId;
     }
 
-    /**
-     * Changes the costumer ID to another costumer.
-     *
-     * @param customerId ID of the new customer
-     */
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 
-    public List<Pizza> getPizzas() {
-        return pizzas;
+    public List<String> getPizzasIds() {
+        return pizzasIds;
     }
 
-    public void setPizzas(List<Pizza> pizzas) {
-        this.pizzas = pizzas;
+    public void setPizzasIds(List<String> pizzasIds) {
+        this.pizzasIds = pizzasIds;
     }
 
-    public Date getCompletionTime() {
-        return completionTime;
+    public String getSelectedTime() {
+        return selectedTime;
     }
 
-    public void setCompletionTime(Date completionTime) {
-        this.completionTime = completionTime;
+    public void setSelectedTime(String selectedTime) {
+        this.selectedTime = selectedTime;
     }
 
     public Status getStatus() {
@@ -127,11 +116,11 @@ public class Order {
         this.price = price;
     }
 
-    public String getStoreId() {
+    public Long getStoreId() {
         return storeId;
     }
 
-    public void setStoreId(String storeId) {
+    public void setStoreId(Long storeId) {
         this.storeId = storeId;
     }
 
