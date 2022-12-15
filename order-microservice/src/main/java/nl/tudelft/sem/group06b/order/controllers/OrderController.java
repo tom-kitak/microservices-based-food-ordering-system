@@ -39,10 +39,22 @@ public class OrderController {
     public ResponseEntity<String> startOrder(@RequestBody Order order) {
         String selectedTime = order.getSelectedTime();
         Long storeId = order.getStoreId();
-        String response = orderProcessor.startOrder(selectedTime, storeId);
+        String response = orderProcessor.startOrder(storeId, selectedTime);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PostMapping("/changeSelectedTime")
+    public ResponseEntity<String> changeSelectedTime(@RequestBody Order order) {
+        String selectedTime = order.getSelectedTime();
+        Long orderId = order.getId();
+        String response = orderProcessor.changeSelectedTime(orderId, selectedTime);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // TODO
+    // Add /changeSelectedLocation
 
     @PostMapping("/addPizzas")
     public ResponseEntity<String> addPizzas(@RequestBody Order order) {
@@ -66,6 +78,14 @@ public class OrderController {
     public ResponseEntity<String> placeOrder(@RequestBody Order order) {
         Long orderId = order.getId();
         String response = orderProcessor.placeOrder(orderId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/cancelOrder")
+    public ResponseEntity<String> cancelOrder(@RequestBody Order order) {
+        Long orderId = order.getId();
+        String response = orderProcessor.cancelOrder(orderId);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
