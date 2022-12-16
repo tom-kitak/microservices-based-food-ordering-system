@@ -53,8 +53,14 @@ public class OrderController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // TODO
-    // Add /changeSelectedLocation
+    @PostMapping("/changeSelectedLocation")
+    public ResponseEntity<String> changeSelectedLocation(@RequestBody Order order) {
+        Long storeId = order.getStoreId();
+        Long orderId = order.getId();
+        String response = orderProcessor.changeSelectedLocation(orderId, storeId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PostMapping("/addPizzas")
     public ResponseEntity<String> addPizzas(@RequestBody Order order) {

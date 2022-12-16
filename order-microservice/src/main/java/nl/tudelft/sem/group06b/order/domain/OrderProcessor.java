@@ -78,6 +78,25 @@ public class OrderProcessor {
         return "Time changed to " + selectedTime;
     }
 
+    public String changeSelectedLocation(Long orderId, Long storeId) {
+        if (orderId == null) {
+            return "Invalid order ID";
+        } else if (!activeOrders.contains(orderId)) {
+            return "No active order with this ID";
+        } else if (storeId == null) {
+            return "Please select store";
+        }
+
+        // TODO
+        // Authenticate the store exists and send appropriate message if it doesn't
+
+        Order order = orderRepository.getOne(orderId);
+        order.setStoreId(storeId);
+        orderRepository.save(order);
+
+        return "Store changed successfully";
+    }
+
     public String addPizzas(Long orderId, List<Long> pizzasIds) {
         if (orderId == null) {
             return "Invalid order ID";
