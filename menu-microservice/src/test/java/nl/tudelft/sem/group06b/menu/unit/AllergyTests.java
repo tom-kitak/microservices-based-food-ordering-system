@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group06b.menu.Unit;
+package nl.tudelft.sem.group06b.menu.unit;
 
 import nl.tudelft.sem.group06b.menu.domain.Allergy;
 import org.assertj.core.api.Assertions;

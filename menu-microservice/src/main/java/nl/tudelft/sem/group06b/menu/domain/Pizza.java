@@ -38,6 +38,14 @@ public class Pizza implements Serializable {
      */
     private @Getter @Setter BigDecimal price;
 
+    /**
+     * Constructor for pizza.
+     *
+     * @param id id of the pizza.
+     * @param toppings toppings on the pizza.
+     * @param name name for the pizza.
+     * @param price price of the pizza.
+     */
     public Pizza(Long id, List<Topping> toppings, String name, BigDecimal price) {
         this.id = id;
         this.toppings = toppings;

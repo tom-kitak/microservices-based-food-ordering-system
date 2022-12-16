@@ -24,6 +24,12 @@ public class Allergy implements Serializable {
      */
     private @Getter String name;
 
+    /**
+     * Constructor for the pizza.
+     *
+     * @param id of the pizza.
+     * @param allergen name of the allergen.
+     */
     public Allergy(long id, String allergen) {
         this.id = id;
         this.name = allergen;

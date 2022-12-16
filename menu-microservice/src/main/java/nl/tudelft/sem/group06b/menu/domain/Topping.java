@@ -37,7 +37,15 @@ public class Topping implements Serializable {
 
     private @Getter @Setter BigDecimal price;
 
-    public Topping(Long id, String name, List<Allergy> allergies, BigDecimal price){
+    /**
+     * constructor for toppings.
+     *
+     * @param id the id of the topping.
+     * @param name the name of the topping.
+     * @param allergies the list of allergies for the topping.
+     * @param price the price of the topping.
+     */
+    public Topping(Long id, String name, List<Allergy> allergies, BigDecimal price) {
         this.id = id;
         this.name = name;
         this.allergies = allergies;
