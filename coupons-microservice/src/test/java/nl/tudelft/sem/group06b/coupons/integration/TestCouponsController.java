@@ -58,7 +58,7 @@ public class TestCouponsController {
                         Date.from(Instant.now().plusSeconds(30)), new HashSet<>())
         ));
 
-        ResultActions result = mockMvc.perform(get("/calculateMinPrice?prices=100,20,10&coupons=1,2,3")
+        ResultActions result = mockMvc.perform(get("/api/coupons/calculatePrice?prices=100,20,10&coupons=1,2,3")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 
