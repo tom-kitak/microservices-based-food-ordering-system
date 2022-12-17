@@ -15,5 +15,5 @@ public interface ToppingRepository extends JpaRepository<Topping, Long> {
      */
     Optional<Topping> findToppingById(Long id);
 
-    void deleteToppingBy(Long id);
+    void deleteToppingById(Long id);
 }

@@ -1,11 +1,14 @@
 package nl.tudelft.sem.group06b.menu.controllers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
+import nl.tudelft.sem.group06b.menu.domain.Allergy;
 import nl.tudelft.sem.group06b.menu.domain.MenuService;
 import nl.tudelft.sem.group06b.menu.domain.Pizza;
 import nl.tudelft.sem.group06b.menu.domain.Topping;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -128,6 +131,12 @@ public class MenuController {
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("getTopping")
+    public ResponseEntity<Topping> topping() {
+        Allergy a = new Allergy(42L, "Gluten");
+        return ResponseEntity.ok(new Topping("Pepperoni", List.of(a), new BigDecimal("24.99")));
     }
 }
 

@@ -142,7 +142,7 @@ public class MenuService {
             if (this.toppingRepository.findToppingById(id).isEmpty()) {
                 return false;
             }
-            this.toppingRepository.deleteToppingBy(id);
+            this.toppingRepository.deleteToppingById(id);
             return true;
         } catch (Exception e) {
             throw new IllegalArgumentException();
@@ -176,11 +176,11 @@ public class MenuService {
      */
     public boolean addPizza(Pizza p) throws IllegalArgumentException {
         try {
-           if (this.pizzaRepository.findPizzaById(p.getId()).isPresent()) {
-               return false;
-           }
-           this.pizzaRepository.save(p);
-           return true;
+            if (this.pizzaRepository.findPizzaById(p.getId()).isPresent()) {
+                return false;
+            }
+            this.pizzaRepository.save(p);
+            return true;
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException();
         }
