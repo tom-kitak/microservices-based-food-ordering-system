@@ -18,7 +18,7 @@ public class ToppingTests {
     public void setup() {
         ArrayList<Allergy> allergies = new ArrayList<>();
         allergies.add(new Allergy(43L, "Gluten"));
-        this.topping1 = new Topping(42L, "Pepperoni", allergies, new BigDecimal("42.99"));
+        this.topping1 = new Topping("Pepperoni", allergies, new BigDecimal("42.99"));
     }
 
     /**

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -22,6 +23,7 @@ public class Pizza implements Serializable {
      * id for the pizza.
      */
     @Id
+    @GeneratedValue
     private @Getter Long id;
     /**
      * list of toppings that the pizza has.
@@ -41,13 +43,11 @@ public class Pizza implements Serializable {
     /**
      * Constructor for pizza.
      *
-     * @param id id of the pizza.
      * @param toppings toppings on the pizza.
      * @param name name for the pizza.
      * @param price price of the pizza.
      */
-    public Pizza(Long id, List<Topping> toppings, String name, BigDecimal price) {
-        this.id = id;
+    public Pizza(List<Topping> toppings, String name, BigDecimal price) {
         this.toppings = toppings;
         this.name = name;
         this.price = price;

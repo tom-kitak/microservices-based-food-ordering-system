@@ -21,8 +21,8 @@ public class PizzaTests {
         allergies.add(new Allergy(42L, "Gluten"));
         allergies.add(new Allergy(53L, "Mushroom"));
         ArrayList<Topping> toppings = new ArrayList<>();
-        toppings.add(new Topping(42L, "Pepperoni", allergies, new BigDecimal("24.49")));
-        this.pizza1 = new Pizza(42L, toppings, "Pepperoni", new BigDecimal("48.99"));
+        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
+        this.pizza1 = new Pizza(toppings, "Pepperoni", new BigDecimal("48.99"));
     }
 
     /**

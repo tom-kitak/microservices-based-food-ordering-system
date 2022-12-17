@@ -93,11 +93,116 @@ public class MenuService {
      * @throws NoSuchElementException if no pizza is found.
      */
     public Pizza getPizzaById(Long id) throws NoSuchElementException {
-        return this.pizzaRepository.findPizzaById(id).orElseThrow();
+        try {
+            return this.pizzaRepository.findPizzaById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
     }
 
+    /**
+     * gets an allergy with a specific id.
+     *
+     * @param id of the allergy
+     * @return allergy with the given id.
+     * @throws NoSuchElementException if no allergy is found.
+     */
     public Allergy getAllergyById(Long id) throws NoSuchElementException {
         return this.allergyRepository.findAllergyById(id).orElseThrow();
+    }
+
+    /**
+     * removes pizza with a specific id.
+     *
+     * @param id of pizza to remove.
+     * @return true if removed/false if no pizza with that id.
+     * @throws IllegalArgumentException if id is null
+     */
+    public boolean removePizzaById(Long id) throws IllegalArgumentException {
+        try {
+            if (this.pizzaRepository.findPizzaById(id).isEmpty()) {
+                return false;
+            }
+            this.pizzaRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * removes a topping with a specific id.
+     *
+     * @param id of the topping to remove.
+     * @return true if removed/false if no topping with that id.
+     * @throws IllegalArgumentException if id is null
+     */
+    public boolean removeToppingById(Long id) throws NoSuchElementException {
+        try {
+            if (this.toppingRepository.findToppingById(id).isEmpty()) {
+                return false;
+            }
+            this.toppingRepository.deleteToppingBy(id);
+            return true;
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * adds a topping to the repository.
+     *
+     * @param t the topping to save.
+     * @return true if topping was saved/false if there is a topping
+     */
+    public boolean addTopping(Topping t) throws IllegalArgumentException {
+        try {
+            if (this.toppingRepository.findToppingById(t.getId()).isPresent()) {
+                return false;
+            }
+            this.toppingRepository.save(t);
+            return true;
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * adds a pizza to the repository.
+     *
+     * @param p the pizza to add.
+     * @return true if saved/false if there is a pizza with that id.
+     * @throws IllegalArgumentException if p is null.
+     */
+    public boolean addPizza(Pizza p) throws IllegalArgumentException {
+        try {
+           if (this.pizzaRepository.findPizzaById(p.getId()).isPresent()) {
+               return false;
+           }
+           this.pizzaRepository.save(p);
+           return true;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * adds an allergy to the repository.
+     *
+     * @param a the allergy to be added.
+     * @return true if added/false if allergy exists already.
+     * @throws IllegalArgumentException if allergy is null.
+     */
+    public boolean addAllergy(Allergy a) throws IllegalArgumentException {
+        try {
+            if (this.allergyRepository.findAllergyById(a.getId()).isPresent()) {
+                return false;
+            }
+            this.allergyRepository.save(a);
+            return true;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException();
+        }
     }
 }
 
