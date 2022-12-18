@@ -17,6 +17,6 @@ public interface EmailRepository extends JpaRepository<Email, Long> {
      * @return A list of dummy emails.
      */
     @Query("SELECT a FROM Email a WHERE a.store.id = ?1")
-    List<Email> retrieveEmailByStoreId(Long storeId);
+    List<Email> retrieveEmailsByStoreId(Long storeId);
 
 }

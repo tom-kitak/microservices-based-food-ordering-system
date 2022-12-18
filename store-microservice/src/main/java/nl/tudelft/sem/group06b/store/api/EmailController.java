@@ -56,11 +56,11 @@ public class EmailController {
      * @param id The store id.
      * @return A list of dummy emails.
      */
-    @GetMapping("/showEmailByStoreId/{id}")
+    @GetMapping("/showEmailsByStoreId/{id}")
     public ResponseEntity<List<Email>> queryEmailsByStore(@PathVariable("id") Long id) {
 
         try {
-            dummyEmails = emailService.getEmailFromStore(id);
+            dummyEmails = emailService.getEmailsFromStore(id);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

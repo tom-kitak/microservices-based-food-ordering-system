@@ -1,7 +1,6 @@
 package nl.tudelft.sem.group06b.store.service;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import nl.tudelft.sem.group06b.store.database.StoreRepository;
 import nl.tudelft.sem.group06b.store.domain.Location;
 import nl.tudelft.sem.group06b.store.domain.NoSuchStoreException;

@@ -1,7 +1,6 @@
 package nl.tudelft.sem.group06b.store.service;
 
 import java.util.List;
-import java.util.Optional;
 import nl.tudelft.sem.group06b.store.database.EmailRepository;
 import nl.tudelft.sem.group06b.store.database.StoreRepository;
 import nl.tudelft.sem.group06b.store.domain.Email;
@@ -62,8 +61,8 @@ public class EmailService {
      * @return A list of dummy emails.
      * @throws Exception If the store does not exist.
      */
-    public List<Email> getEmailFromStore(Long storeId) throws Exception {
+    public List<Email> getEmailsFromStore(Long storeId) throws Exception {
         storeRepository.findById(storeId).orElseThrow(NoSuchStoreException::new);
-        return emailRepository.retrieveEmailByStoreId(storeId);
+        return emailRepository.retrieveEmailsByStoreId(storeId);
     }
 }
