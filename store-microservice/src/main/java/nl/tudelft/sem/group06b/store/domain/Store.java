@@ -1,11 +1,14 @@
 package nl.tudelft.sem.group06b.store.domain;
 
+import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 
@@ -25,15 +28,49 @@ public class Store {
     @Column(name = "location", nullable = false)
     private Location storeLocation;
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Email> dummyEmails;
+
     /**
      * Stores information in a single store.
      *
      * @param name the name of the store.
-     * @param storeLocation the loation of the store.
+     * @param storeLocation the location of the store.
      */
     public Store(String name, Location storeLocation) {
         this.name = name;
         this.storeLocation = storeLocation;
+    }
+
+    /**
+     * Stores information in a single store.
+     *
+     * @param name the name of the store.
+     * @param storeLocation the location of the store.
+     * @param dummyEmails the dummy emails of the store.
+     */
+    public Store(String name, Location storeLocation, List<Email> dummyEmails) {
+        this.name = name;
+        this.storeLocation = storeLocation;
+        this.dummyEmails = dummyEmails;
+    }
+
+    /**
+     * Gets the email id.
+     *
+     * @return The email id.
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the email id.
+     *
+     * @param id The email id.
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
