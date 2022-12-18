@@ -44,8 +44,8 @@ public class Pizza implements Serializable {
      * Constructor for pizza.
      *
      * @param toppings toppings on the pizza.
-     * @param name name for the pizza.
-     * @param price price of the pizza.
+     * @param name     name for the pizza.
+     * @param price    price of the pizza.
      */
     public Pizza(List<Topping> toppings, String name, BigDecimal price) {
         this.toppings = toppings;
@@ -67,4 +67,22 @@ public class Pizza implements Serializable {
         }
         return false;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Pizza)) {
+            return false;
+        }
+        Pizza that = (Pizza) other;
+        return this.name.equals(that.getName())
+                && this.price.equals(that.getPrice())
+                && this.toppings.equals(that.getToppings());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
+
+

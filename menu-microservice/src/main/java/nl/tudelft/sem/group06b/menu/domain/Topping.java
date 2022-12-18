@@ -64,4 +64,20 @@ public class Topping implements Serializable {
         }
         return false;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Topping)) {
+            return false;
+        }
+        Topping that = (Topping) obj;
+        return this.getName().equalsIgnoreCase(that.getName())
+                && this.getPrice().equals(that.getPrice())
+                && this.getAllergies().equals(that.getAllergies());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
