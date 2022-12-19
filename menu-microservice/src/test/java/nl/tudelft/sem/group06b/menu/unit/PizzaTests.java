@@ -33,4 +33,49 @@ public class PizzaTests {
         Assertions.assertThat(pizza1.containsAllergen(new Allergy(42L, "Gluten"))).isTrue();
         Assertions.assertThat(pizza1.containsAllergen(new Allergy(52L, "Gluten"))).isFalse();
     }
+
+    @Test
+    public void equalsTest() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(42L, "Gluten"));
+        allergies.add(new Allergy(53L, "Mushroom"));
+        ArrayList<Topping> toppings = new ArrayList<>();
+        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(toppings, "Pepperoni", new BigDecimal("48.99"));
+        Assertions.assertThat(this.pizza1.equals(pizza2)).isTrue();
+    }
+
+    @Test
+    public void equalsAllergies() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(42L, "Peanuts"));
+        allergies.add(new Allergy(53L, "Allergies"));
+        ArrayList<Topping> toppings = new ArrayList<>();
+        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(toppings, "Pepperoni", new BigDecimal("48.99"));
+        Assertions.assertThat(this.pizza1.equals(pizza2)).isFalse();
+    }
+
+    @Test
+    public void equalsName() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(42L, "Gluten"));
+        allergies.add(new Allergy(53L, "Mushroom"));
+        ArrayList<Topping> toppings = new ArrayList<>();
+        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(toppings, "Hawaii", new BigDecimal("48.99"));
+        Assertions.assertThat(this.pizza1.equals(pizza2)).isFalse();
+    }
+
+    @Test
+    public void equalsPrice() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(42L, "Gluten"));
+        allergies.add(new Allergy(53L, "Mushroom"));
+        ArrayList<Topping> toppings = new ArrayList<>();
+        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(toppings, "Pepperoni", new BigDecimal("48.98"));
+        Assertions.assertThat(this.pizza1.equals(pizza2)).isFalse();
+    }
+
 }

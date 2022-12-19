@@ -29,4 +29,33 @@ public class ToppingTests {
         Assertions.assertThat(topping1.containsAllergy(new Allergy(43L, "Gluten"))).isTrue();
         Assertions.assertThat(topping1.containsAllergy(new Allergy(44L, "Peanuts"))).isFalse();
     }
+
+    @Test
+    public void equalsTest() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(43L, "Gluten"));
+        Topping topping2 = new Topping("Pepperoni", allergies, new BigDecimal("42.99"));
+        Assertions.assertThat(this.topping1.equals(topping2)).isTrue();
+    }
+
+    @Test
+    public void notEqualsAllergiesTest() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(42L, "Meat"));
+        Topping topping2 = new Topping("Pepperoni", allergies, new BigDecimal("42.99"));
+        Assertions.assertThat(this.topping1.equals(topping2)).isFalse();
+    }
+
+    @Test
+    public void notEqualsNameTest() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(43L, "Gluten"));
+        Topping topping2 = new Topping("Salami", allergies, new BigDecimal("42.99"));
+        Assertions.assertThat(this.topping1.equals(topping2)).isFalse();
+    }
+
+    @Test
+    public void notToppingTest() {
+        Assertions.assertThat(this.topping1.equals(5)).isFalse();
+    }
 }
