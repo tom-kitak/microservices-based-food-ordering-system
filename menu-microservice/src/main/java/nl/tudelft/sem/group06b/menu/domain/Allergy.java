@@ -39,7 +39,8 @@ public class Allergy implements Serializable {
     public boolean equals(Object other) {
         if (other instanceof Allergy) {
             Allergy that = (Allergy) other;
-            return this.getId().equals(that.getId());
+            return this.getId().equals(that.getId())
+                    && this.getName().equalsIgnoreCase(that.getName());
         }
         return false;
     }
