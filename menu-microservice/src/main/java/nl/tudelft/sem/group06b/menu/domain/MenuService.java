@@ -204,6 +204,32 @@ public class MenuService {
             throw new IllegalArgumentException();
         }
     }
+
+    /**
+     * checks if a list of pizzas is valid.
+     *
+     * @param pizzaIds the list of pizzas to check.
+     * @param toppingIds the list of toppings to check.
+     * @return true if they are valid/false if they aren't
+     * @throws IllegalArgumentException if one of the pizzas in the list is null.
+     */
+    public boolean isValidPizzaList(List<Long> pizzaIds, List<Long> toppingIds) throws IllegalArgumentException {
+        try {
+            for (Long id : pizzaIds) {
+                if (this.pizzaRepository.findPizzaById(id).isEmpty()) {
+                    return false;
+                }
+            }
+            for (Long id : toppingIds) {
+                if (this.toppingRepository.findToppingById(id).isEmpty()) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
+    }
 }
 
 
