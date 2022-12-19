@@ -8,7 +8,6 @@ import nl.tudelft.sem.group06b.menu.domain.Allergy;
 import nl.tudelft.sem.group06b.menu.domain.MenuService;
 import nl.tudelft.sem.group06b.menu.domain.Pizza;
 import nl.tudelft.sem.group06b.menu.domain.Topping;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,8 +60,18 @@ public class MenuController {
      * @return list of pizzas
      */
     @GetMapping("getAllPizzas")
-    public ResponseEntity<List<Pizza>> getAll() {
+    public ResponseEntity<List<Pizza>> getAllPizzas() {
         return ResponseEntity.ok(menuService.getAllPizzas());
+    }
+
+    /**
+     * returns all the toppings in the repository.
+     *
+     * @return ResponseEntity of a list of toppings
+     */
+    @GetMapping("getAllToppings")
+    public ResponseEntity<List<Topping>> getAllToppings() {
+        return ResponseEntity.ok(menuService.getAllToppings());
     }
 
     /**
@@ -133,7 +142,7 @@ public class MenuController {
         }
     }
 
-    @GetMapping("getTopping")
+    @GetMapping("getStaticTopping")
     public ResponseEntity<Topping> topping() {
         Allergy a = new Allergy(42L, "Gluten");
         return ResponseEntity.ok(new Topping("Pepperoni", List.of(a), new BigDecimal("24.99")));
