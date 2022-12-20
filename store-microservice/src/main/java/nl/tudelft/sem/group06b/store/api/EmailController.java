@@ -1,7 +1,6 @@
 package nl.tudelft.sem.group06b.store.api;
 
 import java.util.List;
-import nl.tudelft.sem.group06b.store.database.EmailRepository;
 import nl.tudelft.sem.group06b.store.domain.Email;
 import nl.tudelft.sem.group06b.store.model.SendEmailRequestModel;
 import nl.tudelft.sem.group06b.store.service.EmailService;
@@ -24,20 +23,16 @@ public class EmailController {
 
     private final transient EmailService emailService;
 
-    private final transient EmailRepository emailRepository;
-
     private transient List<Email> dummyEmails;
 
     /**
      * Instantiates a new controller.
      *
      * @param emailService The email service.
-     * @param emailRepository The email repo.
      */
     @Autowired
-    public EmailController(EmailService emailService, EmailRepository emailRepository) {
+    public EmailController(EmailService emailService) {
         this.emailService = emailService;
-        this.emailRepository = emailRepository;
     }
 
     /**
@@ -47,7 +42,7 @@ public class EmailController {
      */
     @GetMapping("/showAllEmails")
     public ResponseEntity<List<Email>> queryAllEmails() {
-        return ResponseEntity.ok(emailRepository.findAll());
+        return ResponseEntity.ok(emailService.queryAllEmails());
     }
 
     /**
@@ -74,7 +69,7 @@ public class EmailController {
      * @return an HTTP response (200 if the email is saved, 400 otherwise).
      */
     @PostMapping("/sendEmail")
-    public ResponseEntity<?> sendEmail(@RequestBody SendEmailRequestModel request) {
+    public ResponseEntity<String> sendEmail(@RequestBody SendEmailRequestModel request) {
 
         try {
             Long storeId = request.getStoreId();
@@ -93,7 +88,7 @@ public class EmailController {
      * @return an HTTP response (200 if the email is removed, 400 otherwise).
      */
     @DeleteMapping("/deleteEmail/{emailId}")
-    public ResponseEntity<?> deleteEmail(@PathVariable("emailId") Long id) {
+    public ResponseEntity<String> deleteEmail(@PathVariable("emailId") Long id) {
 
         try {
             emailService.deleteEmail(id);
@@ -103,7 +98,5 @@ public class EmailController {
         }
         return ResponseEntity.ok("Email deleted!");
     }
-
-
 
 }
