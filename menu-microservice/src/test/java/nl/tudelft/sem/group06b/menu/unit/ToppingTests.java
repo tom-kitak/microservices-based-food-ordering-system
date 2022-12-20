@@ -55,6 +55,31 @@ public class ToppingTests {
     }
 
     @Test
+    public void sameIdTests() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(43L, "Gluten"));
+        Topping topping2 = new Topping(2L, "Pepper", allergies, new BigDecimal("44.99"));
+        Assertions.assertThat(this.topping1.hasSameIds(topping2)).isTrue();
+    }
+
+
+    @Test
+    public void notSameIdTests() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(43L, "Gluten"));
+        Topping topping2 = new Topping(3L, "Pepper", allergies, new BigDecimal("44.99"));
+        Assertions.assertThat(this.topping1.hasSameIds(topping2)).isFalse();
+    }
+
+    @Test
+    public void notSameAllergyIdTests() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(46L, "Gluten"));
+        Topping topping2 = new Topping(2L, "Pepper", allergies, new BigDecimal("44.99"));
+        Assertions.assertThat(this.topping1.hasSameIds(topping2)).isFalse();
+    }
+
+    @Test
     public void notToppingTest() {
         Assertions.assertThat(this.topping1).isNotEqualTo(5);
     }

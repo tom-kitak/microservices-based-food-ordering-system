@@ -97,7 +97,8 @@ public class Topping implements Serializable {
             return false;
         }
         Topping that = (Topping) obj;
-        return this.getName().equalsIgnoreCase(that.getName())
+        return  this.getId().equals(that.getId())
+                && this.getName().equalsIgnoreCase(that.getName())
                 && this.getPrice().equals(that.getPrice())
                 && this.getAllergies().equals(that.getAllergies());
     }

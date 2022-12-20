@@ -81,9 +81,11 @@ public class Pizza implements Serializable {
         if (!(other instanceof Pizza)) {
             return false;
         }
-
         Pizza that = (Pizza) other;
         HashMap<Long, Topping> toppingHashMap = new HashMap<>();
+        if (!this.getId().equals(that.getId())) {
+            return false;
+        }
         for (Topping t : this.getToppings()) {
             toppingHashMap.put(t.getId(), t);
         }
@@ -95,6 +97,9 @@ public class Pizza implements Serializable {
             if (!t.hasSameIds(toppingHashMap.get(t.getId()))) {
                 return false;
             }
+        }
+        if (this.getToppings().size() != that.getToppings().size()) {
+            return false;
         }
         return true;
     }
