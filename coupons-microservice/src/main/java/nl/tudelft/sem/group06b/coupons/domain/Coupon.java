@@ -1,59 +1,47 @@
 package nl.tudelft.sem.group06b.coupons.domain;
 
 
+import java.util.Date;
+import java.util.Set;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Class representing a coupon and its effects.
  */
 @Entity
+@AllArgsConstructor
 public class Coupon {
     @Id
+    @Getter
+    @Setter
     private String code;
+
+    @Getter
+    @Setter
     private CouponType type;
+
+    @Getter
+    @Setter
     private double discount;
 
-    /**
-     * Instantiates a new Coupon.
-     *
-     * @param code     the coupon code
-     * @param type     the type of the coupon
-     * @param discount the discount if the coupon is a discount coupon
-     */
-    public Coupon(String code, CouponType type, double discount) {
-        this.code = code;
-        this.type = type;
-        this.discount = discount;
-    }
+    @Getter
+    @Setter
+    private Date expirationDate;
+
+    @ElementCollection
+    @Getter
+    @Setter
+    private Set<String> usedBy;
 
     /**
      * No args constructor for JPA.
      */
-    public Coupon() {}
-
-    public String getCode() {
-        return code;
-    }
-
-    protected void setCode(String code) {
-        this.code = code;
-    }
-
-    public CouponType getType() {
-        return type;
-    }
-
-    protected void setType(CouponType type) {
-        this.type = type;
-    }
-
-    public double getDiscount() {
-        return discount;
-    }
-
-    protected void setDiscount(double discount) {
-        this.discount = discount;
+    public Coupon() {
     }
 
     /**
