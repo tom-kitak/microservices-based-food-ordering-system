@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication
 @EntityScan("nl.tudelft.sem.group06b.order.domain")
 @EnableJpaRepositories("nl.tudelft.sem.group06b.order.repository")
 public class Application {

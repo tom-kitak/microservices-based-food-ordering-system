@@ -17,9 +17,10 @@ public class OrderProcessor {
     @Getter @Setter
     private List<Long> activeOrders;
 
-    private final transient String validMessage = "VALID";
+    private final transient String valid = "VALID";
     private final transient String invalidOrderIdMessage = "Invalid order ID";
     private final transient String noActiveOrderMessage = "No active order with this ID";
+    private final transient int deadlineOffset = 30;
 
     /**
      * Instantiates a new OrderProcessor.
@@ -47,15 +48,19 @@ public class OrderProcessor {
      * @param selectedTime selected time for the order
      * @return message of outcome
      */
-    public String startOrder(Long storeId, String selectedTime) throws Exception {
+    public String startOrder(Long storeId, String memberId, String selectedTime) throws Exception {
         if (selectedTime == null) {
             throw new Exception("Please select time");
         } else if (storeId == null) {
             throw new Exception("Please select store");
+        } else if (memberId == null) {
+            throw new Exception("Member ID invalid");
         }
-        String isTimeValid = isTimeValid(selectedTime);
-        if (!isTimeValid.equals(validMessage)) {
-            throw new Exception(isTimeValid);
+
+        // validate if the time is appropriate
+        String isTimeValid = isTimeValid(selectedTime, deadlineOffset);
+        if (!isTimeValid.equals(valid)) {
+            throw new Exception("Order has to be at least " + deadlineOffset + " minutes in the future.");
         }
 
         // TODO
@@ -65,10 +70,11 @@ public class OrderProcessor {
         order.setSelectedTime(selectedTime);
         order.setStoreId(storeId);
         order.setStatus(Status.ORDER_ONGOING);
+        order.setMemberId(memberId);
 
         orderRepository.save(order);
         activeOrders.add(order.getId());
-        System.out.println(order.getId());
+        System.out.println("Ongoing order: " + order.getId());
 
         return "Order number " + order.getId() + " ongoing";
     }
@@ -89,15 +95,15 @@ public class OrderProcessor {
         if (selectedTime == null) {
             throw new Exception("Please select time");
         }
-        String isTimeValid = isTimeValid(selectedTime);
-        if (!isTimeValid.equals(validMessage)) {
-            throw new Exception(isTimeValid);
+        String isTimeValid = isTimeValid(selectedTime, 30);
+        if (!isTimeValid.equals(valid)) {
+            throw new Exception("New time has to be at least " + deadlineOffset + " minutes in the future.");
         }
 
         Order order = orderRepository.getOne(orderId);
         order.setSelectedTime(selectedTime);
         orderRepository.save(order);
-        return "Time changed to " + selectedTime;
+        return "Time for order " + orderId + " changed to " + selectedTime + ".";
     }
 
     /**
@@ -218,10 +224,12 @@ public class OrderProcessor {
         // If you are an admin you can cancel anytime and not just 30 min before
 
         Order order = orderRepository.getOne(orderId);
-        String isTimeValid = isTimeValid(order.getSelectedTime());
-        if (!isTimeValid.equals(validMessage)) {
+
+        String isTimeValid = isTimeValid(order.getSelectedTime(), 30);
+        if (!isTimeValid.equals(valid)) {
             throw new Exception("You can no longer cancel the order");
         }
+
         order.setStatus(Status.ORDER_CANCELED);
         orderRepository.save(order);
 
@@ -232,24 +240,24 @@ public class OrderProcessor {
     }
 
     /**
-     * Checks format of provided time.
      *
-     * @param time provided time
-     * @return message of outcome
+     * @param time
+     * @param deadlineOffset
+     * @return
+     * @throws Exception
      */
-    private String isTimeValid(String time) {
+    private String isTimeValid(String time, int deadlineOffset) throws Exception {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         try {
             LocalDateTime orderDate = LocalDateTime.parse(time, formatter);
             LocalDateTime currentDate = LocalDateTime.now();
 
-            if (orderDate.minusMinutes(30).isBefore(currentDate)) {
-                return "Order time has to be at least 30 minutes in the future";
-            } else {
-                return validMessage;
+            if (orderDate.minusMinutes(deadlineOffset).isBefore(currentDate)) {
+                return "The time is invalid.";
             }
+            return valid;
         } catch (Exception e) {
-            return "Please provide the correct time format: dd/MM/yyyy HH:mm:ss";
+            throw new Exception("Please provide the correct time format: dd/MM/yyyy HH:mm:ss");
         }
     }
 }

@@ -50,7 +50,8 @@ public class OrderController {
         try {
             String selectedTime = order.getSelectedTime();
             Long storeId = order.getStoreId();
-            String response = orderProcessor.startOrder(storeId, selectedTime);
+            String memberId = authManager.getMemberId();
+            String response = orderProcessor.startOrder(storeId, memberId, selectedTime);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -85,7 +86,6 @@ public class OrderController {
      */
     @PostMapping("/changeSelectedLocation")
     public ResponseEntity<String> changeSelectedLocation(@RequestBody Order order) {
-
         try {
             Long storeId = order.getStoreId();
             Long orderId = order.getId();

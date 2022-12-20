@@ -47,6 +47,9 @@ public class Order {
     @Column(name = "storeId", nullable = false)
     private Long storeId;
 
+    @Column(name = "location")
+    private String location;
+
     /**
      * Instantiates a new Order.
      *
@@ -57,9 +60,10 @@ public class Order {
      * @param couponsIds IDs of the coupons of the order
      * @param price price of the order
      * @param storeId ID of the store of the order
+     * @param location location of the store
      */
     public Order(String memberId, List<Long> pizzasIds, String selectedTime,
-                 Status status, List<String> couponsIds, BigDecimal price, Long storeId) {
+                 Status status, List<String> couponsIds, BigDecimal price, Long storeId, String location) {
         this.memberId = memberId;
         this.pizzasIds = pizzasIds;
         this.selectedTime = selectedTime;
@@ -67,6 +71,7 @@ public class Order {
         this.couponsIds = couponsIds;
         this.price = price;
         this.storeId = storeId;
+        this.location = location;
     }
 
     public Long getId() {
@@ -127,6 +132,14 @@ public class Order {
 
     public void setStoreId(Long storeId) {
         this.storeId = storeId;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Override
