@@ -25,6 +25,8 @@ public class StoreController {
 
     private final transient StoreService storeService;
 
+    private transient Long storeId;
+
 
     /**
      * Instantiates a new controller.
@@ -92,6 +94,23 @@ public class StoreController {
     public ResponseEntity<Boolean> validateLocation(@RequestBody LocationRequestModel request) {
         Location location = new Location(request.getStoreLocation());
         return ResponseEntity.ok(storeService.validateStoreLocation(location));
+    }
+
+    /**
+     * Gets the store id from the database.
+     *
+     * @param request serialized Location object in the form of a JSON in the request body.
+     * @return The store id.
+     */
+    @GetMapping("/getStoreId")
+    public ResponseEntity<Long> getStoreId(@RequestBody LocationRequestModel request) {
+        try {
+            Location location = new Location(request.getStoreLocation());
+            storeId = storeService.retrieveStoreId(location);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok(storeId);
     }
 
 }

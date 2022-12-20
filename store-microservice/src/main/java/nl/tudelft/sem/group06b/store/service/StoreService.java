@@ -81,4 +81,17 @@ public class StoreService {
     public boolean validateStoreLocation(Location location) {
         return storeRepository.existsByStoreLocation(location);
     }
+
+    /**
+     * Retrieves the id of the store.
+     *
+     * @param location The preffered location by user.
+     * @return The store id.
+     * @throws Exception If the given store location does not exist.
+     */
+    public Long retrieveStoreId(Location location) throws Exception {
+        Store store = storeRepository.findByStoreLocation(location)
+                 .orElseThrow(NoSuchStoreException::new);
+        return store.getId();
+    }
 }
