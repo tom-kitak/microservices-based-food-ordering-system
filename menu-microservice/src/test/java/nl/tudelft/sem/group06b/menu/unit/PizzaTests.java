@@ -21,8 +21,8 @@ public class PizzaTests {
         allergies.add(new Allergy(42L, "Gluten"));
         allergies.add(new Allergy(53L, "Mushroom"));
         ArrayList<Topping> toppings = new ArrayList<>();
-        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
-        this.pizza1 = new Pizza(toppings, "Pepperoni", new BigDecimal("48.99"));
+        toppings.add(new Topping(2L, "Pepperoni", allergies, new BigDecimal("24.49")));
+        this.pizza1 = new Pizza(41L, toppings, "Pepperoni", new BigDecimal("48.99"));
     }
 
     /**
@@ -40,42 +40,39 @@ public class PizzaTests {
         allergies.add(new Allergy(42L, "Gluten"));
         allergies.add(new Allergy(53L, "Mushroom"));
         ArrayList<Topping> toppings = new ArrayList<>();
-        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
-        Pizza pizza2 = new Pizza(toppings, "Pepperoni", new BigDecimal("48.99"));
+        toppings.add(new Topping(2L, "Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(41L, toppings, "Pepperoni", new BigDecimal("48.99"));
         Assertions.assertThat(this.pizza1.equals(pizza2)).isTrue();
+        Assertions.assertThat(this.pizza1.hashCode()).isEqualTo(pizza2.hashCode());
     }
 
     @Test
-    public void equalsAllergies() {
-        ArrayList<Allergy> allergies = new ArrayList<>();
-        allergies.add(new Allergy(42L, "Peanuts"));
-        allergies.add(new Allergy(53L, "Allergies"));
-        ArrayList<Topping> toppings = new ArrayList<>();
-        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
-        Pizza pizza2 = new Pizza(toppings, "Pepperoni", new BigDecimal("48.99"));
-        Assertions.assertThat(this.pizza1.equals(pizza2)).isFalse();
-    }
-
-    @Test
-    public void equalsName() {
+    public void notEqualIdTest() {
         ArrayList<Allergy> allergies = new ArrayList<>();
         allergies.add(new Allergy(42L, "Gluten"));
         allergies.add(new Allergy(53L, "Mushroom"));
         ArrayList<Topping> toppings = new ArrayList<>();
-        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
-        Pizza pizza2 = new Pizza(toppings, "Hawaii", new BigDecimal("48.99"));
+        toppings.add(new Topping(2L, "Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(45L, toppings, "Pepperoni", new BigDecimal("48.99"));
         Assertions.assertThat(this.pizza1.equals(pizza2)).isFalse();
+        Assertions.assertThat(this.pizza1.hashCode()).isNotEqualTo(pizza2.hashCode());
     }
 
     @Test
-    public void equalsPrice() {
+    public void notEqualAllergiesTest() {
         ArrayList<Allergy> allergies = new ArrayList<>();
-        allergies.add(new Allergy(42L, "Gluten"));
+        allergies.add(new Allergy(46L, "Gluten"));
         allergies.add(new Allergy(53L, "Mushroom"));
         ArrayList<Topping> toppings = new ArrayList<>();
-        toppings.add(new Topping("Pepperoni", allergies, new BigDecimal("24.49")));
-        Pizza pizza2 = new Pizza(toppings, "Pepperoni", new BigDecimal("48.98"));
+        toppings.add(new Topping(2L, "Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(41L, toppings, "Pepperoni", new BigDecimal("48.99"));
         Assertions.assertThat(this.pizza1.equals(pizza2)).isFalse();
+        Assertions.assertThat(this.pizza1.hashCode()).isNotEqualTo(pizza2.hashCode());
     }
+
+   @Test
+   public void notPizzaTest() {
+        Assertions.assertThat(this.pizza1).isNotEqualTo(4);
+   }
 
 }

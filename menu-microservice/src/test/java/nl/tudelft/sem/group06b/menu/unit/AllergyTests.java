@@ -10,8 +10,13 @@ public class AllergyTests {
         Allergy a = new Allergy(5L, "Gluten");
         Allergy b = new Allergy(5L, "Gluten");
         Allergy c = new Allergy(3L, "Gluten");
+        Allergy d = new Allergy(5L, "Yttrium");
         Assertions.assertThat(a).isEqualTo(b);
         Assertions.assertThat(a).isNotEqualTo(c);
         Assertions.assertThat(a).isEqualTo(a);
+        Assertions.assertThat(a).isEqualTo(d);
+        Assertions.assertThat(a).isNotEqualTo(5);
+        Assertions.assertThat(a.hashCode()).isEqualTo(d.hashCode());
+        Assertions.assertThat(a.hashCode()).isNotEqualTo(c.hashCode());
     }
 }

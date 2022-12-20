@@ -18,7 +18,7 @@ public class ToppingTests {
     public void setup() {
         ArrayList<Allergy> allergies = new ArrayList<>();
         allergies.add(new Allergy(43L, "Gluten"));
-        this.topping1 = new Topping("Pepperoni", allergies, new BigDecimal("42.99"));
+        this.topping1 = new Topping(2L, "Pepperoni", allergies, new BigDecimal("42.99"));
     }
 
     /**
@@ -34,28 +34,28 @@ public class ToppingTests {
     public void equalsTest() {
         ArrayList<Allergy> allergies = new ArrayList<>();
         allergies.add(new Allergy(43L, "Gluten"));
-        Topping topping2 = new Topping("Pepperoni", allergies, new BigDecimal("42.99"));
+        Topping topping2 = new Topping(2L, "Pepperoni", allergies, new BigDecimal("42.99"));
         Assertions.assertThat(this.topping1.equals(topping2)).isTrue();
     }
 
     @Test
-    public void notEqualsAllergiesTest() {
+    public void notEqualIdTest() {
         ArrayList<Allergy> allergies = new ArrayList<>();
-        allergies.add(new Allergy(42L, "Meat"));
-        Topping topping2 = new Topping("Pepperoni", allergies, new BigDecimal("42.99"));
+        allergies.add(new Allergy(43L, "Gluten"));
+        Topping topping2 = new Topping(3L, "Pepperoni", allergies, new BigDecimal("42.99"));
         Assertions.assertThat(this.topping1.equals(topping2)).isFalse();
     }
 
     @Test
-    public void notEqualsNameTest() {
+    public void notEqualAllergiesTest() {
         ArrayList<Allergy> allergies = new ArrayList<>();
-        allergies.add(new Allergy(43L, "Gluten"));
-        Topping topping2 = new Topping("Salami", allergies, new BigDecimal("42.99"));
+        allergies.add(new Allergy(45L, "Gluten"));
+        Topping topping2 = new Topping(2L, "Pepperoni", allergies, new BigDecimal("42.99"));
         Assertions.assertThat(this.topping1.equals(topping2)).isFalse();
     }
 
     @Test
     public void notToppingTest() {
-        Assertions.assertThat(this.topping1.equals(5)).isFalse();
+        Assertions.assertThat(this.topping1).isNotEqualTo(5);
     }
 }

@@ -145,7 +145,7 @@ public class MenuController {
     @GetMapping("getStaticTopping")
     public ResponseEntity<Topping> topping() {
         Allergy a = new Allergy(42L, "Gluten");
-        return ResponseEntity.ok(new Topping("Pepperoni", List.of(a), new BigDecimal("24.99")));
+        return ResponseEntity.ok(new Topping(42L, "Pepperoni", List.of(a), new BigDecimal("24.99")));
     }
 }
 

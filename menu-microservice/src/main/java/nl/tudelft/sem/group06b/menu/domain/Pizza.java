@@ -47,7 +47,8 @@ public class Pizza implements Serializable {
      * @param name     name for the pizza.
      * @param price    price of the pizza.
      */
-    public Pizza(List<Topping> toppings, String name, BigDecimal price) {
+    public Pizza(Long id, List<Topping> toppings, String name, BigDecimal price) {
+        this.id = id;
         this.toppings = toppings;
         this.name = name;
         this.price = price;

@@ -3,6 +3,8 @@ package nl.tudelft.sem.group06b.menu.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -44,7 +46,8 @@ public class Topping implements Serializable {
      * @param allergies the list of allergies for the topping.
      * @param price the price of the topping.
      */
-    public Topping(String name, List<Allergy> allergies, BigDecimal price) {
+    public Topping(Long id, String name, List<Allergy> allergies, BigDecimal price) {
+        this.id = id;
         this.name = name;
         this.allergies = allergies;
         this.price = price;
@@ -63,6 +66,23 @@ public class Topping implements Serializable {
             }
         }
         return false;
+    }
+
+    public boolean hasSameIds(Object obj) {
+        if(!(obj instanceof Topping)) {
+            return false;
+        }
+        Topping that = (Topping) obj;
+        if (!this.getId().equals(that.getId())) {
+            return false;
+        }
+        Set<Long> ids = this.getAllergies().stream().map(Allergy::getId).collect(Collectors.toSet());
+        for(Allergy a : that.getAllergies()) {
+            if (!ids.contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
