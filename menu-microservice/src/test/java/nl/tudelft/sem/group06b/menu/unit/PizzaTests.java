@@ -70,8 +70,8 @@ public class PizzaTests {
         Assertions.assertThat(this.pizza1.hashCode()).isNotEqualTo(pizza2.hashCode());
     }
 
-   @Test
-   public void notPizzaTest() {
+    @Test
+    public void notPizzaTest() {
         Assertions.assertThat(this.pizza1).isNotEqualTo(4);
    }
 
