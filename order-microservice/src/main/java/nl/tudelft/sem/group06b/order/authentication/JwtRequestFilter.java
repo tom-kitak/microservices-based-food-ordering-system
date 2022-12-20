@@ -3,6 +3,7 @@ package nl.tudelft.sem.group06b.order.authentication;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -64,9 +66,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 try {
                     if (jwtTokenVerifier.validateToken(token)) {
                         String memberId = jwtTokenVerifier.getMemberIdFromToken(token);
+                        Collection<SimpleGrantedAuthority> coll =
+                                (Collection<SimpleGrantedAuthority>) jwtTokenVerifier.getRoleFromToken(token);
+
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 memberId,
-                                null, List.of() // no credentials and no authorities
+                                null, coll // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));

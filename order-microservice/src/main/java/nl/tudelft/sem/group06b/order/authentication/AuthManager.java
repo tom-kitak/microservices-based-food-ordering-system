@@ -23,7 +23,8 @@ public class AuthManager {
      * @return The role of the user.
      */
     public String getRole() {
-        return (String) SecurityContextHolder.getContext().getAuthentication().getAuthorities().toArray()[0];
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .toArray()[0].toString().split("=")[1].split("}")[0];
     }
 }
 
