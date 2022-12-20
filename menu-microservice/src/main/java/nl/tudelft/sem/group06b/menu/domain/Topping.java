@@ -68,8 +68,14 @@ public class Topping implements Serializable {
         return false;
     }
 
+    /**
+     * checks if two Toppings have the same ids.
+     *
+     * @param obj the topping to check.
+     * @return true if they have the same id/false if they don't.
+     */
     public boolean hasSameIds(Object obj) {
-        if(!(obj instanceof Topping)) {
+        if (!(obj instanceof Topping)) {
             return false;
         }
         Topping that = (Topping) obj;
@@ -77,7 +83,7 @@ public class Topping implements Serializable {
             return false;
         }
         Set<Long> ids = this.getAllergies().stream().map(Allergy::getId).collect(Collectors.toSet());
-        for(Allergy a : that.getAllergies()) {
+        for (Allergy a : that.getAllergies()) {
             if (!ids.contains(a.getId())) {
                 return false;
             }
