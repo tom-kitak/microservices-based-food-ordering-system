@@ -25,7 +25,7 @@ public class StoreService {
     }
 
     /**
-     * Query all stores from the database
+     * Query all stores from the database.
      *
      * @return A list of stores.
      */
