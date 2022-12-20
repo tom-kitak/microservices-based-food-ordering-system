@@ -1,22 +1,25 @@
 package nl.tudelft.sem.group06b.order.domain;
 
-import nl.tudelft.sem.group06b.order.repository.OrderRepository;
-import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import nl.tudelft.sem.group06b.order.repository.OrderRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderProcessor {
 
     private final transient OrderRepository orderRepository;
 
+    @Getter @Setter
     private List<Long> activeOrders;
+
+    private final transient String validMessage = "VALID";
+    private final transient String invalidOrderIdMessage = "Invalid order ID";
+    private final transient String noActiveOrderMessage = "No active order with this ID";
 
     /**
      * Instantiates a new OrderProcessor.
@@ -28,10 +31,22 @@ public class OrderProcessor {
         this.activeOrders = new ArrayList<>();
     }
 
+    /**
+     * Gets order repository.
+     *
+     * @return order repository
+     */
     public OrderRepository getOrderRepository() {
         return orderRepository;
     }
 
+    /**
+     * Starts an order.
+     *
+     * @param storeId id of the store
+     * @param selectedTime selected time for the order
+     * @return message of outcome
+     */
     public String startOrder(Long storeId, String selectedTime) {
         if (selectedTime == null) {
             return "Please select time";
@@ -39,7 +54,7 @@ public class OrderProcessor {
             return "Please select store";
         }
         String isTimeValid = isTimeValid(selectedTime);
-        if (!isTimeValid.equals("VALID")) {
+        if (!isTimeValid.equals(validMessage)) {
             return isTimeValid;
         }
 
@@ -58,17 +73,24 @@ public class OrderProcessor {
         return "Order number " + order.getId() + " ongoing";
     }
 
+    /**
+     * Changes the time of an order.
+     *
+     * @param orderId id of the order
+     * @param selectedTime selected time of the order
+     * @return message of outcome
+     */
     public String changeSelectedTime(Long orderId, String selectedTime) {
         if (orderId == null) {
-            return "Invalid order ID";
+            return invalidOrderIdMessage;
         } else if (!activeOrders.contains(orderId)) {
-            return "No active order with this ID";
+            return noActiveOrderMessage;
         }
         if (selectedTime == null) {
             return "Please select time";
         }
         String isTimeValid = isTimeValid(selectedTime);
-        if (!isTimeValid.equals("VALID")) {
+        if (!isTimeValid.equals(validMessage)) {
             return isTimeValid;
         }
 
@@ -78,11 +100,18 @@ public class OrderProcessor {
         return "Time changed to " + selectedTime;
     }
 
+    /**
+     * Changes the selected location of an order.
+     *
+     * @param orderId id of the order
+     * @param storeId id of the store
+     * @return message of outcome
+     */
     public String changeSelectedLocation(Long orderId, Long storeId) {
         if (orderId == null) {
-            return "Invalid order ID";
+            return invalidOrderIdMessage;
         } else if (!activeOrders.contains(orderId)) {
-            return "No active order with this ID";
+            return noActiveOrderMessage;
         } else if (storeId == null) {
             return "Please select store";
         }
@@ -97,11 +126,18 @@ public class OrderProcessor {
         return "Store changed successfully";
     }
 
+    /**
+     * Adds pizzas to an order.
+     *
+     * @param orderId id of the order
+     * @param pizzasIds list of pizza id
+     * @return message of outcome
+     */
     public String addPizzas(Long orderId, List<Long> pizzasIds) {
         if (orderId == null) {
-            return "Invalid order ID";
+            return invalidOrderIdMessage;
         } else if (!activeOrders.contains(orderId)) {
-            return "No active order with this ID";
+            return noActiveOrderMessage;
         } else if (pizzasIds == null) {
             return "Please enter valid pizzas";
         }
@@ -117,11 +153,18 @@ public class OrderProcessor {
         return "Pizzas successfully added";
     }
 
+    /**
+     * Applies coupon to an order.
+     *
+     * @param orderId id of the order
+     * @param couponsIds ids of the coupons entered
+     * @return message of outcome
+     */
     public String addCoupons(Long orderId, List<String> couponsIds) {
         if (orderId == null) {
-            return "Invalid order ID";
+            return invalidOrderIdMessage;
         } else if (!activeOrders.contains(orderId)) {
-            return "No active order with this ID";
+            return noActiveOrderMessage;
         } else if (couponsIds == null) {
             return "Please enter valid coupons";
         }
@@ -136,9 +179,15 @@ public class OrderProcessor {
         return "Coupons successfully applied";
     }
 
+    /**
+     * Places an order.
+     *
+     * @param orderId id of the order
+     * @return message of outcome
+     */
     public String placeOrder(Long orderId) {
         if (orderId == null || !activeOrders.contains(orderId)) {
-            return "No active order with this ID";
+            return noActiveOrderMessage;
         }
 
         // TODO
@@ -154,9 +203,15 @@ public class OrderProcessor {
         return "Order placed successfully, the price is: XXX";
     }
 
+    /**
+     * Cancels an order.
+     *
+     * @param orderId id of the order
+     * @return message of outcome
+     */
     public String cancelOrder(Long orderId) {
         if (orderId == null) {
-            return "Invalid order ID";
+            return invalidOrderIdMessage;
         }
 
         // TODO
@@ -164,7 +219,7 @@ public class OrderProcessor {
 
         Order order = orderRepository.getOne(orderId);
         String isTimeValid = isTimeValid(order.getSelectedTime());
-        if (!isTimeValid.equals("VALID")) {
+        if (!isTimeValid.equals(validMessage)) {
             return "You can no longer cancel the order";
         }
         order.setStatus(Status.ORDER_CANCELED);
@@ -176,6 +231,12 @@ public class OrderProcessor {
         return "Order canceled successfully";
     }
 
+    /**
+     * Checks format of provided time.
+     *
+     * @param time provided time
+     * @return message of outcome
+     */
     private String isTimeValid(String time) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         try {
@@ -184,7 +245,9 @@ public class OrderProcessor {
 
             if (orderDate.minusMinutes(30).isBefore(currentDate)) {
                 return "Order time has to be at least 30 minutes in the future";
-            } else return "VALID";
+            } else {
+                return validMessage;
+            }
         } catch (Exception e) {
             return "Please provide the correct time format: dd/MM/yyyy HH:mm:ss";
         }

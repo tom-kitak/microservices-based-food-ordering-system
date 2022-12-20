@@ -2,7 +2,6 @@ package nl.tudelft.sem.group06b.order.authentication;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;

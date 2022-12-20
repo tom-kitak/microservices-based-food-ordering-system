@@ -58,7 +58,8 @@ public class Order {
      * @param price price of the order
      * @param storeId ID of the store of the order
      */
-    public Order(String memberId, List<Long> pizzasIds, String selectedTime, Status status, List<String> couponsIds, BigDecimal price, Long storeId) {
+    public Order(String memberId, List<Long> pizzasIds, String selectedTime,
+                 Status status, List<String> couponsIds, BigDecimal price, Long storeId) {
         this.memberId = memberId;
         this.pizzasIds = pizzasIds;
         this.selectedTime = selectedTime;

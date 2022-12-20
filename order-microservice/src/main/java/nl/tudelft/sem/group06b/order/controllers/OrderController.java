@@ -1,16 +1,18 @@
 package nl.tudelft.sem.group06b.order.controllers;
 
+import java.util.List;
+import java.util.Locale;
 import nl.tudelft.sem.group06b.order.authentication.AuthManager;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.OrderProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Hello World example controller.
@@ -37,6 +39,12 @@ public class OrderController {
         this.orderProcessor = orderProcessor;
     }
 
+    /**
+     * Starts an order.
+     *
+     * @param order The order requested
+     * @return the outcome response
+     */
     @PostMapping("/startOrder")
     public ResponseEntity<String> startOrder(@RequestBody Order order) {
         try {
@@ -50,6 +58,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Changes selected time of an order.
+     *
+     * @param order The order requested
+     * @return the outcome response
+     */
     @PostMapping("/changeSelectedTime")
     public ResponseEntity<String> changeSelectedTime(@RequestBody Order order) {
         try {
@@ -63,6 +77,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Changes selected location of an order.
+     *
+     * @param order The order requested
+     * @return the outcome response
+     */
     @PostMapping("/changeSelectedLocation")
     public ResponseEntity<String> changeSelectedLocation(@RequestBody Order order) {
 
@@ -77,6 +97,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Adds pizzas to an order.
+     *
+     * @param order The order requested
+     * @return the outcome response
+     */
     @PostMapping("/addPizzas")
     public ResponseEntity<String> addPizzas(@RequestBody Order order) {
 
@@ -91,6 +117,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Adds coupons to an order.
+     *
+     * @param order The order requested
+     * @return the outcome response
+     */
     @PostMapping("/addCoupons")
     public ResponseEntity<String> addCoupons(@RequestBody Order order) {
         try {
@@ -104,6 +136,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Places an order.
+     *
+     * @param order The order requested
+     * @return the outcome response
+     */
     @PostMapping("/placeOrder")
     public ResponseEntity<String> placeOrder(@RequestBody Order order) {
         try {
@@ -116,6 +154,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Cancels an order.
+     *
+     * @param order The order requested
+     * @return the outcome response
+     */
     @PostMapping("/cancelOrder")
     public ResponseEntity<String> cancelOrder(@RequestBody Order order) {
         try {
@@ -128,6 +172,11 @@ public class OrderController {
         }
     }
 
+    /**
+     * Gets all placed orders.
+     *
+     * @return all currently placed orders
+     */
     @GetMapping("/allOrders")
     public ResponseEntity<List<Order>> getAllOrders() {
 
