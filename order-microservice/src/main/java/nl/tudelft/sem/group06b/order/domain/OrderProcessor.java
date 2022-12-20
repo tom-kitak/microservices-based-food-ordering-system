@@ -47,15 +47,15 @@ public class OrderProcessor {
      * @param selectedTime selected time for the order
      * @return message of outcome
      */
-    public String startOrder(Long storeId, String selectedTime) {
+    public String startOrder(Long storeId, String selectedTime) throws Exception {
         if (selectedTime == null) {
-            return "Please select time";
+            throw new Exception("Please select time");
         } else if (storeId == null) {
-            return "Please select store";
+            throw new Exception("Please select store");
         }
         String isTimeValid = isTimeValid(selectedTime);
         if (!isTimeValid.equals(validMessage)) {
-            return isTimeValid;
+            throw new Exception(isTimeValid);
         }
 
         // TODO
@@ -80,18 +80,18 @@ public class OrderProcessor {
      * @param selectedTime selected time of the order
      * @return message of outcome
      */
-    public String changeSelectedTime(Long orderId, String selectedTime) {
+    public String changeSelectedTime(Long orderId, String selectedTime) throws Exception {
         if (orderId == null) {
-            return invalidOrderIdMessage;
+            throw new Exception(invalidOrderIdMessage);
         } else if (!activeOrders.contains(orderId)) {
-            return noActiveOrderMessage;
+            throw new Exception(noActiveOrderMessage);
         }
         if (selectedTime == null) {
-            return "Please select time";
+            throw new Exception("Please select time");
         }
         String isTimeValid = isTimeValid(selectedTime);
         if (!isTimeValid.equals(validMessage)) {
-            return isTimeValid;
+            throw new Exception(isTimeValid);
         }
 
         Order order = orderRepository.getOne(orderId);
@@ -107,13 +107,13 @@ public class OrderProcessor {
      * @param storeId id of the store
      * @return message of outcome
      */
-    public String changeSelectedLocation(Long orderId, Long storeId) {
+    public String changeSelectedLocation(Long orderId, Long storeId) throws Exception {
         if (orderId == null) {
-            return invalidOrderIdMessage;
+            throw new Exception(invalidOrderIdMessage);
         } else if (!activeOrders.contains(orderId)) {
-            return noActiveOrderMessage;
+            throw new Exception(noActiveOrderMessage);
         } else if (storeId == null) {
-            return "Please select store";
+            throw new Exception("Please select store");
         }
 
         // TODO
@@ -133,13 +133,13 @@ public class OrderProcessor {
      * @param pizzasIds list of pizza id
      * @return message of outcome
      */
-    public String addPizzas(Long orderId, List<Long> pizzasIds) {
+    public String addPizzas(Long orderId, List<Long> pizzasIds) throws Exception {
         if (orderId == null) {
-            return invalidOrderIdMessage;
+            throw new Exception(invalidOrderIdMessage);
         } else if (!activeOrders.contains(orderId)) {
-            return noActiveOrderMessage;
+            throw new Exception(noActiveOrderMessage);
         } else if (pizzasIds == null) {
-            return "Please enter valid pizzas";
+            throw new Exception("Please enter valid pizzas");
         }
 
         // TODO
@@ -160,13 +160,13 @@ public class OrderProcessor {
      * @param couponsIds ids of the coupons entered
      * @return message of outcome
      */
-    public String addCoupons(Long orderId, List<String> couponsIds) {
+    public String addCoupons(Long orderId, List<String> couponsIds) throws Exception {
         if (orderId == null) {
-            return invalidOrderIdMessage;
+            throw new Exception(invalidOrderIdMessage);
         } else if (!activeOrders.contains(orderId)) {
-            return noActiveOrderMessage;
+            throw new Exception(noActiveOrderMessage);
         } else if (couponsIds == null) {
-            return "Please enter valid coupons";
+            throw new Exception("Please enter valid coupons");
         }
 
         Order order = orderRepository.getOne(orderId);
@@ -185,9 +185,9 @@ public class OrderProcessor {
      * @param orderId id of the order
      * @return message of outcome
      */
-    public String placeOrder(Long orderId) {
+    public String placeOrder(Long orderId) throws Exception {
         if (orderId == null || !activeOrders.contains(orderId)) {
-            return noActiveOrderMessage;
+            throw new Exception(noActiveOrderMessage);
         }
 
         // TODO
@@ -209,9 +209,9 @@ public class OrderProcessor {
      * @param orderId id of the order
      * @return message of outcome
      */
-    public String cancelOrder(Long orderId) {
+    public String cancelOrder(Long orderId) throws Exception {
         if (orderId == null) {
-            return invalidOrderIdMessage;
+            throw new Exception(invalidOrderIdMessage);
         }
 
         // TODO
@@ -220,7 +220,7 @@ public class OrderProcessor {
         Order order = orderRepository.getOne(orderId);
         String isTimeValid = isTimeValid(order.getSelectedTime());
         if (!isTimeValid.equals(validMessage)) {
-            return "You can no longer cancel the order";
+            throw new Exception("You can no longer cancel the order");
         }
         order.setStatus(Status.ORDER_CANCELED);
         orderRepository.save(order);
