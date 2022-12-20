@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import org.springframework.stereotype.Service;
@@ -54,10 +55,17 @@ public class MenuService {
     /**
      * filters the pizzas by all the allergens of a user.
      *
-     * @param allergyList list of allergies to filter out.
+     * @param strings list of allergies to filter out.
      * @return list of pizzas without the allergens in the list.
      */
-    public List<Pizza> filterPizzasByAllergens(List<Allergy> allergyList) {
+    public List<Pizza> filterPizzasByAllergens(List<String> strings) {
+        ArrayList<Allergy> allergyList = new ArrayList<>();
+        for (String s : strings) {
+            if (allergyRepository.findAllergyByNameIsIgnoreCase(s).isPresent()) {
+                allergyList.add(allergyRepository.findAllergyByNameIsIgnoreCase(s).get());
+            }
+        }
+
         ArrayList<Pizza> ret = new ArrayList<>();
         for (Pizza p : getAllPizzas()) {
             boolean add = true;
@@ -80,8 +88,8 @@ public class MenuService {
      * @return topping object that has the id.
      * @throws NoSuchElementException if no topping is found with that id.
      */
-    public Topping getToppingById(Long id) throws NoSuchElementException {
-        return this.toppingRepository.findToppingById(id).orElseThrow();
+    public Optional<Topping> getToppingById(Long id) {
+        return this.toppingRepository.findToppingById(id);
     }
 
     /**
@@ -91,12 +99,8 @@ public class MenuService {
      * @return the pizza object that has the id.
      * @throws NoSuchElementException if no pizza is found.
      */
-    public Pizza getPizzaById(Long id) throws NoSuchElementException {
-        try {
-            return this.pizzaRepository.findPizzaById(id).orElseThrow();
-        } catch (Exception e) {
-            throw new IllegalArgumentException();
-        }
+    public Optional<Pizza> getPizzaById(Long id) {
+        return this.pizzaRepository.findPizzaById(id);
     }
 
     /**
@@ -106,8 +110,18 @@ public class MenuService {
      * @return allergy with the given id.
      * @throws NoSuchElementException if no allergy is found.
      */
-    public Allergy getAllergyById(Long id) throws NoSuchElementException {
-        return this.allergyRepository.findAllergyById(id).orElseThrow();
+    public Optional<Allergy> getAllergyById(Long id) {
+        return this.allergyRepository.findAllergyById(id);
+    }
+
+    /**
+     * returns allergy with a given name.
+     *
+     * @param name of the allergy to find.
+     * @return optional of allergy/empty if not there.
+     */
+    public Optional<Allergy> getAllergyByName(String name) {
+        return this.allergyRepository.findAllergyByNameIsIgnoreCase(name);
     }
 
     /**
@@ -117,16 +131,13 @@ public class MenuService {
      * @return true if removed/false if no pizza with that id.
      * @throws IllegalArgumentException if id is null
      */
-    public boolean removePizzaById(Long id) throws IllegalArgumentException {
-        try {
-            if (this.pizzaRepository.findPizzaById(id).isEmpty()) {
-                return false;
-            }
-            this.pizzaRepository.deleteById(id);
-            return true;
-        } catch (Exception e) {
-            throw new IllegalArgumentException();
+    public boolean removePizzaById(Long id) {
+        if (this.pizzaRepository.findPizzaById(id).isEmpty()) {
+            return false;
         }
+        this.pizzaRepository.deleteById(id);
+        return true;
+
     }
 
     /**
@@ -136,16 +147,13 @@ public class MenuService {
      * @return true if removed/false if no topping with that id.
      * @throws IllegalArgumentException if id is null
      */
-    public boolean removeToppingById(Long id) throws NoSuchElementException {
-        try {
-            if (this.toppingRepository.findToppingById(id).isEmpty()) {
-                return false;
-            }
-            this.toppingRepository.deleteToppingById(id);
-            return true;
-        } catch (Exception e) {
-            throw new IllegalArgumentException();
+    public boolean removeToppingById(Long id) {
+        if (this.toppingRepository.findToppingById(id).isEmpty()) {
+            return false;
         }
+        this.toppingRepository.deleteToppingById(id);
+        return true;
+
     }
 
     /**
@@ -230,38 +238,80 @@ public class MenuService {
         }
     }
 
-    public Optional<String> checkForAllergies(List<Long> pizzaList, List<Long> toppingList, List<String> strings) {
+    public Optional<String> checkForAllergies(List<Long> pizzaList, List<Long> toppingList, List<String> allergies) {
         String ret = "";
-        Set<String> s = new HashSet<>();
-        s.addAll(strings);
+
+        ArrayList<Allergy> allergyList = new ArrayList<>();
+        for (String s : allergies) {
+            if (getAllergyByName(s).isPresent()) {
+                allergyList.add(getAllergyByName(s).get());
+            }
+        }
+
         for (Long l : pizzaList) {
-            try {
-                for (Topping t : this.getPizzaById(l).getToppings()) {
-                    for (Allergy a : t.getAllergies()) {
-                        if (s.contains(a.getName().toLowerCase())){
-                            ret += a.getName() + ", " + t.getName() + ", " + this.getPizzaById(l).getName() + "; ";
-                        }
-                    }
-                }
-            } catch (Exception e){
-                ret = ret + "";
+            Optional<Pizza> curr = getPizzaById(l);
+            if (curr.isPresent()) {
+               for (Allergy a : allergyList) {
+                   if (curr.get().containsAllergen(a).isPresent()) {
+                       ret += curr.get().containsAllergen(a).get() + ";";
+                   }
+               }
             }
         }
-        for (Long l : toppingList) {
-            try{
-                for (Allergy a : this.getToppingById(l).getAllergies()) {
-                    if (s.contains(a.getName().toLowerCase())) {
-                        ret += a.getName() + ", " + this.getToppingById(l).getName() + "; ";
-                    }
-                }
-            } catch (Exception e) {
-                ret = ret + "";
+
+        for(Long l : toppingList) {
+            Optional<Topping> curr = getToppingById(l);
+            if (curr.isPresent()) {
+               for (Allergy a : allergyList) {
+                   if(curr.get().containsAllergy(a).isPresent()) {
+                       ret += curr.get().containsAllergy(a).get() + ";";
+                   }
+               }
             }
         }
+
         if (ret.equals("")) {
             return Optional.empty();
         }
         return Optional.of(ret);
+    }
+
+    public BigDecimal getPrice(Long id, List<Long> toppingIds) {
+        Optional<Pizza> p = getPizzaById(id);
+        if (p.isEmpty()) {
+            return new BigDecimal("0.0");
+        }
+        BigDecimal ret = p.get().getPrice();
+        for (Long l : toppingIds) {
+            Optional<Topping> t = getToppingById(l);
+            if (t.isPresent()) {
+                ret = ret.add(t.get().getPrice());
+            }
+        }
+        return ret;
+    }
+
+    public List<Topping> filterToppingsByAllergens(List<String> strings) {
+        ArrayList<Allergy> allergyList = new ArrayList<>();
+        for (String s : strings) {
+            if (allergyRepository.findAllergyByNameIsIgnoreCase(s).isPresent()) {
+                allergyList.add(allergyRepository.findAllergyByNameIsIgnoreCase(s).get());
+            }
+        }
+
+        ArrayList<Topping> ret = new ArrayList<>();
+        for (Topping t : getAllToppings()) {
+            boolean add = true;
+            for (Allergy a : allergyList) {
+                if (t.containsAllergy(a).isEmpty()) {
+                    add = false;
+                }
+            }
+            if (add) {
+                ret.add(t);
+            }
+        }
+        return ret;
     }
 }
 

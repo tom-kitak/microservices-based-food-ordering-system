@@ -48,9 +48,18 @@ public class MenuController {
      * @return the topping with the specific id.
      */
     @PostMapping("getToppingByID/{itemId}")
-    public ResponseEntity<Topping> getItem(@PathVariable Long itemId) throws ResponseStatusException {
+    public ResponseEntity<Optional<Topping>> getToppingById(@PathVariable Long itemId) throws ResponseStatusException {
         try {
             return ResponseEntity.ok(menuService.getToppingById(itemId));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("getPizzaByID/{itemId}")
+    public ResponseEntity<Optional<Pizza>> getPizzaById(@PathVariable Long itemId) throws ResponseStatusException {
+        try {
+            return ResponseEntity.ok(menuService.getPizzaById(itemId));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -110,7 +119,6 @@ public class MenuController {
         }
     }
 
-
     /**
      * adds a topping to the repository.
      *
@@ -152,8 +160,7 @@ public class MenuController {
 
     @PostMapping("getPrice")
     public ResponseEntity<BigDecimal> getPrice(@RequestBody Long id, @RequestBody List<Long> Toppings) {
-        //TODO
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity.ok(this.menuService.getPrice(id, Toppings));
     }
 
     @PostMapping("isValid")
@@ -168,16 +175,35 @@ public class MenuController {
     @PostMapping("containsAllergen")
     public ResponseEntity<Optional<String>> containsAllergen(@RequestBody List<Long> ids, @RequestBody List<Long> toppingIds, @RequestBody Long memberId) {
         try {
-            return ResponseEntity.ok(Optional.of("3"));
+            throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PostMapping("filteredByAllergens")
-    public ResponseEntity<List<Pizza>> filterByAllergens(@RequestBody List<String> allergens) {
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    /**
+     * returns a list of pizzas without given allergens.
+     *
+     * @param allergens to filter out.
+     * @return list of pizzas.
+     */
+    @PostMapping("filteredPizzasByAllergens")
+    public ResponseEntity<List<Pizza>> filterPizzasByAllergens(@RequestBody List<String> allergens) {
+        return ResponseEntity.ok(this.menuService.filterPizzasByAllergens(allergens));
     }
+
+    /**
+     * returns a list of toppings without given allergens.
+     *
+     * @param allergens to filter out.
+     * @return list of toppings.
+     */
+    @PostMapping("filteredToppingsByAllergens")
+    public ResponseEntity<List<Topping>> filterToppingsByAllergens(@RequestBody List<String> allergens) {
+        return ResponseEntity.ok(this.menuService.filterToppingsByAllergens(allergens));
+    }
+
+
 }
 
 
