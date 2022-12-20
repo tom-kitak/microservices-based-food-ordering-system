@@ -2,7 +2,9 @@ package nl.tudelft.sem.group06b.menu.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -67,6 +69,34 @@ public class Pizza implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * checks if two pizzas and their toppings have the same ids.
+     *
+     * @param other pizza to check
+     * @return true if they have the same ids/false if they don't
+     */
+    public boolean hasSameIds(Object other) {
+        if (!(other instanceof Pizza)) {
+            return false;
+        }
+
+        Pizza that = (Pizza) other;
+        HashMap<Long, Topping> toppingHashMap = new HashMap<>();
+        for (Topping t : this.getToppings()) {
+            toppingHashMap.put(t.getId(), t);
+        }
+        Set<Long> toppingIds = toppingHashMap.keySet();
+        for (Topping t : that.getToppings()) {
+            if (!toppingIds.contains(t.getId())) {
+                return false;
+            }
+            if (!t.hasSameIds(toppingHashMap.get(t.getId()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
