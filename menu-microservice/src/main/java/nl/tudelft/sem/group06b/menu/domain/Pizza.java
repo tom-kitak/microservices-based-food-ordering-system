@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -62,13 +63,13 @@ public class Pizza implements Serializable {
      * @param a the allergen to test against.
      * @return true if contains allergy, false if it doesn't.
      */
-    public boolean containsAllergen(Allergy a) {
+    public Optional<String> containsAllergen(Allergy a) {
         for (Topping t : this.toppings) {
-            if (t.containsAllergy(a)) {
-                return true;
+            if (t.containsAllergy(a).isPresent()) {
+                return Optional.of(t.containsAllergy(a).get() + ", " + this.getId());
             }
         }
-        return false;
+        return Optional.empty();
     }
 
     /**

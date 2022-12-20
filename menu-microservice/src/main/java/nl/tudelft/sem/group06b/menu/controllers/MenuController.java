@@ -2,6 +2,8 @@ package nl.tudelft.sem.group06b.menu.controllers;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
 import nl.tudelft.sem.group06b.menu.domain.Allergy;
@@ -146,6 +148,35 @@ public class MenuController {
     public ResponseEntity<Topping> topping() {
         Allergy a = new Allergy(42L, "Gluten");
         return ResponseEntity.ok(new Topping(42L, "Pepperoni", List.of(a), new BigDecimal("24.99")));
+    }
+
+    @PostMapping("getPrice")
+    public ResponseEntity<BigDecimal> getPrice(@RequestBody Long id, @RequestBody List<Long> Toppings) {
+        //TODO
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @PostMapping("isValid")
+    public ResponseEntity<Boolean> isValid(@RequestBody List<Long> ids, @RequestBody List<Long> toppingIds) {
+        try {
+            return ResponseEntity.ok(this.menuService.isValidPizzaList(ids, toppingIds));
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
+    }
+
+    @PostMapping("containsAllergen")
+    public ResponseEntity<Optional<String>> containsAllergen(@RequestBody List<Long> ids, @RequestBody List<Long> toppingIds, @RequestBody Long memberId) {
+        try {
+            return ResponseEntity.ok(Optional.of("3"));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("filteredByAllergens")
+    public ResponseEntity<List<Pizza>> filterByAllergens(@RequestBody List<String> allergens) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 }
 

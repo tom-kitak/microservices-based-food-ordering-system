@@ -3,6 +3,7 @@ package nl.tudelft.sem.group06b.menu.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.Entity;
@@ -59,13 +60,13 @@ public class Topping implements Serializable {
      * @param a the allergen to test against.
      * @return true if it does contain the allergen. False if it doesn't.
      */
-    public boolean containsAllergy(Allergy a) {
+    public Optional<String> containsAllergy(Allergy a) {
         for (Allergy allergy : this.getAllergies()) {
             if (a.getId().equals(allergy.getId())) {
-                return true;
+                return Optional.of(a.getName() + ", " + this.getName());
             }
         }
-        return false;
+        return Optional.empty();
     }
 
     /**

@@ -1,8 +1,7 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -63,7 +62,7 @@ public class MenuService {
         for (Pizza p : getAllPizzas()) {
             boolean add = true;
             for (Allergy a : allergyList) {
-                if (p.containsAllergen(a)) {
+                if (p.containsAllergen(a).isPresent()) {
                     add = false;
                 }
             }
@@ -229,6 +228,40 @@ public class MenuService {
         } catch (Exception e) {
             throw new IllegalArgumentException();
         }
+    }
+
+    public Optional<String> checkForAllergies(List<Long> pizzaList, List<Long> toppingList, List<String> strings) {
+        String ret = "";
+        Set<String> s = new HashSet<>();
+        s.addAll(strings);
+        for (Long l : pizzaList) {
+            try {
+                for (Topping t : this.getPizzaById(l).getToppings()) {
+                    for (Allergy a : t.getAllergies()) {
+                        if (s.contains(a.getName().toLowerCase())){
+                            ret += a.getName() + ", " + t.getName() + ", " + this.getPizzaById(l).getName() + "; ";
+                        }
+                    }
+                }
+            } catch (Exception e){
+                ret = ret + "";
+            }
+        }
+        for (Long l : toppingList) {
+            try{
+                for (Allergy a : this.getToppingById(l).getAllergies()) {
+                    if (s.contains(a.getName().toLowerCase())) {
+                        ret += a.getName() + ", " + this.getToppingById(l).getName() + "; ";
+                    }
+                }
+            } catch (Exception e) {
+                ret = ret + "";
+            }
+        }
+        if (ret.equals("")) {
+            return Optional.empty();
+        }
+        return Optional.of(ret);
     }
 }
 
