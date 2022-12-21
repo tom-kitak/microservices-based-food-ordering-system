@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.order.domain;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -49,6 +50,10 @@ public class Order {
     @Column(name = "location")
     private String location;
 
+    @Column(name = "couponApplied")
+    @ElementCollection
+    private String couponApplied;
+
     /**
      * Instantiates a new Order.
      *
@@ -61,8 +66,8 @@ public class Order {
      * @param storeId ID of the store of the order
      * @param location location of the store
      */
-    public Order(String memberId, List<Pizza> pizzas, String selectedTime,
-                 Status status, List<String> couponsIds, BigDecimal price, Long storeId, String location) {
+    public Order(String memberId, List<Pizza> pizzas, String selectedTime, Status status,
+                 List<String> couponsIds, BigDecimal price, Long storeId, String location, String couponApplied) {
         this.memberId = memberId;
         this.pizzas = pizzas;
         this.selectedTime = selectedTime;
@@ -71,6 +76,58 @@ public class Order {
         this.price = price;
         this.storeId = storeId;
         this.location = location;
+    }
+
+    /**
+     * Calculates the total price of the pizzas currently in the Order.
+     */
+    public void calculateTotalPrice() {
+        BigDecimal priceSum = new BigDecimal(0).setScale(2, RoundingMode.HALF_DOWN);
+        for (Pizza pizza : pizzas) {
+            priceSum = priceSum.add(pizza.getPrice());
+        }
+        this.price = priceSum;
+    }
+
+    /**
+     * Formats order details into an email.
+     *
+     * @return formatted email
+     */
+    public String formatEmail() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Order with an ID of " + this.id + " has been placed by " + this.memberId);
+        sb.append(", to be collected at " + this.selectedTime + "\n");
+        sb.append("Order contains the following pizzas:\n");
+        sb.append(pizzas.toString() + "\n");
+        if (this.couponsIds != null && !this.couponsIds.isEmpty()) {
+            sb.append("No coupon was applied");
+        } else {
+            sb.append("Following coupon was applied: " + couponApplied);
+        }
+        sb.append("Final price of the order is " + this.price);
+        return sb.toString();
+    }
+
+    /**
+     * Formats the receipt with Order details.
+     *
+     * @return formatted receipt
+     */
+    public String formatReceipt() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Order ID: " + this.id + "\n");
+        sb.append("Date: " + this.selectedTime + "\n");
+        sb.append("Location: " + this.location + "\n");
+        sb.append("Pizzas: " + this.pizzas.toString() + "\n");
+        sb.append("Final price: " + this.price);
+        if (this.couponApplied == null) {
+            sb.append("No coupon was applied");
+        } else {
+            sb.append("Following coupon was applied: " + this.couponApplied);
+        }
+
+        return sb.toString();
     }
 
     public Long getId() {
@@ -139,6 +196,14 @@ public class Order {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCouponApplied() {
+        return couponApplied;
+    }
+
+    public void setCouponApplied(String couponApplied) {
+        this.couponApplied = couponApplied;
     }
 
     @Override

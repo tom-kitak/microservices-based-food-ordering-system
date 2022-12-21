@@ -151,7 +151,8 @@ public class OrderController {
     public ResponseEntity<String> placeOrder(@RequestBody Order order) {
         try {
             Long orderId = order.getId();
-            String response = orderProcessor.placeOrder(orderId);
+            String token = authManager.getToken();
+            String response = orderProcessor.placeOrder(orderId, token);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {

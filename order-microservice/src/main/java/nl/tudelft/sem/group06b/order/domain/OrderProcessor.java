@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.order.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
+import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +35,7 @@ public class OrderProcessor {
     private final transient String noActiveOrderMessage = "No active order with this ID";
     private final transient int deadlineOffset = 30;
     private final transient String storeUrl = "http://localhost:8084/api/stores";
+    private final transient String storeEmailUrl = "http://localhost:8084/api/email";
     private final transient String couponUrl = "http://localhost:8083/api/coupons";
     private final transient String menuUrl = "http://localhost:8086/api/menu";
 
@@ -243,27 +246,52 @@ public class OrderProcessor {
     }
 
     /**
-     * Places an order.
+     * Place the order.
      *
-     * @param orderId id of the order
-     * @return message of outcome
+     * @param orderId ID of the order to place
+     * @param token authentication token
+     * @return receipt of the order
+     * @throws Exception when there are no Pizzas in the order
      */
-    public String placeOrder(Long orderId) throws Exception {
+    public String placeOrder(Long orderId, String token) throws Exception {
         if (orderId == null || !activeOrders.contains(orderId)) {
             throw new Exception(noActiveOrderMessage);
         }
 
-        // TODO
-        // Query Menu for the prices
-        // Query Coupon for the discount
-        // Send the price
-
         Order order = orderRepository.getOne(orderId);
+
+        // query Menu for the prices
+        if (order.getPizzas() == null || !order.getPizzas().isEmpty()) {
+            throw new Exception("There are no valid pizzas in the order");
+        }
+        for (Pizza pizza : order.getPizzas()) {
+            pizza.setPrice(getPizzaPriceFromMenu(pizza, token));
+        }
+
+        // query Coupon for the discount and coupon used
+        if (order.getCouponsIds() != null && !order.getCouponsIds().isEmpty()) {
+            ApplyCouponsToOrderModel applyCouponsToResponse = applyCouponsToOrder(order.getPizzas(),
+                    order.getCouponsIds(), token);
+            if (applyCouponsToResponse.getCoupons() == null || !applyCouponsToResponse.getCoupons().isEmpty()) {
+                order.setCouponApplied(null);
+            } else {
+                order.setCouponApplied(applyCouponsToResponse.getCoupons().get(0));
+            }
+            order.setPizzas(applyCouponsToResponse.getPizzas());
+        }
+
+        order.calculateTotalPrice();
         order.setStatus(Status.ORDER_PLACED);
         orderRepository.save(order);
         activeOrders.remove(orderId);
 
-        return "Order placed successfully, the price is: XXX";
+        // notify the store
+        sendEmailToStore(order.getStoreId(), order.formatEmail(), token);
+
+        // send receipt
+        String receipt = order.formatReceipt();
+
+        return receipt;
     }
 
     /**
@@ -381,6 +409,55 @@ public class OrderProcessor {
         }
 
         return response.getBody();
+    }
+
+    private BigDecimal getPizzaPriceFromMenu(Pizza pizza, String token) {
+        HttpHeaders headers = makeHeader(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", pizza.getPizzaId());
+        map.put("toppingIds", pizza.getToppings());
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<BigDecimal> response = restTemplate.postForEntity(couponUrl + "", entity, BigDecimal.class);
+
+        return response.getBody();
+    }
+
+    private ApplyCouponsToOrderModel applyCouponsToOrder(List<Pizza> pizzas, List<String> coupons, String token) {
+        HttpHeaders headers = makeHeader(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("pizzas", pizzas);
+        map.put("coupons", coupons);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<ApplyCouponsToOrderModel> response = restTemplate.postForEntity(menuUrl + "/calculatePrice",
+                entity, ApplyCouponsToOrderModel.class);
+
+        return response.getBody();
+    }
+
+    private void sendEmailToStore(Long storeId, String email, String token) {
+        HttpHeaders headers = makeHeader(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("storeId", storeId);
+        map.put("email", email);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(storeEmailUrl + "/sendEmail", entity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            System.out.println(response.getBody());
+        }
+        System.out.println("Problem with sending an email");
     }
 
     /**
