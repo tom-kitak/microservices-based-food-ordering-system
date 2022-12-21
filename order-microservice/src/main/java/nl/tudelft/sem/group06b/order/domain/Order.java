@@ -1,6 +1,5 @@
 package nl.tudelft.sem.group06b.order.domain;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -27,9 +26,9 @@ public class Order {
     @Column(name = "memberId")
     private String memberId;
 
-    @Column(name = "pizzasIds")
+    @Column(name = "pizzas")
     @ElementCollection
-    private List<Long> pizzasIds;
+    private List<Pizza> pizzas;
 
     @Column(name = "selectedTime", nullable = false)
     private String selectedTime;
@@ -54,7 +53,7 @@ public class Order {
      * Instantiates a new Order.
      *
      * @param memberId ID of the member placing the order
-     * @param pizzasIds IDs of pizzas in the order
+     * @param pizzas pizzas of the order
      * @param selectedTime selected time of the order
      * @param status current status of the order
      * @param couponsIds IDs of the coupons of the order
@@ -62,10 +61,10 @@ public class Order {
      * @param storeId ID of the store of the order
      * @param location location of the store
      */
-    public Order(String memberId, List<Long> pizzasIds, String selectedTime,
+    public Order(String memberId, List<Pizza> pizzas, String selectedTime,
                  Status status, List<String> couponsIds, BigDecimal price, Long storeId, String location) {
         this.memberId = memberId;
-        this.pizzasIds = pizzasIds;
+        this.pizzas = pizzas;
         this.selectedTime = selectedTime;
         this.status = status;
         this.couponsIds = couponsIds;
@@ -86,12 +85,12 @@ public class Order {
         this.memberId = memberId;
     }
 
-    public List<Long> getPizzasIds() {
-        return pizzasIds;
+    public List<Pizza> getPizzas() {
+        return pizzas;
     }
 
-    public void setPizzasIds(List<Long> pizzasIds) {
-        this.pizzasIds = pizzasIds;
+    public void setPizzas(List<Pizza> pizzas) {
+        this.pizzas = pizzas;
     }
 
     public String getSelectedTime() {

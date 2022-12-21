@@ -5,6 +5,7 @@ import java.util.Locale;
 import nl.tudelft.sem.group06b.order.authentication.AuthManager;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.OrderProcessor;
+import nl.tudelft.sem.group06b.order.domain.Pizza;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,9 +109,9 @@ public class OrderController {
 
         try {
             Long orderId = order.getId();
-            List<Long> pizzasIds = order.getPizzasIds();
-            String response = orderProcessor.addPizzas(orderId, pizzasIds);
-
+            List<Pizza> pizzas = order.getPizzas();
+            //String response = orderProcessor.addPizzas(orderId, pizzas);
+            String response = "";
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

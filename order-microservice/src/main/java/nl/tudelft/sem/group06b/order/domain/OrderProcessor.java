@@ -154,7 +154,7 @@ public class OrderProcessor {
         // Send Notification if any of the pizzas contain allergen
 
         Order order = orderRepository.getOne(orderId);
-        order.getPizzasIds().addAll(pizzasIds);
+        //order.getPizzasIds().addAll(pizzasIds);
         orderRepository.save(order);
         return "Pizzas successfully added";
     }
