@@ -1,11 +1,14 @@
 package nl.tudelft.sem.group06b.coupons.domain;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import nl.tudelft.sem.group06b.coupons.model.ApplyCouponsRequestModel;
+import nl.tudelft.sem.group06b.coupons.model.Pizza;
 import nl.tudelft.sem.group06b.coupons.repository.CouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,44 +81,67 @@ public class CouponsService {
     }
 
     /**
-     * Calculates the minimum price of the basket by picking the optimal coupon.
+     * Applies the coupons to the pizzas, chooses the optimal one to obtain the lowest price.
      *
-     * @param prices  the prices of the items in the basket
-     * @param coupons the coupons added to the order
-     * @return the minimum price of the basket and the coupon used as a list of string
+     * @param pizzasAndCoupons the request containing the pizzas and the coupons
      */
-    public List<String> calculatePrice(List<Double> prices, List<String> coupons) {
-        if (!prices.isEmpty()) {
-            List<Coupon> couponsList = couponRepository.findAllById(coupons);
-            double price = prices.stream().mapToDouble(Double::doubleValue).sum();
-
-            double discountPrice = price - price * couponsList.stream()
-                    .filter(coupon -> coupon.getType() == CouponType.DISCOUNT)
-                    .mapToDouble(Coupon::getDiscount)
-                    .max().orElse(0.0);
-            String discountCode = couponsList.stream()
-                    .filter(coupon -> coupon.getType() == CouponType.DISCOUNT)
-                    .max(Comparator.comparingDouble(Coupon::getDiscount)).map(Coupon::getCode).orElse("");
-
-            double oneOffPrice = price - prices.stream().max(Double::compareTo).orElse(0.0);
-            String oneOffCode = couponsList.stream()
-                    .filter(coupon -> coupon.getType() == CouponType.ONE_OFF)
-                    .map(Coupon::getCode).findFirst().orElse("");
-
-            if (discountCode.isBlank() && oneOffCode.isBlank()) {
-                return List.of(String.valueOf(price), "");
-            } else if (discountCode.isBlank()) {
-                return List.of(String.valueOf(oneOffPrice), oneOffCode);
-            } else if (oneOffCode.isBlank()) {
-                return List.of(String.valueOf(oneOffPrice), oneOffCode);
-            } else {
-                return List.of(
-                        String.valueOf(Math.min(discountPrice, oneOffPrice)),
-                        discountPrice < oneOffPrice ? discountCode : oneOffCode
-                );
+    public void calculatePrice(ApplyCouponsRequestModel pizzasAndCoupons) {
+        List<Pizza> pizzas = pizzasAndCoupons.getPizzas();
+        if (!pizzas.isEmpty()) {
+            List<Coupon> couponsList = couponRepository.findAllById(pizzasAndCoupons.getCoupons());
+            if (couponsList.isEmpty()) {
+                return;
             }
+
+            Coupon discountCoupon = couponsList.stream()
+                    .filter(coupon -> coupon.getType() == CouponType.DISCOUNT)
+                    .max(Comparator.comparing(Coupon::getDiscount))
+                    .orElse(null);
+            Coupon oneOffCoupon = couponsList.stream()
+                    .filter(coupon -> coupon.getType() == CouponType.ONE_OFF)
+                    .findFirst()
+                    .orElse(null);
+
+            BigDecimal totalPrice = pizzas.stream()
+                    .map(Pizza::getPrice)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal bigPrice = pizzas.stream()
+                    .map(Pizza::getPrice)
+                    .max(BigDecimal::compareTo)
+                    .orElse(BigDecimal.ZERO);
+            // Find the index of the pizza with the highest price
+            int index = pizzas.indexOf(pizzas.stream()
+                    .filter(pizza -> pizza.getPrice().equals(bigPrice))
+                    .findFirst()
+                    .orElse(null));
+
+            if (discountCoupon != null && oneOffCoupon != null) {
+                if (totalPrice.multiply(BigDecimal.valueOf(discountCoupon.getDiscount()))
+                        .compareTo(totalPrice.subtract(bigPrice)) < 0) {
+                    pizzasAndCoupons.setCoupons(List.of(discountCoupon.getCode()));
+                    pizzasAndCoupons.getPizzas()
+                            .forEach(
+                                    pizza -> pizza.setPrice(
+                                            pizza.getPrice().multiply(BigDecimal.valueOf(discountCoupon.getDiscount()))
+                                    ));
+                } else {
+                    pizzasAndCoupons.setCoupons(List.of(oneOffCoupon.getCode()));
+                    pizzas.get(index).setPrice(BigDecimal.ZERO);
+                }
+            } else if (discountCoupon != null) {
+                pizzasAndCoupons.setCoupons(List.of(discountCoupon.getCode()));
+                pizzasAndCoupons.getPizzas()
+                        .forEach(
+                                pizza -> pizza.setPrice(
+                                        pizza.getPrice().multiply(BigDecimal.valueOf(discountCoupon.getDiscount()))
+                                ));
+            } else if (oneOffCoupon != null) {
+                pizzasAndCoupons.setCoupons(List.of(oneOffCoupon.getCode()));
+                pizzas.get(index).setPrice(BigDecimal.ZERO);
+            }
+            return;
         }
 
-        return List.of();
+        throw new IllegalArgumentException("The basket is empty");
     }
 }

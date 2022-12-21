@@ -2,9 +2,11 @@ package nl.tudelft.sem.group06b.coupons.integration;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.HashSet;
@@ -13,19 +15,19 @@ import nl.tudelft.sem.group06b.coupons.authentication.AuthManager;
 import nl.tudelft.sem.group06b.coupons.authentication.JwtTokenVerifier;
 import nl.tudelft.sem.group06b.coupons.domain.Coupon;
 import nl.tudelft.sem.group06b.coupons.domain.CouponType;
+import nl.tudelft.sem.group06b.coupons.model.ApplyCouponsRequestModel;
+import nl.tudelft.sem.group06b.coupons.model.Pizza;
 import nl.tudelft.sem.group06b.coupons.repository.CouponRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 
 @SpringBootTest
@@ -62,20 +64,28 @@ public class TestCouponsController {
                         Date.from(Instant.now().plusSeconds(30)), new HashSet<>())
         ));
 
-        HttpEntity<String> request = new HttpEntity<>("{\"coupons\": [\"1\", \"2\", \"3\"]}");
+        ApplyCouponsRequestModel applyCouponsRequestModel = new ApplyCouponsRequestModel();
+        applyCouponsRequestModel.setCoupons(List.of("1", "2", "3"));
+        applyCouponsRequestModel.setPizzas(List.of(
+                new Pizza(1, List.of(1L), new BigDecimal("10.00")),
+                new Pizza(2, List.of(2L), new BigDecimal("100.00")),
+                new Pizza(3, List.of(), new BigDecimal("30.00"))
+        ));
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        ResultActions result = mockMvc.perform(get("/api/coupons/calculatePrice?prices=100,20,10&coupons=1,2,3")
+        ResultActions result = mockMvc.perform(post("/api/coupons/calculatePrice")
+                .content(objectMapper.writeValueAsString(applyCouponsRequestModel))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken"));
+                .header("Authorization", "Bearer token"));
 
         result.andExpect(status().isOk());
 
         //Get response as List<String>
-        List<String> response = List.of(result.andReturn().getResponse().getContentAsString().replace("[", "")
-                .replace("]", "").replace("\"", "").split(","));
+        ApplyCouponsRequestModel response = objectMapper
+                .readValue(result.andReturn().getResponse().getContentAsString(), ApplyCouponsRequestModel.class);
 
         //Check if the response is correct
-        assert Double.valueOf(response.get(0)).equals(30D);
-        assert response.get(1).equals("2");
+        assert response.getPizzas().get(1).getPrice().equals(BigDecimal.ZERO);
+        assert response.getCoupons().get(0).equals("2");
     }
 }

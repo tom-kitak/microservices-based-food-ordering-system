@@ -2,10 +2,10 @@ package nl.tudelft.sem.group06b.coupons.controllers;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.coupons.authentication.AuthManager;
 import nl.tudelft.sem.group06b.coupons.domain.CouponsService;
+import nl.tudelft.sem.group06b.coupons.model.ApplyCouponsRequestModel;
 import nl.tudelft.sem.group06b.coupons.model.NewCouponRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 
 /**
@@ -73,19 +72,15 @@ public class CouponsController {
      *
      * @return a list of the best price and the coupon applied
      */
-    @GetMapping("/calculatePrice")
-    public ResponseEntity<List<String>> calculatePrice(
-            @RequestParam List<Double> prices,
-            @RequestParam List<String> coupons
-    ) {
-        List<String> result = couponsService.calculatePrice(prices, coupons);
-        return result.isEmpty() ? ResponseEntity.status(HttpStatus.BAD_REQUEST).build() : ResponseEntity.ok(result);
-    }
-
-    @PostMapping("/useCoupon/{code}")
-    public ResponseEntity<Boolean> useCoupon(@PathVariable String code) {
-        boolean used = couponsService.useCoupon(code, authManager.getMemberId());
-        return used ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    @PostMapping("/calculatePrice")
+    public ResponseEntity<ApplyCouponsRequestModel> calculatePrice(@RequestBody ApplyCouponsRequestModel couponsAndPizzas) {
+        try {
+            couponsService.calculatePrice(couponsAndPizzas);
+            couponsService.useCoupon(couponsAndPizzas.getCoupons().get(0), authManager.getMemberId());
+            return ResponseEntity.ok(couponsAndPizzas);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
 }
