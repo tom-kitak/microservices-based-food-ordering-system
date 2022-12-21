@@ -1,5 +1,8 @@
 package nl.tudelft.sem.group06b.order.service.processor;
 
+import java.util.Collection;
+import nl.tudelft.sem.group06b.order.domain.Order;
+
 public interface OrderProcessor {
 
     void startOrder();
@@ -12,7 +15,9 @@ public interface OrderProcessor {
 
     void cancelOrder();
 
-    void fetchOrder();
+    Order fetchOrder();
 
-    void fetchAllOrders();
+    Collection<Order> fetchAllStoreOrders();
+
+    Collection<Order> fetchAllOrders();
 }

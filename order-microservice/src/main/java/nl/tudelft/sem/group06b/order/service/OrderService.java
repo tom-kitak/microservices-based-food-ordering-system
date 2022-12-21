@@ -1,5 +1,8 @@
 package nl.tudelft.sem.group06b.order.service;
 
+import java.util.Collection;
+import nl.tudelft.sem.group06b.order.domain.Order;
+
 public interface OrderService {
 
     void startOrder();
@@ -12,9 +15,11 @@ public interface OrderService {
 
     void cancelOrder();
 
-    void fetchOrder();
+    Order fetchOrder();
 
-    void fetchAllOrders();
+    Collection<Order> fetchAllStoreOrders();
+
+    Collection<Order> fetchAllOrders();
 
     void addPizza();
 

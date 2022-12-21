@@ -1,6 +1,11 @@
 package nl.tudelft.sem.group06b.order.service.processor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import nl.tudelft.sem.group06b.order.domain.Order;
+
 public class OrderProcessorImpl implements OrderProcessor {
+
     @Override
     public void startOrder() {
 
@@ -27,12 +32,17 @@ public class OrderProcessorImpl implements OrderProcessor {
     }
 
     @Override
-    public void fetchOrder() {
-
+    public Order fetchOrder() {
+        return null;
     }
 
     @Override
-    public void fetchAllOrders() {
+    public Collection<Order> fetchAllStoreOrders() {
+        return new ArrayList<>();
+    }
 
+    @Override
+    public Collection<Order> fetchAllOrders() {
+        return new ArrayList<>();
     }
 }

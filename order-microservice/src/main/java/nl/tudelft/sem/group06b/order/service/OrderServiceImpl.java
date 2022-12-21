@@ -1,6 +1,8 @@
 package nl.tudelft.sem.group06b.order.service;
 
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.service.coupon.OrderCoupon;
 import nl.tudelft.sem.group06b.order.service.editing.OrderEditor;
 import nl.tudelft.sem.group06b.order.service.processor.OrderProcessor;
@@ -41,13 +43,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void fetchOrder() {
-        orderProcessor.fetchOrder();
+    public Order fetchOrder() {
+        return orderProcessor.fetchOrder();
     }
 
     @Override
-    public void fetchAllOrders() {
-        orderProcessor.fetchAllOrders();
+    public Collection<Order> fetchAllStoreOrders() {
+        return orderProcessor.fetchAllStoreOrders();
+    }
+
+    @Override
+    public Collection<Order> fetchAllOrders() {
+        return orderProcessor.fetchAllOrders();
     }
 
     @Override
