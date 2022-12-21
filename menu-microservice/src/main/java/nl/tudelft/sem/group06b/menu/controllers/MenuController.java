@@ -234,12 +234,12 @@ public class MenuController {
     @PostMapping("containsAllergen")
     public ResponseEntity<Optional<String>> containsAllergen(@RequestBody Long id,
                                                              @RequestBody List<Long> toppingIds,
-                                                             @RequestBody Long memberId) {
+                                                             @RequestBody String memberId) {
         try {
             Optional<String> ret;
-            if (this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId.toString())).isPresent()) {
+            if (this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId)).isPresent()) {
                 ret = Optional.of("You might be allergic!: "
-                        + this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId.toString())).get());
+                        + this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId)).get());
             } else {
                 ret = Optional.empty();
             }
