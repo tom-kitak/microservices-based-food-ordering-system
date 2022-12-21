@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,6 +33,7 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @AllArgsConstructor
+@RequestMapping("/api/menu")
 public class MenuController {
 
     private final transient AuthManager authManager;
@@ -213,7 +215,7 @@ public class MenuController {
      * @return encapsulated true if valid/false if not.
      */
     @PostMapping("isValid")
-    public ResponseEntity<Boolean> isValid(@RequestBody List<Long> ids, @RequestBody List<Long> toppingIds) {
+    public ResponseEntity<Boolean> isValid(@RequestBody Long ids, @RequestBody List<Long> toppingIds) {
         try {
             return ResponseEntity.ok(this.menuService.isValidPizzaList(ids, toppingIds));
         } catch (Exception e) {

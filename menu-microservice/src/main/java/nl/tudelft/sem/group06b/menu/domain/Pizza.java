@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -26,7 +27,7 @@ public class Pizza implements Serializable {
      * id for the pizza.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private @Getter Long id;
     /**
      * list of toppings that the pizza has.
