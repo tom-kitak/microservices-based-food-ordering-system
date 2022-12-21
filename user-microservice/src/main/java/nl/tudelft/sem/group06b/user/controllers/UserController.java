@@ -83,6 +83,16 @@ public class UserController {
     }
 
     /**
+     * Gets location by memberId.
+     *
+     * @return the preferred store location found in the database with the given memberId
+     */
+    @GetMapping("/user/{memberId}/getLocation")
+    public ResponseEntity<Location> getLocation(@PathVariable String memberId) throws Exception {
+        return ResponseEntity.ok(userService.getUser(memberId).getPreferredLocation());
+    }
+
+    /**
      * Updates the location of the user's preferred store.
      *
      * @return the location of the new preferred store

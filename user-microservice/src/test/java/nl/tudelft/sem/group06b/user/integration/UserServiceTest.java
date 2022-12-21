@@ -56,6 +56,9 @@ class UserServiceTest {
                 new User("Kevin",
                         List.of(new Allergy("Lactose"), new Allergy("Gluten")),
                         new Location("Library")));
+        assertThrows(Exception.class, () -> {
+            userService.getUser("KevinSh");
+        });
     }
 
     @Test
@@ -65,6 +68,11 @@ class UserServiceTest {
                 List.of(new Allergy("Lactose"),
                         new Allergy("Gluten"),
                         new Allergy("Collagen")));
+        assertThrows(Exception.class, () -> {
+            userService.addAllergy("Kevin",
+                    new Allergy("Collagen"));
+        });
+
     }
 
     @Test
@@ -72,23 +80,38 @@ class UserServiceTest {
         assertEquals(userService.removeAllergy("Kevin", new Allergy("Gluten"))
                         .getAllergies(),
                 List.of(new Allergy("Lactose")));
+        assertThrows(Exception.class, () -> {
+            userService.removeAllergy("Kevin", new Allergy("Tomato"));
+        });
+        assertThrows(Exception.class, () -> {
+            userService.removeAllergy("Kevin12", new Allergy("Tomato"));
+        });
     }
 
     @Test
     void removeAllAllergiesTest() throws Exception {
         assertEquals(userService.removeAllAllergies("Kevin").getAllergies(),
                 List.of());
+        assertThrows(Exception.class, () -> {
+            userService.removeAllAllergies("Kevin12");
+        });
     }
 
     @Test
     void updateLocationTest() throws Exception {
         assertEquals(userService.updateLocation("Kevin", new Location("Drebbelweg")).getPreferredLocation(),
                 new Location("Drebbelweg"));
+        assertThrows(Exception.class, () -> {
+            userService.updateLocation("12", new Location("Drebbelweg"));
+        });
     }
 
     @Test
     void resetLocationTest() throws Exception {
         assertNull(userService.resetLocation("Kevin").getPreferredLocation());
+        assertThrows(Exception.class, () -> {
+            userService.resetLocation("Kevin12");
+        });
     }
 
     @Test

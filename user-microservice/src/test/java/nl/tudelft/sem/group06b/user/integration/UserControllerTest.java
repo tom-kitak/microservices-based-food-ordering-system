@@ -141,6 +141,34 @@ public class UserControllerTest {
     }
 
     @Test
+    public void getLocationTest() throws Exception {
+        when(mockAuthenticationManager.getMemberId()).thenReturn("kevin121");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("kevin121");
+
+        //Firstly register the user
+        mockMvc.perform(post("/register/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        mockMvc.perform(put("/user/kevin121/drebbelweg/updateLocation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        ResultActions result = mockMvc.perform(get("/user/kevin121/getLocation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        String response = result.andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+
+        Assertions.assertEquals(response, "{\"address\":\"drebbelweg\"}");
+
+        // Assert
+        result.andExpect(status().isOk());
+    }
+
+    @Test
     public void updateLocationTest() throws Exception {
         when(mockAuthenticationManager.getMemberId()).thenReturn("kevin124");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);

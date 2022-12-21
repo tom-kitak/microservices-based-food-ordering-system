@@ -37,6 +37,8 @@ public class LocationTest {
         Location location1 = new Location("Drebbelweg");
         Location location2 = new Location("EWI");
         assertEquals(location, location1);
+        assertEquals(location, location);
         assertNotEquals(location, location2);
+        assertNotEquals(location, null);
     }
 }

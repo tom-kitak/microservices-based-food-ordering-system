@@ -36,6 +36,8 @@ public class AllergyTest {
         Allergy allergy1 = new Allergy("Lactose");
         Allergy allergy2 = new Allergy("Gluten");
         assertEquals(allergy, allergy1);
+        assertEquals(allergy, allergy);
         assertNotEquals(allergy, allergy2);
+        assertNotEquals(allergy, null);
     }
 }
