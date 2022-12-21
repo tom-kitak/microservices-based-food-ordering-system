@@ -9,11 +9,14 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import javax.swing.text.StyledEditorKit;
 
 @Service
 public class OrderProcessor {
@@ -23,7 +26,7 @@ public class OrderProcessor {
     @Getter @Setter
     private List<Long> activeOrders;
 
-    private final RestTemplate restTemplate;
+    private final transient RestTemplate restTemplate;
 
     private final transient String valid = "VALID";
     private final transient String invalidOrderIdMessage = "Invalid order ID";
@@ -31,6 +34,7 @@ public class OrderProcessor {
     private final transient int deadlineOffset = 30;
     private final transient String storeUrl = "http://localhost:8084/api/stores";
     private final transient String couponUrl = "http://localhost:8083/api/coupons";
+    private final transient String menuUrl = "http://localhost:8086/api/menu";
 
     /**
      * Instantiates a new OrderProcessor.
@@ -60,7 +64,7 @@ public class OrderProcessor {
      * @param selectedTime selected time of the order
      * @param token authentication token
      * @return confirmation response if the order was successful and details of what went wrong if not successful
-     * @throws Exception
+     * @throws Exception when selectedTime or location is not valid
      */
     public String startOrder(String location, String memberId, String selectedTime, String token) throws Exception {
         if (selectedTime == null) {
@@ -126,13 +130,13 @@ public class OrderProcessor {
     }
 
     /**
-     * Changes the location of the order if the selected order is in ongoing phase
+     * Changes the location of the order if the selected order is in ongoing phase.
      *
      * @param location new location
      * @param orderId ID of the order
      * @param token authentication token
      * @return message of the outcome
-     * @throws Exception
+     * @throws Exception when location is not valid
      */
     public String changeSelectedLocation(String location, Long orderId, String token) throws Exception {
         if (location == null) {
@@ -158,30 +162,46 @@ public class OrderProcessor {
     }
 
     /**
-     * Adds pizzas to an order.
+     * Add pizzas to the order.
      *
-     * @param orderId id of the order
-     * @param pizzas list of pizzas
-     * @return message of outcome
+     * @param memberId ID of the member that placed the order
+     * @param orderId ID of the order
+     * @param pizzas list of pizzas to add
+     * @param token authentication token
+     * @return message of the outcome with appropriate reminders of possible allergens
+     * @throws Exception when pizza is not valid
      */
-    public String addPizzas(Long orderId, List<Pizza> pizzas) throws Exception {
+    public String addPizzas(String memberId, Long orderId, List<Pizza> pizzas, String token) throws Exception {
         if (orderId == null) {
             throw new Exception(invalidOrderIdMessage);
         } else if (!activeOrders.contains(orderId)) {
             throw new Exception(noActiveOrderMessage);
         } else if (pizzas == null) {
             throw new Exception("Please enter valid pizzas");
+        } else if (memberId == null) {
+            throw new Exception("Order does not have a valid member Id");
+        }
+        StringBuilder allergensResponse = new StringBuilder();
+        allergensResponse.append("Pizzas successfully added");
+
+        // Query the Menu to see if pizzas are valid
+        for (Pizza pizza : pizzas) {
+            validatePizza(pizza, token);
         }
 
-        // TODO
-        // Query menu to see if pizzas are valid
-        // Menu will also communicate if the pizzas contain allergens
-        // Send Notification if any of the pizzas contain allergen
+        // Query the Menu to see if pizzas contain an allergen and store the response to inform the user
+        for (Pizza pizza : pizzas) {
+            String responseMessage = containsAllergen(pizza, memberId, token);
+            if (responseMessage != null && !responseMessage.equals("")) {
+                allergensResponse.append("\n" + responseMessage);
+            }
+        }
 
         Order order = orderRepository.getOne(orderId);
         order.getPizzas().addAll(pizzas);
         orderRepository.save(order);
-        return "Pizzas successfully added";
+
+        return allergensResponse.toString();
     }
 
     /**
@@ -202,8 +222,7 @@ public class OrderProcessor {
 
         // Call to Coupon-microservice to see if coupons are valid
         for (String coupon : couponsIds) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", String.format("Bearer %s", token));
+            HttpHeaders headers = makeHeader(token);
             HttpEntity request = new HttpEntity(headers);
             ResponseEntity<Boolean> response = restTemplate.exchange(
                     couponUrl + "/checkAvailability/" + coupon,
@@ -301,8 +320,7 @@ public class OrderProcessor {
     }
 
     private void validateLocation(String location, String token) throws Exception {
-        HttpHeaders headerForValidation = new HttpHeaders();
-        headerForValidation.set("Authorization", String.format("Bearer %s", token));
+        HttpHeaders headerForValidation = makeHeader(token);
         HttpEntity requestValidation = new HttpEntity(headerForValidation);
         ResponseEntity<Boolean> responseValidation = restTemplate.exchange(
                 storeUrl + "/validateLocation/" + location,
@@ -316,8 +334,7 @@ public class OrderProcessor {
     }
 
     private Long getStoreIdFromLocation(String location, String token) throws Exception {
-        HttpHeaders headerForStoreId = new HttpHeaders();
-        headerForStoreId.set("Authorization", String.format("Bearer %s", token));
+        HttpHeaders headerForStoreId = makeHeader(token);
         HttpEntity requestStoreId = new HttpEntity(headerForStoreId);
         ResponseEntity<Long> responseStoreId = restTemplate.exchange(
                 storeUrl + "/getStoreId/" + location,
@@ -330,4 +347,52 @@ public class OrderProcessor {
         }
         return responseStoreId.getBody();
     }
+
+    private void validatePizza(Pizza pizza, String token) throws Exception {
+        HttpHeaders headers = makeHeader(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", pizza.getPizzaId());
+        map.put("toppingIds", pizza.getToppings());
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(menuUrl + "/isValid", entity, Boolean.class);
+
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == false) {
+            throw new Exception("Pizza " + pizza.getPizzaId() + " is not valid");
+        }
+    }
+
+    private String containsAllergen(Pizza pizza, String memberId, String token) {
+        HttpHeaders headers = makeHeader(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", pizza.getPizzaId());
+        map.put("toppingIds", pizza.getToppings());
+        map.put("memberId", memberId);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(menuUrl + "/containsAllergen", entity, String.class);
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return "";
+        }
+
+        return response.getBody();
+    }
+
+    /**
+     * Makes HttpHeaders with the selected token.
+     *
+     * @param token authentication token
+     * @return HttpHeaders with appropriate Authorization set
+     */
+    private HttpHeaders makeHeader(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", String.format("Bearer %s", token));
+        return headers;
+    }
 }
+

@@ -108,11 +108,12 @@ public class OrderController {
      */
     @PostMapping("/addPizzas")
     public ResponseEntity<String> addPizzas(@RequestBody Order order) {
-
         try {
+            String memberId = order.getMemberId();
             Long orderId = order.getId();
             List<Pizza> pizzas = order.getPizzas();
-            String response = orderProcessor.addPizzas(orderId, pizzas);
+            String token = authManager.getToken();
+            String response = orderProcessor.addPizzas(memberId, orderId, pizzas, token);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
