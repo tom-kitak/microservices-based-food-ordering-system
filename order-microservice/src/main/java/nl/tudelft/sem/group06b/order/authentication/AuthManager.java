@@ -26,5 +26,9 @@ public class AuthManager {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                 .toArray()[0].toString().split("=")[1].split("}")[0];
     }
+
+    public String getToken() {
+        return SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
+    }
 }
 

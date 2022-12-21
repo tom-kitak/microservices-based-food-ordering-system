@@ -52,10 +52,16 @@ public class Pizza implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Pizza)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Pizza)) {
+            return false;
+        }
         Pizza pizza = (Pizza) o;
-        return Objects.equals(pizzaId, pizza.pizzaId) && Objects.equals(toppings, pizza.toppings) && Objects.equals(price, pizza.price);
+        return Objects.equals(pizzaId, pizza.pizzaId)
+                && Objects.equals(toppings, pizza.toppings)
+                && Objects.equals(price, pizza.price);
     }
 
     @Override

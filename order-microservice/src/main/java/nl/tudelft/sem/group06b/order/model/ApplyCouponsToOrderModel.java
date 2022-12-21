@@ -1,9 +1,8 @@
 package nl.tudelft.sem.group06b.order.model;
 
+import java.util.List;
 import lombok.Data;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
-
-import java.util.List;
 
 @Data
 public class ApplyCouponsToOrderModel {

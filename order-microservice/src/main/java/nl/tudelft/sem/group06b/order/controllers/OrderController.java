@@ -50,9 +50,9 @@ public class OrderController {
     public ResponseEntity<String> startOrder(@RequestBody Order order) {
         try {
             String selectedTime = order.getSelectedTime();
-            Long storeId = order.getStoreId();
+            String location = order.getLocation();
             String memberId = authManager.getMemberId();
-            String response = orderProcessor.startOrder(storeId, memberId, selectedTime);
+            String response = orderProcessor.startOrder(location, memberId, selectedTime);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -110,8 +110,8 @@ public class OrderController {
         try {
             Long orderId = order.getId();
             List<Pizza> pizzas = order.getPizzas();
-            //String response = orderProcessor.addPizzas(orderId, pizzas);
-            String response = "";
+            String response = orderProcessor.addPizzas(orderId, pizzas);
+
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

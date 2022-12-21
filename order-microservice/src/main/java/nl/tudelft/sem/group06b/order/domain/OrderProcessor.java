@@ -21,6 +21,7 @@ public class OrderProcessor {
     private final transient String invalidOrderIdMessage = "Invalid order ID";
     private final transient String noActiveOrderMessage = "No active order with this ID";
     private final transient int deadlineOffset = 30;
+    private final transient String storeUrl = "http://localhost:8084/api/stores";
 
     /**
      * Instantiates a new OrderProcessor.
@@ -44,15 +45,15 @@ public class OrderProcessor {
     /**
      * Starts an order.
      *
-     * @param storeId id of the store
+     * @param location location of the store
      * @param selectedTime selected time for the order
      * @return message of outcome
      */
-    public String startOrder(Long storeId, String memberId, String selectedTime) throws Exception {
+    public String startOrder(String location, String memberId, String selectedTime) throws Exception {
         if (selectedTime == null) {
             throw new Exception("Please select time");
-        } else if (storeId == null) {
-            throw new Exception("Please select store");
+        } else if (location == null) {
+            throw new Exception("Please select location");
         } else if (memberId == null) {
             throw new Exception("Member ID invalid");
         }
@@ -64,11 +65,14 @@ public class OrderProcessor {
         }
 
         // TODO
+        // 1. location has to be validated from Store
+        // 2. get storedID from Store
         // Authenticate the store exists and send appropriate message if it doesn't
+
 
         Order order = new Order();
         order.setSelectedTime(selectedTime);
-        order.setStoreId(storeId);
+        order.setLocation(location);
         order.setStatus(Status.ORDER_ONGOING);
         order.setMemberId(memberId);
 
@@ -125,6 +129,7 @@ public class OrderProcessor {
         // TODO
         // Authenticate the store exists and send appropriate message if it doesn't
 
+
         Order order = orderRepository.getOne(orderId);
         order.setStoreId(storeId);
         orderRepository.save(order);
@@ -136,15 +141,15 @@ public class OrderProcessor {
      * Adds pizzas to an order.
      *
      * @param orderId id of the order
-     * @param pizzasIds list of pizza id
+     * @param pizzas list of pizzas
      * @return message of outcome
      */
-    public String addPizzas(Long orderId, List<Long> pizzasIds) throws Exception {
+    public String addPizzas(Long orderId, List<Pizza> pizzas) throws Exception {
         if (orderId == null) {
             throw new Exception(invalidOrderIdMessage);
         } else if (!activeOrders.contains(orderId)) {
             throw new Exception(noActiveOrderMessage);
-        } else if (pizzasIds == null) {
+        } else if (pizzas == null) {
             throw new Exception("Please enter valid pizzas");
         }
 
@@ -154,7 +159,7 @@ public class OrderProcessor {
         // Send Notification if any of the pizzas contain allergen
 
         Order order = orderRepository.getOne(orderId);
-        //order.getPizzasIds().addAll(pizzasIds);
+        order.getPizzas().addAll(pizzas);
         orderRepository.save(order);
         return "Pizzas successfully added";
     }
@@ -240,11 +245,12 @@ public class OrderProcessor {
     }
 
     /**
+     * Checks if the time is valid and makes sense.
      *
-     * @param time
-     * @param deadlineOffset
-     * @return
-     * @throws Exception
+     * @param time time to check
+     * @param deadlineOffset integer of how many minutes before the provided time is the deadline
+     * @return String that indicates if the time is valid or not
+     * @throws Exception indication the format of time is not correct
      */
     private String isTimeValid(String time, int deadlineOffset) throws Exception {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");

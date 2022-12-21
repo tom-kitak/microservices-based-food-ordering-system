@@ -71,7 +71,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
                                 memberId,
-                                null, coll // no credentials and no authorities
+                                token, coll // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));
