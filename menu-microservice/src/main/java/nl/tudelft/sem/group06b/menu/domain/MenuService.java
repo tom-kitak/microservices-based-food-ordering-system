@@ -1,8 +1,10 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
 import java.math.BigDecimal;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 /**
@@ -238,7 +240,15 @@ public class MenuService {
         }
     }
 
-    public Optional<String> checkForAllergies(List<Long> pizzaList, List<Long> toppingList, List<String> allergies) {
+    /**
+     * checks a pizza list for allergies.
+     *
+     * @param pizzaId the id for the pizza.
+     * @param toppingList the ids for the toppings.
+     * @param allergies the allergies to check for.
+     * @return formatted string if found/empty if not.
+     */
+    public Optional<String> checkForAllergies(Long pizzaId, List<Long> toppingList, List<String> allergies) {
         String ret = "";
 
         ArrayList<Allergy> allergyList = new ArrayList<>();
@@ -248,25 +258,23 @@ public class MenuService {
             }
         }
 
-        for (Long l : pizzaList) {
-            Optional<Pizza> curr = getPizzaById(l);
-            if (curr.isPresent()) {
-               for (Allergy a : allergyList) {
-                   if (curr.get().containsAllergen(a).isPresent()) {
-                       ret += curr.get().containsAllergen(a).get() + ";";
-                   }
-               }
+        Optional<Pizza> currPizza = getPizzaById(pizzaId);
+        if (currPizza.isPresent()) {
+            for (Allergy a : allergyList) {
+                if (currPizza.get().containsAllergen(a).isPresent()) {
+                    ret += currPizza.get().containsAllergen(a).get() + ";";
+                }
             }
         }
 
-        for(Long l : toppingList) {
+        for (Long l : toppingList) {
             Optional<Topping> curr = getToppingById(l);
             if (curr.isPresent()) {
-               for (Allergy a : allergyList) {
-                   if(curr.get().containsAllergy(a).isPresent()) {
-                       ret += curr.get().containsAllergy(a).get() + ";";
-                   }
-               }
+                for (Allergy a : allergyList) {
+                    if (curr.get().containsAllergy(a).isPresent()) {
+                        ret += curr.get().containsAllergy(a).get() + ";";
+                    }
+                }
             }
         }
 
@@ -276,6 +284,13 @@ public class MenuService {
         return Optional.of(ret);
     }
 
+    /**
+     * gets price of pizza.
+     *
+     * @param id of pizza.
+     * @param toppingIds ids of toppings.
+     * @return price.
+     */
     public BigDecimal getPrice(Long id, List<Long> toppingIds) {
         Optional<Pizza> p = getPizzaById(id);
         if (p.isEmpty()) {
@@ -291,6 +306,12 @@ public class MenuService {
         return ret;
     }
 
+    /**
+     * filters all toppings by allergens.
+     *
+     * @param strings allergies to filter out.
+     * @return the toppings.
+     */
     public List<Topping> filterToppingsByAllergens(List<String> strings) {
         ArrayList<Allergy> allergyList = new ArrayList<>();
         for (String s : strings) {
@@ -303,7 +324,7 @@ public class MenuService {
         for (Topping t : getAllToppings()) {
             boolean add = true;
             for (Allergy a : allergyList) {
-                if (t.containsAllergy(a).isEmpty()) {
+                if (t.containsAllergy(a).isPresent()) {
                     add = false;
                 }
             }

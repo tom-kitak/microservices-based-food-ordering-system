@@ -61,7 +61,7 @@ public class Pizza implements Serializable {
      * checks if the pizza contains a given allergen.
      *
      * @param a the allergen to test against.
-     * @return true if contains allergy, false if it doesn't.
+     * @return Optional formatted string/empty if no allergy.
      */
     public Optional<String> containsAllergen(Allergy a) {
         for (Topping t : this.toppings) {
@@ -75,14 +75,11 @@ public class Pizza implements Serializable {
     /**
      * checks if two pizzas and their toppings have the same ids.
      *
-     * @param other pizza to check
+     * @param that pizza to check
      * @return true if they have the same ids/false if they don't
      */
-    public boolean hasSameIds(Object other) {
-        if (!(other instanceof Pizza)) {
-            return false;
-        }
-        Pizza that = (Pizza) other;
+    public boolean hasSameIds(Pizza that) {
+
         HashMap<Long, Topping> toppingHashMap = new HashMap<>();
         if (!this.getId().equals(that.getId())) {
             return false;

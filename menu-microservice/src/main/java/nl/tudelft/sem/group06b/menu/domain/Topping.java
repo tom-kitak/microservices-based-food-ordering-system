@@ -61,25 +61,27 @@ public class Topping implements Serializable {
      * @return true if it does contain the allergen. False if it doesn't.
      */
     public Optional<String> containsAllergy(Allergy a) {
+        String ret = "";
         for (Allergy allergy : this.getAllergies()) {
             if (a.getId().equals(allergy.getId())) {
-                return Optional.of(a.getName() + ", " + this.getName());
+                ret = ret + a.getName() + ", ";
             }
         }
-        return Optional.empty();
+        if (ret.equals("")) {
+            return Optional.empty();
+        }
+        ret = ret + this.getName();
+        return Optional.of(ret);
     }
 
     /**
      * checks if two Toppings have the same ids.
      *
-     * @param obj the topping to check.
+     * @param that the topping to check.
      * @return true if they have the same id/false if they don't.
      */
-    public boolean hasSameIds(Object obj) {
-        if (!(obj instanceof Topping)) {
-            return false;
-        }
-        Topping that = (Topping) obj;
+    public boolean hasSameIds(Topping that) {
+
         if (!this.getId().equals(that.getId())) {
             return false;
         }

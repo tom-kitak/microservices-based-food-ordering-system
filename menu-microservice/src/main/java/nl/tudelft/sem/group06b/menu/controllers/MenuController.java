@@ -3,7 +3,6 @@ package nl.tudelft.sem.group06b.menu.controllers;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
 import nl.tudelft.sem.group06b.menu.domain.Allergy;
@@ -56,6 +55,13 @@ public class MenuController {
         }
     }
 
+    /**
+     * gets a pizza with a specific id.
+     *
+     * @param itemId the id of the item.
+     * @return Optional of the pizza.
+     * @throws ResponseStatusException if itemId is null or there is an exception.
+     */
     @PostMapping("getPizzaByID/{itemId}")
     public ResponseEntity<Optional<Pizza>> getPizzaById(@PathVariable Long itemId) throws ResponseStatusException {
         try {
@@ -159,10 +165,17 @@ public class MenuController {
     }
 
     @PostMapping("getPrice")
-    public ResponseEntity<BigDecimal> getPrice(@RequestBody Long id, @RequestBody List<Long> Toppings) {
-        return ResponseEntity.ok(this.menuService.getPrice(id, Toppings));
+    public ResponseEntity<BigDecimal> getPrice(@RequestBody Long id, @RequestBody List<Long> toppings) {
+        return ResponseEntity.ok(this.menuService.getPrice(id, toppings));
     }
 
+    /**
+     * checks if a list of pizzas is valid.
+     *
+     * @param ids the ids of the pizzas.
+     * @param toppingIds the ids of the toppings.
+     * @return encapsulated true if valid/false if not.
+     */
     @PostMapping("isValid")
     public ResponseEntity<Boolean> isValid(@RequestBody List<Long> ids, @RequestBody List<Long> toppingIds) {
         try {
@@ -172,9 +185,21 @@ public class MenuController {
         }
     }
 
+    /**
+     * checks if a pizzas contain allergens.
+     *
+     * @param ids the ids ot the pizzas.
+     * @param toppingIds the ids of the toppings.
+     * @param memberId the id of the member with allergies.
+     * @return optional string with the conflicts.
+     */
     @PostMapping("containsAllergen")
-    public ResponseEntity<Optional<String>> containsAllergen(@RequestBody List<Long> ids, @RequestBody List<Long> toppingIds, @RequestBody Long memberId) {
+    public ResponseEntity<Optional<String>> containsAllergen(@RequestBody List<Long> ids,
+                                                             @RequestBody List<Long> toppingIds,
+                                                             @RequestBody Long memberId) {
         try {
+            //can't be implemented until I can get allergies from users.
+            //formatted with "allergy, allergy, allergy, topping, pizza;" and repeats
             throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
