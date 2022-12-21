@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.store.service;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import nl.tudelft.sem.group06b.store.database.StoreRepository;
 import nl.tudelft.sem.group06b.store.domain.Location;
 import nl.tudelft.sem.group06b.store.domain.NoSuchStoreException;
@@ -24,37 +25,41 @@ public class StoreService {
     }
 
     /**
+     * Query all stores from the database.
+     *
+     * @return A list of stores.
+     */
+    public List<Store> queryAllStores() {
+        return storeRepository.findAll();
+    }
+
+    /**
      * Add a store to the existing stores.
      *
      * @param name The store name.
      * @param location The store location.
-     * @return Added store.
      * @throws Exception If the store already exists at the given location.
      */
-    public Store addStore(String name, Location location) throws Exception {
+    public void addStore(String name, Location location) throws Exception {
         if (checkLocationIsUnique(location)) {
-            Store store = new Store(name, location);
+            Store store = new Store(name, location, new ArrayList<>());
             storeRepository.save(store);
             storeRepository.flush();
-            return store;
+        } else {
+            throw new StoreAlreadyExistException(location);
         }
-        throw new StoreAlreadyExistException(location);
     }
 
     /**
      * Removes a store from the existing stores.
      *
-     * @param location The store location.
-     * @return Removed store.
+     * @param storeId The store id.
      * @throws Exception If the store does not exist at the given location.
      */
-    public Store removeStore(Location location) throws Exception {
-        if (checkLocationIsUnique(location)) {
-            Optional<Store> store = storeRepository.findByStoreLocation(location);
-            store.ifPresent(storeRepository::delete);
-            storeRepository.flush();
-        }
-        throw new NoSuchStoreException(location);
+    public void removeStore(Long storeId) throws Exception {
+        Store store = storeRepository.findById(storeId).orElseThrow(NoSuchStoreException::new);
+        storeRepository.delete(store);
+        storeRepository.flush();
     }
 
     /**
@@ -65,5 +70,28 @@ public class StoreService {
      */
     public boolean checkLocationIsUnique(Location location) {
         return !storeRepository.existsByStoreLocation(location);
+    }
+
+    /**
+     * Checks if the given store location is valid.
+     *
+     * @param location The input location.
+     * @return True if the input location is valid, false otherwise.
+     */
+    public boolean validateStoreLocation(Location location) {
+        return storeRepository.existsByStoreLocation(location);
+    }
+
+    /**
+     * Retrieves the id of the store.
+     *
+     * @param location The preffered location by user.
+     * @return The store id.
+     * @throws Exception If the given store location does not exist.
+     */
+    public Long retrieveStoreId(Location location) throws Exception {
+        Store store = storeRepository.findByStoreLocation(location)
+                 .orElseThrow(NoSuchStoreException::new);
+        return store.getId();
     }
 }

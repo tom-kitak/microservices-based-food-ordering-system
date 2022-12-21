@@ -3,7 +3,7 @@ package nl.tudelft.sem.group06b.store.model;
 import lombok.Data;
 
 @Data
-public class AddStoreRequestModel {
+public class ModifyStoreRequestModel {
     private String name;
-    private String location;
+    private String storeLocation;
 }

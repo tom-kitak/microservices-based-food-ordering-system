@@ -28,7 +28,7 @@ public class AuthManagerTests {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         // Act
-        String actual = authManager.getUsername();
+        String actual = authManager.getMemberId();
 
         // Assert
         assertThat(actual).isEqualTo(expected);
