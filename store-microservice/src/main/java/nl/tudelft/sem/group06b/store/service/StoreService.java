@@ -40,9 +40,9 @@ public class StoreService {
      * @param location The store location.
      * @throws Exception If the store already exists at the given location.
      */
-    public void addStore(String name, Location location) throws Exception {
+    public void addStore(String name, Location location, String manager) throws Exception {
         if (checkLocationIsUnique(location)) {
-            Store store = new Store(name, location, new ArrayList<>());
+            Store store = new Store(name, location, new ArrayList<>(), manager);
             storeRepository.save(store);
             storeRepository.flush();
         } else {
@@ -83,6 +83,16 @@ public class StoreService {
     }
 
     /**
+     * Checks if the given manager memberId is valid.
+     *
+     * @param manager The input location.
+     * @return True if the input location is valid, false otherwise.
+     */
+    public boolean validateManager(String manager) {
+        return storeRepository.existsByManager(manager);
+    }
+
+    /**
      * Retrieves the id of the store.
      *
      * @param location The preffered location by user.
@@ -92,6 +102,19 @@ public class StoreService {
     public Long retrieveStoreId(Location location) throws Exception {
         Store store = storeRepository.findByStoreLocation(location)
                  .orElseThrow(NoSuchStoreException::new);
+        return store.getId();
+    }
+
+    /**
+     * Retrieves the id of the store.
+     *
+     * @param manager The memberId of the manager.
+     * @return The store id.
+     * @throws Exception If the given store location does not exist.
+     */
+    public Long retrieveStoreId(String manager) throws Exception {
+        Store store = storeRepository.findByManager(manager)
+                .orElseThrow(Exception::new);
         return store.getId();
     }
 }

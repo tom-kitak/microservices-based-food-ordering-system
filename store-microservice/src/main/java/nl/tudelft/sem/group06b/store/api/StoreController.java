@@ -59,7 +59,8 @@ public class StoreController {
         try {
             String name = request.getName();
             Location location = new Location(request.getStoreLocation());
-            storeService.addStore(name, location);
+            String manager = request.getManager();
+            storeService.addStore(name, location, manager);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -96,6 +97,17 @@ public class StoreController {
     }
 
     /**
+     * Validates if the store manager exists.
+     *
+     * @param manager memeberId of the manager.
+     * @return True if the given store location exists.
+     */
+    @GetMapping("/validateManager/{manager}")
+    public ResponseEntity<Boolean> validateManager(@PathVariable String manager) {
+        return ResponseEntity.ok(storeService.validateManager(manager));
+    }
+
+    /**
      * Gets the store id from the database.
      *
      * @param address address of the store.
@@ -106,6 +118,22 @@ public class StoreController {
         try {
             Location location = new Location(address);
             storeId = storeService.retrieveStoreId(location);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok(storeId);
+    }
+
+    /**
+     * Gets the store id from the database.
+     *
+     * @param manager address of the store.
+     * @return The store id.
+     */
+    @GetMapping("/getStoreIdManager/{manager}")
+    public ResponseEntity<Long> getStoreIdFromManager(@PathVariable String manager) {
+        try {
+            storeId = storeService.retrieveStoreId(manager);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

@@ -25,4 +25,20 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
      * @return An optional Store.
      */
     Optional<Store> findByStoreLocation(Location location);
+
+    /**
+     * Check if a store already exists with the given manager.
+     *
+     * @param manager memberId of the manager
+     * @return True if store already exist on the given location
+     */
+    boolean existsByManager(String manager);
+
+    /**
+     * Find a store by its manager.
+     *
+     * @param manager memberId of the manager.
+     * @return An optional Store.
+     */
+    Optional<Store> findByManager(String manager);
 }
