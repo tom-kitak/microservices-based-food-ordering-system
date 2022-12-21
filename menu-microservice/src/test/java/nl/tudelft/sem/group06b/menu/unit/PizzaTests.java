@@ -120,4 +120,41 @@ public class PizzaTests {
         Assertions.assertThat(this.pizza1.hasSameIds(pizza2)).isFalse();
     }
 
+    @Test
+    public void notEqualHashCodes() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(42L, "Gluten"));
+        allergies.add(new Allergy(53L, "Mushroom"));
+        ArrayList<Topping> toppings = new ArrayList<>();
+        toppings.add(new Topping(2L, "Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(43L, toppings, "Pepper", new BigDecimal("43.98"));
+        Assertions.assertThat(this.pizza1.hashCode()).isNotEqualTo(pizza2.hashCode());
+    }
+
+    @Test
+    public void sameIdsButDifferentToppings() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(42L, "Gluten"));
+        allergies.add(new Allergy(53L, "Mushroom"));
+        allergies.add(new Allergy(54L, "Pizza"));
+        ArrayList<Topping> toppings = new ArrayList<>();
+        toppings.add(new Topping(2L, "Pepperoni", allergies, new BigDecimal("24.49")));
+        toppings.add(new Topping(4L, "Sardines", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(41L, toppings, "Pepper", new BigDecimal("43.98"));
+        Assertions.assertThat(this.pizza1.hasSameIds(pizza2)).isFalse();
+    }
+
+    @Test
+    public void sameIdsButDifferentToppingSizes() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(42L, "Gluten"));
+        allergies.add(new Allergy(53L, "Mushroom"));
+        allergies.add(new Allergy(54L, "Pizza"));
+        ArrayList<Topping> toppings = new ArrayList<>();
+        toppings.add(new Topping(2L, "Pepperoni", allergies, new BigDecimal("24.49")));
+        toppings.add(new Topping(2L, "Pepperoni", allergies, new BigDecimal("24.49")));
+        Pizza pizza2 = new Pizza(41L, toppings, "Pepper", new BigDecimal("43.98"));
+        Assertions.assertThat(this.pizza1.hasSameIds(pizza2)).isFalse();
+    }
+
 }

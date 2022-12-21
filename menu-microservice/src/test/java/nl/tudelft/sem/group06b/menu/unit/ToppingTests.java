@@ -84,4 +84,13 @@ public class ToppingTests {
     public void notToppingTest() {
         Assertions.assertThat(this.topping1).isNotEqualTo(5);
     }
+
+    @Test
+    public void notEqualHashCode() {
+        ArrayList<Allergy> allergies = new ArrayList<>();
+        allergies.add(new Allergy(46L, "Gluten"));
+        Topping topping2 = new Topping(2L, "Pepper", allergies, new BigDecimal("44.99"));
+        Assertions.assertThat(this.topping1.hashCode()).isNotEqualTo(topping2.hashCode());
+    }
+
 }
