@@ -67,6 +67,8 @@ public class UserTest {
                 new Allergy("Gluten")),
                 new Location("Library"));
         assertEquals(user, user2);
+        assertEquals(user, user);
         assertNotEquals(user, user3);
+        assertNotEquals(user, null);
     }
 }
