@@ -10,7 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
@@ -27,6 +29,10 @@ public class Store {
 
     @Column(name = "location", nullable = false)
     private Location storeLocation;
+
+    @Getter @Setter
+    @Column(name = "manager", nullable = false, unique = true)
+    private String manager;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Email> dummyEmails;
@@ -49,10 +55,11 @@ public class Store {
      * @param storeLocation the location of the store.
      * @param dummyEmails the dummy emails of the store.
      */
-    public Store(String name, Location storeLocation, List<Email> dummyEmails) {
+    public Store(String name, Location storeLocation, List<Email> dummyEmails, String manager) {
         this.name = name;
         this.storeLocation = storeLocation;
         this.dummyEmails = dummyEmails;
+        this.manager = manager;
     }
 
     /**
