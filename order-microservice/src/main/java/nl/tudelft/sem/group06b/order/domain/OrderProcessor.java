@@ -9,12 +9,11 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import javax.swing.text.StyledEditorKit;
 
 @Service
 public class OrderProcessor {
@@ -24,11 +23,14 @@ public class OrderProcessor {
     @Getter @Setter
     private List<Long> activeOrders;
 
+    private final RestTemplate restTemplate;
+
     private final transient String valid = "VALID";
     private final transient String invalidOrderIdMessage = "Invalid order ID";
     private final transient String noActiveOrderMessage = "No active order with this ID";
     private final transient int deadlineOffset = 30;
     private final transient String storeUrl = "http://localhost:8084/api/stores";
+    private final transient String couponUrl = "http://localhost:8083/api/coupons";
 
     /**
      * Instantiates a new OrderProcessor.
@@ -38,6 +40,7 @@ public class OrderProcessor {
     public OrderProcessor(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
         this.activeOrders = new ArrayList<>();
+        this.restTemplate = new RestTemplate();
     }
 
     /**
@@ -72,18 +75,25 @@ public class OrderProcessor {
         }
 
         // TODO
-        // 1. location has to be validated from Store
-        final RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", String.format("Bearer %s", token));
+        // validate location for the store
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.set("Authorization", String.format("Bearer %s", token));
+//
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("storeLocation", location);
+//        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+//
+//        ResponseEntity<Boolean> response = restTemplate.postForEntity(storeUrl + "/validateLocation", entity, Boolean.class);
+//        System.out.println(response.getBody());
+//
+//        if (response.getStatusCode() == HttpStatus.BAD_REQUEST || response.getBody() == false) {
+//            throw new Exception("Not a valid location");
+//        }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("storeLocation", location);
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
-        ResponseEntity<Boolean> response = restTemplate.postForEntity(storeUrl + "/validateLocation", entity, Boolean.class);
-        System.out.println(response.getBody());
+        // TODO
         // 2. get storedID from Store
+
         // Authenticate the store exists and send appropriate message if it doesn't
 
 
@@ -188,7 +198,7 @@ public class OrderProcessor {
      * @param couponsIds ids of the coupons entered
      * @return message of outcome
      */
-    public String addCoupons(Long orderId, List<String> couponsIds) throws Exception {
+    public String addCoupons(Long orderId, List<String> couponsIds, String token) throws Exception {
         if (orderId == null) {
             throw new Exception(invalidOrderIdMessage);
         } else if (!activeOrders.contains(orderId)) {
@@ -197,14 +207,27 @@ public class OrderProcessor {
             throw new Exception("Please enter valid coupons");
         }
 
+        // Call to Coupon-microservice to see if coupons are valid
+        for (String coupon : couponsIds) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", String.format("Bearer %s", token));
+            HttpEntity request = new HttpEntity(headers);
+            ResponseEntity<Boolean> response = restTemplate.exchange(
+                    couponUrl + "/checkAvailability/" + coupon,
+                    HttpMethod.GET,
+                    request,
+                    Boolean.class
+            );
+            if (response.getBody() == false) {
+                throw new Exception("Coupon " + coupon + " is not valid");
+            }
+        }
+
         Order order = orderRepository.getOne(orderId);
         order.getCouponsIds().addAll(couponsIds);
         orderRepository.save(order);
 
-        //TODO
-        // Some call to Coupon-microservice to see if coupons are valid
-
-        return "Coupons successfully applied";
+        return "Coupons successfully added";
     }
 
     /**

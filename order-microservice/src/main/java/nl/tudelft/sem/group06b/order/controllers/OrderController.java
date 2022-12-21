@@ -130,7 +130,8 @@ public class OrderController {
         try {
             Long orderId = order.getId();
             List<String> couponsIds = order.getCouponsIds();
-            String response = orderProcessor.addCoupons(orderId, couponsIds);
+            String token = authManager.getToken();
+            String response = orderProcessor.addCoupons(orderId, couponsIds, token);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
