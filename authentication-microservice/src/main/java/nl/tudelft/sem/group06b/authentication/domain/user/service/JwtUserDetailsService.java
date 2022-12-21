@@ -1,7 +1,6 @@
 package nl.tudelft.sem.group06b.authentication.domain.user.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
 import nl.tudelft.sem.group06b.authentication.repository.RoleRepository;
@@ -40,12 +39,8 @@ public class JwtUserDetailsService implements UserDetailsService {
         }
 
         var user = optionalUser.get();
-
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(
-                roleRepository.findById(user.getRoleId()).orElseThrow().getName().getRoleNameValue()));
-
-        return new User(user.getMemberId().getMemberIdValue(), user.getPassword().toString(), new ArrayList<>());
+        return new User(user.getMemberId().getMemberIdValue(), user.getPassword().toString(),
+                List.of(new SimpleGrantedAuthority(user.getRole().getName().getRoleNameValue())));
     }
 }
 

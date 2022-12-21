@@ -69,7 +69,7 @@ public class RegistrationServiceTest {
         roleRepository.save(new Role(new RoleName("customer")));
 
         User existingAppUser = new User(testUser, existingTestPassword,
-                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
+                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow());
         userRepository.save(existingAppUser);
 
         // Act
@@ -83,8 +83,8 @@ public class RegistrationServiceTest {
 
         assertThat(savedUser.getMemberId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
-        assertThat(savedUser.getRoleId())
-                .isEqualTo(roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
+        assertThat(savedUser.getRole())
+                .isEqualTo(roleRepository.findByRoleName(new RoleName("customer")).orElseThrow());
     }
 
     @Test
@@ -97,8 +97,7 @@ public class RegistrationServiceTest {
         roleRepository.save(new Role(newRoleName));
 
         User existingAppUser = new User(testUser, testPassword,
-                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
-        System.out.println(existingAppUser.getRoleId());
+                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow());
         userRepository.save(existingAppUser);
 
         // Act
@@ -109,7 +108,7 @@ public class RegistrationServiceTest {
 
         assertThat(savedUser.getMemberId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(testPassword);
-        assertThat(savedUser.getRoleId()).isEqualTo(roleRepository.findByRoleName(newRoleName).orElseThrow().getId());
+        assertThat(savedUser.getRole().getId()).isEqualTo(roleRepository.findByRoleName(newRoleName).orElseThrow().getId());
     }
 
     @Test

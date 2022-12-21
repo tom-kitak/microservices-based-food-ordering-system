@@ -59,7 +59,5 @@ public class RoleCreationServiceTest {
         Role savedRole = roleRepository.findByRoleName(roleName).orElseThrow();
 
         assertThat(savedRole.getName()).isEqualTo(roleName);
-
-        assertThat(roleRepository.count()).isEqualTo(1);
     }
 }

@@ -1,29 +1,21 @@
-package nl.tudelft.sem.group06b.authentication.filtering;
+package nl.tudelft.sem.group06b.authentication.filter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import java.io.IOException;
+import java.util.Collection;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-
-/**
- * Request filter for JWT security.
- * <p>
- * The request filter is called once for each request and makes it possible to modify the request
- * before it reaches the application. If an authorization header is present in the request,
- * the filter will validate it and authenticate the token.
- * </p>
- */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -59,15 +51,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String[] directives = authorizationHeader.split(" ");
 
             // Check for the correct auth scheme
+            System.out.println(directives.length);
+            System.out.println(directives[0]);
             if (directives.length == 2 && directives[0].equals(AUTHORIZATION_AUTH_SCHEME)) {
                 String token = directives[1];
 
                 try {
                     if (jwtTokenVerifier.validateToken(token)) {
-                        String netId = jwtTokenVerifier.getNetIdFromToken(token);
+                        String memberId = jwtTokenVerifier.getMemberIdFromToken(token);
+                        Collection<SimpleGrantedAuthority> coll =
+                                (Collection<SimpleGrantedAuthority>) jwtTokenVerifier.getRoleFromToken(token);
+
                         var authenticationToken = new UsernamePasswordAuthenticationToken(
-                                netId,
-                                null, List.of() // no credentials and no authorities
+                                memberId,
+                                token, coll // no credentials and no authorities
                         );
                         authenticationToken.setDetails(new WebAuthenticationDetailsSource()
                                 .buildDetails(request));
@@ -77,7 +74,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         // Spring Security Configurations successfully.
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     }
-
                 } catch (ExpiredJwtException e) {
                     System.err.println("JWT token has expired.");
                 } catch (IllegalArgumentException | JwtException e) {

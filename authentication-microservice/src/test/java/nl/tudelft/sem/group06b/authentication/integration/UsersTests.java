@@ -98,7 +98,9 @@ public class UsersTests {
         final Password newTestPassword = new Password("password456");
         final HashedPassword existingTestPassword = new HashedPassword("password123");
 
-        User existingAppUser = new User(testUser, existingTestPassword, 2L);
+        roleRepository.save(new Role(new RoleName("customer")));
+        User existingAppUser = new User(testUser, existingTestPassword,
+                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow());
         userRepository.save(existingAppUser);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
@@ -140,7 +142,7 @@ public class UsersTests {
         roleRepository.save(new Role(new RoleName("customer")));
 
         User appUser = new User(testUser, testHashedPassword,
-                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow().getId());
+                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow());
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
@@ -189,7 +191,7 @@ public class UsersTests {
                 .content(JsonUtil.serialize(model)));
 
         // Assert
-        resultActions.andExpect(status().isForbidden());
+        resultActions.andExpect(status().isUnauthorized());
 
         verify(mockAuthenticationManager).authenticate(argThat(authentication ->
                            testUser.equals(authentication.getPrincipal().toString())
@@ -212,7 +214,9 @@ public class UsersTests {
                     && wrongPassword.equals(authentication.getCredentials().toString())
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
-        User appUser = new User(new MemberId(testUser), testHashedPassword, 2L);
+        roleRepository.save(new Role(new RoleName("customer")));
+        User appUser = new User(new MemberId(testUser), new HashedPassword(testPassword),
+                roleRepository.findByRoleName(new RoleName("customer")).orElseThrow());
         userRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
@@ -225,7 +229,7 @@ public class UsersTests {
                 .content(JsonUtil.serialize(model)));
 
         // Assert
-        resultActions.andExpect(status().isUnauthorized());
+        resultActions.andExpect(status().isForbidden());
 
         verify(mockAuthenticationManager).authenticate(argThat(authentication ->
                 testUser.equals(authentication.getPrincipal().toString())

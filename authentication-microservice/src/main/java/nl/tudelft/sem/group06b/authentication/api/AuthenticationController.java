@@ -5,6 +5,7 @@ import nl.tudelft.sem.group06b.authentication.domain.role.RoleName;
 import nl.tudelft.sem.group06b.authentication.domain.user.MemberId;
 import nl.tudelft.sem.group06b.authentication.domain.user.MemberIdAlreadyInUseException;
 import nl.tudelft.sem.group06b.authentication.domain.user.Password;
+import nl.tudelft.sem.group06b.authentication.filter.AuthManager;
 import nl.tudelft.sem.group06b.authentication.model.AuthenticationRequestModel;
 import nl.tudelft.sem.group06b.authentication.model.AuthenticationResponseModel;
 import nl.tudelft.sem.group06b.authentication.model.ChangeRoleRequestModel;
@@ -13,6 +14,7 @@ import nl.tudelft.sem.group06b.authentication.model.RoleCreationRequestModel;
 import nl.tudelft.sem.group06b.authentication.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/authentication")
 public class AuthenticationController {
 
+    private final transient AuthManager authManager;
     private final transient AuthenticationService authenticationService;
 
     /**
@@ -47,7 +50,7 @@ public class AuthenticationController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "USER_DISABLED", disabledException);
         } catch (BadCredentialsException badCredentialsException) {
             System.out.println("Bad credentials exception");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", badCredentialsException);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "INVALID_CREDENTIALS", badCredentialsException);
         }
 
     }
@@ -76,9 +79,13 @@ public class AuthenticationController {
      * @param request the new name of the role
      * @return an empty response with message which indicate success
      */
-    @PostMapping("/create_role")
+    @PostMapping("/admin/create_role")
     private ResponseEntity<?> createRole(@RequestBody RoleCreationRequestModel request) {
-        //TODO: add authorization for this endpoint so that only the regional manager can query this.
+        System.out.println("Am intrat aici");
+        System.out.println(authManager.getRole());
+        if (!authManager.getRole().equals("regional_manager")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You role has no access to this API");
+        }
         try {
             authenticationService.createRole(new RoleName(request.getRoleName()));
         } catch (Exception e) {
@@ -93,9 +100,11 @@ public class AuthenticationController {
      * @param request the user identifier (memberId) and the new role of that user
      * @return an empty response with message which indicate success
      */
-    @PutMapping("/change_role")
+    @PutMapping("/admin/change_role")
     private ResponseEntity<?> changeRole(@RequestBody ChangeRoleRequestModel request) {
-        //TODO: add authorization for this endpoint so that only the regional manager can query this.
+        if (!authManager.getRole().equals("regional_manager")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You role has no access to this API");
+        }
         try {
             authenticationService.changeRole(new MemberId(request.getMemberId()), new RoleName(request.getNewRoleName()));
         } catch (Exception e) {
