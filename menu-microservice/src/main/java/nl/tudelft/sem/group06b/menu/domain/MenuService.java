@@ -161,8 +161,9 @@ public class MenuService {
     /**
      * adds a topping to the repository.
      *
-     * @param t the topping to save.
-     * @return true if topping was saved/false if there is a topping
+     * @param t the topping to add.
+     * @return true if added/false if couldn't
+     * @throws IllegalArgumentException if t is null.
      */
     public boolean addTopping(Topping t) throws IllegalArgumentException {
         try {
@@ -172,7 +173,7 @@ public class MenuService {
             this.toppingRepository.save(t);
             return true;
         } catch (Exception e) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
