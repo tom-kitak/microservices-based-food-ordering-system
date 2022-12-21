@@ -232,16 +232,16 @@ public class MenuController {
      * @return optional string with the conflicts.
      */
     @PostMapping("containsAllergen")
-    public ResponseEntity<Optional<String>> containsAllergen(@RequestBody Long id,
+    public ResponseEntity<String> containsAllergen(@RequestBody Long id,
                                                              @RequestBody List<Long> toppingIds,
                                                              @RequestBody String memberId) {
         try {
-            Optional<String> ret;
+            String ret;
             if (this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId)).isPresent()) {
-                ret = Optional.of("You might be allergic!: "
-                        + this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId)).get());
+                ret = "You might be allergic!: "
+                        + this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId)).get();
             } else {
-                ret = Optional.empty();
+                ret = "";
             }
             return ResponseEntity.ok(ret);
         } catch (Exception e) {
@@ -285,9 +285,9 @@ public class MenuController {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
-        List<String> allergens = (List<String>) response.getBody().stream()
+        return (List<String>) response.getBody().stream()
                 .map(x -> x.toString().split("=")[1].split("}")[0]).collect(Collectors.toList());
-        return allergens;
+
     }
 
 
