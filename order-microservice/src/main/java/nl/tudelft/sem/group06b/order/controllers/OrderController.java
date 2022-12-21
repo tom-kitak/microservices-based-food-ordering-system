@@ -2,11 +2,12 @@ package nl.tudelft.sem.group06b.order.controllers;
 
 import java.util.List;
 import java.util.Locale;
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.group06b.order.authentication.AuthManager;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.OrderProcessor;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.tudelft.sem.group06b.order.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,23 +23,14 @@ import org.springframework.web.server.ResponseStatusException;
  * </p>
  */
 @RestController
+@RequiredArgsConstructor
 public class OrderController {
 
     private final transient AuthManager authManager;
 
-    private final transient OrderProcessor orderProcessor;
+    private final transient OrderService orderService;
 
-    /**
-     * Instantiates a new controller.
-     *
-     * @param authManager Spring Security component used to authenticate and authorize the user
-     * @param orderProcessor order processor
-     */
-    @Autowired
-    public OrderController(AuthManager authManager, OrderProcessor orderProcessor) {
-        this.authManager = authManager;
-        this.orderProcessor = orderProcessor;
-    }
+    private final transient OrderProcessor orderProcessor;
 
     /**
      * Starts an order.

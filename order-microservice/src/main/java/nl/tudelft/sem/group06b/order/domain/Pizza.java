@@ -26,6 +26,18 @@ public class Pizza implements Serializable {
         this.price = price;
     }
 
+    /**
+     * Constructor for a pizza that does not involve the price.
+     *
+     * @param pizzaId the id of the new pizza
+     * @param toppings the toppings for the pizza
+     */
+    public Pizza(Long pizzaId, List<Long> toppings) {
+        this.pizzaId = pizzaId;
+        this.toppings = toppings;
+        this.price = new BigDecimal(0);
+    }
+
     public Long getPizzaId() {
         return pizzaId;
     }
