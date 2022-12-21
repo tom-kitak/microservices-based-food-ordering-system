@@ -173,6 +173,7 @@ public class MenuService {
             this.toppingRepository.save(t);
             return true;
         } catch (Exception e) {
+            System.out.println("Message: " + e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }
     }

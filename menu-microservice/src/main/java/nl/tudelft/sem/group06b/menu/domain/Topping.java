@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -32,15 +30,16 @@ public class Topping implements Serializable {
      * id of the allergy.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private @Getter Long id;
     /**
      * list of the allergies it contains.
      */
     @OneToMany
+    @Column(name = "allergies")
     private @Getter @Setter List<Allergy> allergies;
 
+    @Column(name = "price")
     private @Getter @Setter BigDecimal price;
 
     /**

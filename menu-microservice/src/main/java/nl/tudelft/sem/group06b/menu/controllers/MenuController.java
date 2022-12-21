@@ -161,6 +161,7 @@ public class MenuController {
     @PostMapping("add/pizza/")
     public ResponseEntity<Boolean> addPizza(@RequestBody Pizza pizza) throws ResponseStatusException {
         try {
+            System.out.println(pizza.toString());
             return ResponseEntity.ok(menuService.addPizza(pizza));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -189,10 +190,12 @@ public class MenuController {
      *
      * @return static topping.
      */
-    @GetMapping("getStaticTopping")
-    public ResponseEntity<Topping> topping() {
+    @GetMapping("getStaticPizza")
+    public ResponseEntity<Pizza> pizza() {
         Allergy a = new Allergy(42L, "Gluten");
-        return ResponseEntity.ok(new Topping(42L, "Pepperoni", List.of(a), new BigDecimal("24.99")));
+        Topping t1 = new Topping(12L, "Cheese", List.of(a), new BigDecimal("3.00"));
+        Pizza p = new Pizza(99L, List.of(t1), "Dough", new BigDecimal("11.00"));
+        return ResponseEntity.ok(p);
     }
 
     /**

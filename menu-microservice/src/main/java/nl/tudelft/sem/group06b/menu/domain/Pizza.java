@@ -6,9 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -27,21 +26,24 @@ public class Pizza implements Serializable {
      * id for the pizza.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private @Getter Long id;
     /**
      * list of toppings that the pizza has.
      */
     @OneToMany
+    @Column(name = "toppings")
     private @Getter @Setter List<Topping> toppings;
     /**
      * The name of the pizza.
      */
+    @Column(name = "name")
     private @Getter @Setter String name;
 
     /**
      * The total price of the pizza.
      */
+    @Column(name = "price")
     private @Getter @Setter BigDecimal price;
 
     /**
