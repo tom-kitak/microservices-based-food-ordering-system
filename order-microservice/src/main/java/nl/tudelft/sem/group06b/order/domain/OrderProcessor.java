@@ -3,11 +3,18 @@ package nl.tudelft.sem.group06b.order.domain;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class OrderProcessor {
@@ -49,7 +56,7 @@ public class OrderProcessor {
      * @param selectedTime selected time for the order
      * @return message of outcome
      */
-    public String startOrder(String location, String memberId, String selectedTime) throws Exception {
+    public String startOrder(String location, String memberId, String selectedTime, String token) throws Exception {
         if (selectedTime == null) {
             throw new Exception("Please select time");
         } else if (location == null) {
@@ -66,6 +73,16 @@ public class OrderProcessor {
 
         // TODO
         // 1. location has to be validated from Store
+        final RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", String.format("Bearer %s", token));
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("storeLocation", location);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(storeUrl + "/validateLocation", entity, Boolean.class);
+        System.out.println(response.getBody());
         // 2. get storedID from Store
         // Authenticate the store exists and send appropriate message if it doesn't
 

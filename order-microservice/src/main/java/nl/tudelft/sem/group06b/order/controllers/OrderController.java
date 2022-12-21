@@ -52,7 +52,8 @@ public class OrderController {
             String selectedTime = order.getSelectedTime();
             String location = order.getLocation();
             String memberId = authManager.getMemberId();
-            String response = orderProcessor.startOrder(location, memberId, selectedTime);
+            String token = authManager.getToken();
+            String response = orderProcessor.startOrder(location, memberId, selectedTime, token);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -193,7 +194,6 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
 }
 
 

@@ -90,7 +90,7 @@ public class StoreController {
      * @param request serialized Location object in the form of a JSON in the request body.
      * @return True if the given store location exists.
      */
-    @GetMapping("/validateLocation")
+    @PostMapping("/validateLocation")
     public ResponseEntity<Boolean> validateLocation(@RequestBody LocationRequestModel request) {
         Location location = new Location(request.getStoreLocation());
         return ResponseEntity.ok(storeService.validateStoreLocation(location));

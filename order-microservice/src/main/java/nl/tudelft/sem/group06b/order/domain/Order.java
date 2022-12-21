@@ -43,7 +43,7 @@ public class Order {
     @Column(name = "price")
     private BigDecimal price;
 
-    @Column(name = "storeId", nullable = false)
+    @Column(name = "storeId")
     private Long storeId;
 
     @Column(name = "location")
