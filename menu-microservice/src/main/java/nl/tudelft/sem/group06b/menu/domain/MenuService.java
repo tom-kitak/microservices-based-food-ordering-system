@@ -226,6 +226,8 @@ public class MenuService {
      */
     public boolean isValidPizzaList(Long pid, List<Long> toppingIds) throws IllegalArgumentException {
         try {
+            System.out.println(pid);
+            System.out.println(toppingIds);
             if (this.pizzaRepository.findPizzaById(pid).isEmpty()) {
                 return false;
             }
@@ -240,6 +242,7 @@ public class MenuService {
             throw new IllegalArgumentException();
         }
     }
+
 
     /**
      * checks a pizza list for allergies.
@@ -298,6 +301,9 @@ public class MenuService {
             return new BigDecimal("0.0");
         }
         BigDecimal ret = p.get().getPrice();
+        for (Topping t : p.get().getToppings()) {
+            ret = ret.add(t.getPrice());
+        }
         for (Long l : toppingIds) {
             Optional<Topping> t = getToppingById(l);
             if (t.isPresent()) {

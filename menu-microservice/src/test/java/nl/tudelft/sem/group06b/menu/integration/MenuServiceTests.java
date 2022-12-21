@@ -88,7 +88,7 @@ public class MenuServiceTests {
 
     @Test
     public void priceTest() {
-        Assertions.assertThat(this.menuService.getPrice(40L, List.of(11L, 12L))).isEqualTo(new BigDecimal("25.18"));
+        Assertions.assertThat(this.menuService.getPrice(40L, List.of(11L, 12L))).isEqualTo(new BigDecimal("39.37"));
     }
 
     @Test

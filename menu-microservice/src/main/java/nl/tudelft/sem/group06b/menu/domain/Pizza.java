@@ -9,7 +9,7 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,8 +31,8 @@ public class Pizza implements Serializable {
     /**
      * list of toppings that the pizza has.
      */
-    @OneToMany
-    @Column(name = "toppings")
+    @ManyToMany
+    @Column(name = "toppings", unique = false)
     private @Getter @Setter List<Topping> toppings;
     /**
      * The name of the pizza.

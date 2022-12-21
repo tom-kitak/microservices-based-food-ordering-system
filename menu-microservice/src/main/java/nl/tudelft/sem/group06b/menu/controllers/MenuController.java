@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.menu.controllers;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,12 +11,16 @@ import nl.tudelft.sem.group06b.menu.domain.Allergy;
 import nl.tudelft.sem.group06b.menu.domain.MenuService;
 import nl.tudelft.sem.group06b.menu.domain.Pizza;
 import nl.tudelft.sem.group06b.menu.domain.Topping;
+import nl.tudelft.sem.group06b.menu.models.ContainsAllergenModel;
+import nl.tudelft.sem.group06b.menu.models.PriceModel;
+import nl.tudelft.sem.group06b.menu.models.ValidModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -199,50 +204,46 @@ public class MenuController {
     }
 
     /**
-     * gets Price of pizza.
+     * gets prices for a pizza.
      *
-     * @param id of pizza.
-     * @param toppings of pizza.
-     * @return price of pizza.
+     * @param request the ids of the pizza and toppings.
+     * @return price of pizza and toppings.
      */
     @PostMapping("getPrice")
-    public ResponseEntity<BigDecimal> getPrice(@RequestBody Long id, @RequestBody List<Long> toppings) {
-        return ResponseEntity.ok(this.menuService.getPrice(id, toppings));
+    public ResponseEntity<BigDecimal> getPrice(@RequestBody PriceModel request) {
+        return ResponseEntity.ok(this.menuService.getPrice(request.getId(), request.getToppingIds()));
     }
 
     /**
-     * checks if a list of pizzas is valid.
+     * checks if a pizza is valid.
      *
-     * @param ids the ids of the pizzas.
-     * @param toppingIds the ids of the toppings.
+     * @param request the pizza and toppings.
      * @return encapsulated true if valid/false if not.
      */
     @PostMapping("isValid")
-    public ResponseEntity<Boolean> isValid(@RequestBody Long ids, @RequestBody List<Long> toppingIds) {
+    public ResponseEntity<Boolean> isValid(@RequestBody ValidModel request) {
         try {
-            return ResponseEntity.ok(this.menuService.isValidPizzaList(ids, toppingIds));
+            return ResponseEntity.ok(this.menuService.isValidPizzaList(request.getId(), request.getToppingIds()));
         } catch (Exception e) {
             return ResponseEntity.ok(false);
         }
     }
 
     /**
-     * checks if a pizzas contain allergens.
+     * checks if a pizza contains allergens.
      *
-     * @param id the id of the pizzas.
-     * @param toppingIds the ids of the toppings.
-     * @param memberId the id of the member with allergies.
-     * @return optional string with the conflicts.
+     * @param request the pizza, toppings and the memberId.
+     * @return string of allergies, empty if none.
      */
     @PostMapping("containsAllergen")
-    public ResponseEntity<String> containsAllergen(@RequestBody Long id,
-                                                             @RequestBody List<Long> toppingIds,
-                                                             @RequestBody String memberId) {
+    public ResponseEntity<String> containsAllergen(@RequestBody ContainsAllergenModel request) {
         try {
             String ret;
-            if (this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId)).isPresent()) {
+            if (this.menuService.checkForAllergies(
+                    request.getId(), request.getToppingIds(), getAllergens(request.getMemberId())).isPresent()) {
                 ret = "You might be allergic!: "
-                        + this.menuService.checkForAllergies(id, toppingIds, getAllergens(memberId)).get();
+                        + this.menuService.checkForAllergies(
+                                request.getId(), request.getToppingIds(), getAllergens(request.getMemberId())).get();
             } else {
                 ret = "";
             }
