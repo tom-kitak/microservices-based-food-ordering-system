@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group06b.coupons.domain;
+package nl.tudelft.sem.group06b.coupons.service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -6,7 +6,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import nl.tudelft.sem.group06b.coupons.domain.Coupon;
+import nl.tudelft.sem.group06b.coupons.domain.CouponType;
 import nl.tudelft.sem.group06b.coupons.model.ApplyCouponsRequestModel;
 import nl.tudelft.sem.group06b.coupons.model.Pizza;
 import nl.tudelft.sem.group06b.coupons.repository.CouponRepository;
@@ -15,7 +18,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class CouponsService {
+@Transactional
+public class CouponsServiceImpl implements CouponsService {
     private final transient CouponRepository couponRepository;
 
 
@@ -81,16 +85,16 @@ public class CouponsService {
     }
 
     /**
-     * Applies the coupons to the pizzas, chooses the optimal one to obtain the lowest price.
+     * Receives a list of applied coupons and prices and returns the best price and the coupon applied.
      *
-     * @param pizzasAndCoupons the request containing the pizzas and the coupons
+     * @return a list of the best price and the coupon applied
      */
-    public void calculatePrice(ApplyCouponsRequestModel pizzasAndCoupons) {
+    public ApplyCouponsRequestModel calculatePrice(ApplyCouponsRequestModel pizzasAndCoupons) {
         List<Pizza> pizzas = pizzasAndCoupons.getPizzas();
         if (!pizzas.isEmpty()) {
             List<Coupon> couponsList = couponRepository.findAllById(pizzasAndCoupons.getCoupons());
             if (couponsList.isEmpty()) {
-                return;
+                throw new IllegalArgumentException("No coupons found");
             }
 
             Coupon discountCoupon = couponsList.stream()
@@ -139,7 +143,7 @@ public class CouponsService {
                 pizzasAndCoupons.setCoupons(List.of(oneOffCoupon.getCode()));
                 pizzas.get(index).setPrice(BigDecimal.ZERO);
             }
-            return;
+            return pizzasAndCoupons;
         }
 
         throw new IllegalArgumentException("The basket is empty");

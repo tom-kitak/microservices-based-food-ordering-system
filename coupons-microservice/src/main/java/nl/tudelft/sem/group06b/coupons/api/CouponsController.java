@@ -1,12 +1,12 @@
-package nl.tudelft.sem.group06b.coupons.controllers;
+package nl.tudelft.sem.group06b.coupons.api;
 
 import java.time.Instant;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.coupons.authentication.AuthManager;
-import nl.tudelft.sem.group06b.coupons.domain.CouponsService;
 import nl.tudelft.sem.group06b.coupons.model.ApplyCouponsRequestModel;
 import nl.tudelft.sem.group06b.coupons.model.NewCouponRequestModel;
+import nl.tudelft.sem.group06b.coupons.service.CouponsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 /**
- * Hello World example controller.
- * <p>
- * This controller shows how you can extract information from the JWT token.
- * </p>
+ * Controller for incoming requests of the coupons' microservice.
  */
 @RestController
 @RequestMapping("/api/coupons")
@@ -75,9 +72,13 @@ public class CouponsController {
     @PostMapping("/calculatePrice")
     public ResponseEntity<ApplyCouponsRequestModel> calculatePrice(@RequestBody ApplyCouponsRequestModel couponsAndPizzas) {
         try {
-            couponsService.calculatePrice(couponsAndPizzas);
-            couponsService.useCoupon(couponsAndPizzas.getCoupons().get(0), authManager.getMemberId());
-            return ResponseEntity.ok(couponsAndPizzas);
+            ApplyCouponsRequestModel returnModel = couponsService.calculatePrice(couponsAndPizzas);
+            boolean res = couponsService.useCoupon(returnModel.getCoupons().get(0), authManager.getMemberId());
+            if (res) {
+                return ResponseEntity.ok(returnModel);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Coupon used already");
+            }
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
