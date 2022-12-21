@@ -46,12 +46,35 @@ public class CouponsService {
      * @param couponId the id of the coupon
      * @return true if the coupon is in the repository
      */
-    public boolean isCouponAvailable(String couponId) {
+    public boolean isCouponAvailable(String couponId, String memberId) {
         if (!couponRepository.existsById(couponId)) {
             return false;
         }
         Coupon coupon = couponRepository.getOne(couponId);
+        if (coupon.getUsedBy().contains(memberId)) {
+            return false;
+        }
         return coupon.getExpirationDate().after(Date.from(Instant.now()));
+    }
+
+    /**
+     * Remembers that a coupon has been used by a customer.
+     *
+     * @param couponId the id of the coupon
+     * @param memberId the id of the customer
+     * @return if the coupon has been successfully used
+     */
+    public boolean useCoupon(String couponId, String memberId) {
+        if (!couponRepository.existsById(couponId)) {
+            return false;
+        }
+        Coupon coupon = couponRepository.getOne(couponId);
+        if (coupon.getUsedBy().contains(memberId)) {
+            return false;
+        }
+        coupon.getUsedBy().add(memberId);
+        couponRepository.save(coupon);
+        return true;
     }
 
     /**

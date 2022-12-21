@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @SpringBootApplication
 @EnableJpaRepositories("nl.tudelft.sem.group06b.coupons.repository")
-public class Application {
+public class CouponsServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(CouponsServiceApplication.class, args);
     }
 }

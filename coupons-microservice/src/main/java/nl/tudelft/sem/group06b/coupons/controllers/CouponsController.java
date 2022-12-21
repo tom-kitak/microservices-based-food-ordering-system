@@ -6,9 +6,11 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.coupons.authentication.AuthManager;
 import nl.tudelft.sem.group06b.coupons.domain.CouponsService;
+import nl.tudelft.sem.group06b.coupons.model.NewCouponRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 
 /**
@@ -35,22 +38,20 @@ public class CouponsController {
     /**
      * Adds a new coupon to the database if the user is admin.
      *
-     * @param couponId       the id of the coupon
-     * @param couponType     the type of the coupon
-     * @param discount       the discount of the coupon
-     * @param expirationDate the expiration date of the coupon in milliseconds since epoch
+     * @param coupon the coupon to be added as a request body
      * @return ok if the coupon has been added
      */
     @PostMapping("/addCoupon")
-    public ResponseEntity addCoupon(@RequestBody String couponId, @RequestBody String couponType,
-                                    @RequestBody double discount, @RequestBody long expirationDate) {
-        //TODO: check if the coupon already exists and if the user is admin
+    public ResponseEntity<?> addCoupon(@RequestBody NewCouponRequestModel coupon) {
+        if (authManager.getRoles().contains(new SimpleGrantedAuthority("customer"))) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         boolean added = couponsService.addCoupon(
-                couponId,
-                couponType,
-                discount,
-                Date.from(Instant.ofEpochMilli(expirationDate))
+                coupon.getCouponId(),
+                coupon.getCouponType(),
+                coupon.getDiscount(),
+                Date.from(Instant.ofEpochMilli(coupon.getExpirationDate()))
         );
 
         return added ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -63,9 +64,7 @@ public class CouponsController {
      */
     @GetMapping("/checkAvailability/{code}")
     public ResponseEntity<Boolean> checkAvailability(@PathVariable String code) {
-        //TODO: extract user id from token and check it
-
-        boolean available = couponsService.isCouponAvailable(code);
+        boolean available = couponsService.isCouponAvailable(code, authManager.getMemberId());
         return ResponseEntity.ok(available);
     }
 
@@ -83,10 +82,10 @@ public class CouponsController {
         return result.isEmpty() ? ResponseEntity.status(HttpStatus.BAD_REQUEST).build() : ResponseEntity.ok(result);
     }
 
-    @PostMapping("/useCoupon")
-    public ResponseEntity<Boolean> useCoupon(@RequestParam String code) {
-        //TODO: extract user id from token and add it to the relevant coupon as used
-        return ResponseEntity.ok(false);
+    @PostMapping("/useCoupon/{code}")
+    public ResponseEntity<Boolean> useCoupon(@PathVariable String code) {
+        boolean used = couponsService.useCoupon(code, authManager.getMemberId());
+        return used ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
 }

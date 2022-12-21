@@ -19,10 +19,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 
 @SpringBootTest
@@ -45,9 +48,10 @@ public class TestCouponsController {
 
     @Test
     public void testCalculateMinPrice() throws Exception {
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+        when(mockAuthenticationManager.getMemberId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getAuthoritiesFromToken(anyString())).thenReturn(new SimpleGrantedAuthority("customer"));
 
         when(couponRepository.findAllById(List.of("1", "2", "3"))).thenReturn(List.of(
                 new Coupon("1", CouponType.DISCOUNT, 0.5,
@@ -57,6 +61,8 @@ public class TestCouponsController {
                 new Coupon("3", CouponType.DISCOUNT, 0.4,
                         Date.from(Instant.now().plusSeconds(30)), new HashSet<>())
         ));
+
+        HttpEntity<String> request = new HttpEntity<>("{\"coupons\": [\"1\", \"2\", \"3\"]}");
 
         ResultActions result = mockMvc.perform(get("/api/coupons/calculatePrice?prices=100,20,10&coupons=1,2,3")
                 .contentType(MediaType.APPLICATION_JSON)

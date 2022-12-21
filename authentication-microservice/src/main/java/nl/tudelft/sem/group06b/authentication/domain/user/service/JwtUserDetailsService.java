@@ -45,7 +45,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         authorities.add(new SimpleGrantedAuthority(
                 roleRepository.findById(user.getRoleId()).orElseThrow().getName().getRoleNameValue()));
 
-        return new User(user.getMemberId().getMemberIdValue(), user.getPassword().toString(), new ArrayList<>());
+        return new User(user.getMemberId().getMemberIdValue(), user.getPassword().toString(), authorities);
     }
 }
 
