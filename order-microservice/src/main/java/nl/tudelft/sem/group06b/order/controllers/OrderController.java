@@ -89,9 +89,10 @@ public class OrderController {
     @PostMapping("/changeSelectedLocation")
     public ResponseEntity<String> changeSelectedLocation(@RequestBody Order order) {
         try {
-            Long storeId = order.getStoreId();
+            String location = order.getLocation();
             Long orderId = order.getId();
-            String response = orderProcessor.changeSelectedLocation(orderId, storeId);
+            String token = authManager.getToken();
+            String response = orderProcessor.changeSelectedLocation(location, orderId, token);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {

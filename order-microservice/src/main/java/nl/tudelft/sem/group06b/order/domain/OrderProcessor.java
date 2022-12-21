@@ -53,11 +53,14 @@ public class OrderProcessor {
     }
 
     /**
-     * Starts an order.
+     * Method that instantiates an order to ongoing stage.
      *
-     * @param location location of the store
-     * @param selectedTime selected time for the order
-     * @return message of outcome
+     * @param location location of the order
+     * @param memberId member ID of the person placing the order
+     * @param selectedTime selected time of the order
+     * @param token authentication token
+     * @return confirmation response if the order was successful and details of what went wrong if not successful
+     * @throws Exception
      */
     public String startOrder(String location, String memberId, String selectedTime, String token) throws Exception {
         if (selectedTime == null) {
@@ -74,34 +77,19 @@ public class OrderProcessor {
             throw new Exception("Order has to be at least " + deadlineOffset + " minutes in the future.");
         }
 
-        // TODO
         // validate location for the store
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.set("Authorization", String.format("Bearer %s", token));
-//
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("storeLocation", location);
-//        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
-//
-//        ResponseEntity<Boolean> response = restTemplate.postForEntity(storeUrl + "/validateLocation", entity, Boolean.class);
-//        System.out.println(response.getBody());
-//
-//        if (response.getStatusCode() == HttpStatus.BAD_REQUEST || response.getBody() == false) {
-//            throw new Exception("Not a valid location");
-//        }
+        validateLocation(location, token);
 
-        // TODO
-        // 2. get storedID from Store
+        // get storedID of the store with provided location from Store microservice
+        Long storeId = getStoreIdFromLocation(location, token);
 
-        // Authenticate the store exists and send appropriate message if it doesn't
-
-
+        // creating an order
         Order order = new Order();
         order.setSelectedTime(selectedTime);
         order.setLocation(location);
         order.setStatus(Status.ORDER_ONGOING);
         order.setMemberId(memberId);
+        order.setStoreId(storeId);
 
         orderRepository.save(order);
         activeOrders.add(order.getId());
@@ -138,27 +126,32 @@ public class OrderProcessor {
     }
 
     /**
-     * Changes the selected location of an order.
+     * Changes the location of the order if the selected order is in ongoing phase
      *
-     * @param orderId id of the order
-     * @param storeId id of the store
-     * @return message of outcome
+     * @param location new location
+     * @param orderId ID of the order
+     * @param token authentication token
+     * @return message of the outcome
+     * @throws Exception
      */
-    public String changeSelectedLocation(Long orderId, Long storeId) throws Exception {
-        if (orderId == null) {
+    public String changeSelectedLocation(String location, Long orderId, String token) throws Exception {
+        if (location == null) {
             throw new Exception(invalidOrderIdMessage);
         } else if (!activeOrders.contains(orderId)) {
             throw new Exception(noActiveOrderMessage);
-        } else if (storeId == null) {
-            throw new Exception("Please select store");
+        } else if (location == null) {
+            throw new Exception("Please enter a valid location");
         }
 
-        // TODO
-        // Authenticate the store exists and send appropriate message if it doesn't
+        // validate new location for the store
+        validateLocation(location, token);
 
+        // get the new storedID of the store with provided location
+        Long storeId = getStoreIdFromLocation(location, token);
 
         Order order = orderRepository.getOne(orderId);
         order.setStoreId(storeId);
+        order.setLocation(location);
         orderRepository.save(order);
 
         return "Store changed successfully";
@@ -305,5 +298,36 @@ public class OrderProcessor {
         } catch (Exception e) {
             throw new Exception("Please provide the correct time format: dd/MM/yyyy HH:mm:ss");
         }
+    }
+
+    private void validateLocation(String location, String token) throws Exception {
+        HttpHeaders headerForValidation = new HttpHeaders();
+        headerForValidation.set("Authorization", String.format("Bearer %s", token));
+        HttpEntity requestValidation = new HttpEntity(headerForValidation);
+        ResponseEntity<Boolean> responseValidation = restTemplate.exchange(
+                storeUrl + "/validateLocation/" + location,
+                HttpMethod.GET,
+                requestValidation,
+                Boolean.class
+        );
+        if (responseValidation.getBody() == false) {
+            throw new Exception("Location " + location + " is not valid");
+        }
+    }
+
+    private Long getStoreIdFromLocation(String location, String token) throws Exception {
+        HttpHeaders headerForStoreId = new HttpHeaders();
+        headerForStoreId.set("Authorization", String.format("Bearer %s", token));
+        HttpEntity requestStoreId = new HttpEntity(headerForStoreId);
+        ResponseEntity<Long> responseStoreId = restTemplate.exchange(
+                storeUrl + "/getStoreId/" + location,
+                HttpMethod.GET,
+                requestStoreId,
+                Long.class
+        );
+        if (responseStoreId.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            throw new Exception("Problem with location, please try again");
+        }
+        return responseStoreId.getBody();
     }
 }
