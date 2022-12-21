@@ -3,7 +3,6 @@ package nl.tudelft.sem.group06b.store.api;
 import java.util.List;
 import nl.tudelft.sem.group06b.store.domain.Location;
 import nl.tudelft.sem.group06b.store.domain.Store;
-import nl.tudelft.sem.group06b.store.model.LocationRequestModel;
 import nl.tudelft.sem.group06b.store.model.ModifyStoreRequestModel;
 import nl.tudelft.sem.group06b.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,25 +86,25 @@ public class StoreController {
     /**
      * Validates if the store locations.
      *
-     * @param request serialized Location object in the form of a JSON in the request body.
+     * @param address address of the store.
      * @return True if the given store location exists.
      */
-    @GetMapping("/validateLocation")
-    public ResponseEntity<Boolean> validateLocation(@RequestBody LocationRequestModel request) {
-        Location location = new Location(request.getStoreLocation());
+    @GetMapping("/validateLocation/{address}")
+    public ResponseEntity<Boolean> validateLocation(@PathVariable String address) {
+        Location location = new Location(address);
         return ResponseEntity.ok(storeService.validateStoreLocation(location));
     }
 
     /**
      * Gets the store id from the database.
      *
-     * @param request serialized Location object in the form of a JSON in the request body.
+     * @param address address of the store.
      * @return The store id.
      */
-    @GetMapping("/getStoreId")
-    public ResponseEntity<Long> getStoreId(@RequestBody LocationRequestModel request) {
+    @GetMapping("/getStoreId/{address}")
+    public ResponseEntity<Long> getStoreId(@PathVariable String address) {
         try {
-            Location location = new Location(request.getStoreLocation());
+            Location location = new Location(address);
             storeId = storeService.retrieveStoreId(location);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
