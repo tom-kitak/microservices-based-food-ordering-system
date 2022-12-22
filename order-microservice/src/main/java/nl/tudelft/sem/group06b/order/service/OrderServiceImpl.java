@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void setOrderLocation(String token, Long orderId, Location location) throws Exception {
+    public void setOrderLocation(String token, Long orderId, String location) throws Exception {
         orderProcessor.setOrderLocation(token, orderId, location);
     }
 
@@ -51,13 +51,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Collection<Order> fetchAllStoreOrders(Long storeId) {
-        return orderProcessor.fetchAllStoreOrders();
+    public Collection<Order> fetchAllStoreOrders(String token, String memberId,
+                                                 String roleName, Long storeId) throws Exception {
+        return orderProcessor.fetchAllStoreOrders(token, memberId, roleName, storeId);
     }
 
     @Override
-    public Collection<Order> fetchAllOrders() {
-        return orderProcessor.fetchAllOrders();
+    public Collection<Order> fetchAllOrders(String token, String memberId, String roleName) throws Exception {
+        return orderProcessor.fetchAllOrders(token, memberId, roleName);
     }
 
     @Override

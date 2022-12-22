@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group06b.store.domain;
+package nl.tudelft.sem.group06b.store.domain.store;
 
 public class NoSuchStoreException extends Exception {
 

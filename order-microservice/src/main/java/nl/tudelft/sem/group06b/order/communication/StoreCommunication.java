@@ -29,13 +29,30 @@ public class StoreCommunication {
      * @throws Exception if the location or response is not valid
      */
     public boolean validateLocation(String location, String token) {
-        HttpHeaders headerForValidation = new HttpHeaders();
-        headerForValidation.set("Authorization", String.format("Bearer %s", token));
-        HttpEntity requestValidation = new HttpEntity(headerForValidation);
+
         ResponseEntity<Boolean> responseValidation = restTemplate.exchange(
                 storeUrl + "/validateLocation/" + location,
                 HttpMethod.GET,
-                requestValidation,
+                createGetRequest(token),
+                Boolean.class
+        );
+        return responseValidation.getBody();
+    }
+
+
+
+    /**
+     * Checks if the user is a manager and updates their role.
+     *
+     * @param manager memberId of the user
+     * @param token authentication token
+     * @throws Exception if the location or response is not valid
+     */
+    public boolean validateManager(String manager, String token) {
+        ResponseEntity<Boolean> responseValidation = restTemplate.exchange(
+                storeUrl + "/validateManager/" + manager,
+                HttpMethod.GET,
+                createGetRequest(token),
                 Boolean.class
         );
         return responseValidation.getBody();
@@ -50,13 +67,31 @@ public class StoreCommunication {
      * @throws Exception if invalid response
      */
     public Long getStoreIdFromLocation(String location, String token) throws Exception {
-        HttpHeaders headerForStoreId = new HttpHeaders();
-        headerForStoreId.set("Authorization", String.format("Bearer %s", token));
-        HttpEntity requestStoreId = new HttpEntity(headerForStoreId);
         ResponseEntity<Long> responseStoreId = restTemplate.exchange(
                 storeUrl + "/getStoreId/" + location,
                 HttpMethod.GET,
-                requestStoreId,
+                createGetRequest(token),
+                Long.class
+        );
+        if (responseStoreId.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            throw new Exception("Problem with location, please try again");
+        }
+        return responseStoreId.getBody();
+    }
+
+    /**
+     * Gets store ID from the manager memberId provided.
+     *
+     * @param manager memberId of store manager
+     * @param token authentication token
+     * @return store ID of the location
+     * @throws Exception if invalid response
+     */
+    public Long getStoreIdFromManager(String manager, String token) throws Exception {
+        ResponseEntity<Long> responseStoreId = restTemplate.exchange(
+                storeUrl + "/getStoreIdManager/" + manager,
+                HttpMethod.GET,
+                createGetRequest(token),
                 Long.class
         );
         if (responseStoreId.getStatusCode() == HttpStatus.BAD_REQUEST) {
@@ -87,8 +122,20 @@ public class StoreCommunication {
 
         if (response.getStatusCode() == HttpStatus.OK) {
             System.out.println(response.getBody());
+            return;
         }
         System.out.println("Problem with sending an email");
+    }
+
+    /**
+     * Creates GET request.
+     *
+     * @param token authentication token
+     */
+    public HttpEntity createGetRequest(String token) {
+        HttpHeaders headerForValidation = new HttpHeaders();
+        headerForValidation.set("Authorization", String.format("Bearer %s", token));
+        return new HttpEntity(headerForValidation);
     }
 
 }

@@ -1,14 +1,22 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+/**
+ * repository for the allergies.
+ */
 public interface AllergyRepository extends JpaRepository<Allergy, Long> {
 
     /**
      * returns specific allergy that has the given id.
      *
      * @param id of the allergy.
-     * @return the allergy with the id.
+     * @return the allergy with the id or empty optional if doesn't exist.
      */
-    Allergy getAllergyById(Long id);
+    Optional<Allergy> findAllergyById(Long id);
+
+    Optional<Allergy> findAllergyByNameIsIgnoreCase(String s);
+
+    void deleteAllergyById(Long id);
 }

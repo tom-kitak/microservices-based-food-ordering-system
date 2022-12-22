@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,12 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-/**
- * Hello World example controller.
- * <p>
- * This controller shows how you can extract information from the JWT token.
- * </p>
- */
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/order")
@@ -60,7 +56,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Changes the time of the order.
      *
      * @param request the request
      * @return the result
@@ -76,7 +72,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Changes the location of the order.
      *
      * @param request the request
      * @return the result
@@ -92,7 +88,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Places an order.
      *
      * @param request the request
      * @return the result
@@ -108,7 +104,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Cancels an order.
      *
      * @param request the request
      * @return the result
@@ -125,7 +121,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Gets an order.
      *
      * @param request the request
      * @return the result
@@ -140,7 +136,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Gets all orders from a certain store.
      *
      * @param request the request
      * @return the result
@@ -150,28 +146,30 @@ public class OrderController {
             @RequestBody FetchStoreOrdersRequestModel request) {
         try {
             return ResponseEntity.ok(new FetchStoreOrdersResponseModel(
-                    orderService.fetchAllStoreOrders(request.getStoreId())));
+                    orderService.fetchAllStoreOrders(authManager.getToken(), authManager.getMemberId(),
+                            authManager.getRole(), request.getStoreId())));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Javadoc.
+     * Gets all orders from all stores.
      *
      * @return the result
      */
     @GetMapping("/fetch_all")
     public ResponseEntity<FetchOrdersResponseModel> fetchOrders() {
         try {
-            return ResponseEntity.ok(new FetchOrdersResponseModel(orderService.fetchAllOrders()));
+            return ResponseEntity.ok(new FetchOrdersResponseModel(orderService.fetchAllOrders(
+                    authManager.getToken(), authManager.getMemberId(), authManager.getRole())));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Javadoc.
+     * Adds a pizza to an order.
      *
      * @param request the request
      * @return the result
@@ -188,7 +186,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Removes a pizza from an order.
      *
      * @param request the request
      * @return the result
@@ -204,7 +202,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Adds a topping to a pizza.
      *
      * @param request the request
      * @return the result
@@ -221,7 +219,7 @@ public class OrderController {
     }
 
     /**
-     * Javadoc.
+     * Removes a topping from a pizza.
      *
      * @param request the request
      * @return the result
@@ -230,6 +228,39 @@ public class OrderController {
     public ResponseEntity<?> removeTopping(@RequestBody RemoveToppingRequestModel request) {
         try {
             orderService.removeTopping(request.getOrderId(), request.getPizza(), request.getToppingId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
+        }
+    }
+
+    /**
+     * Adds a coupon to the order.
+     *
+     * @param orderId the order id
+     * @param couponId the coupon id
+     * @return the result
+     */
+    @PostMapping("/add_coupon/{orderId}/{couponId}")
+    public ResponseEntity<?> addCoupon(@PathVariable long orderId, @PathVariable String couponId) {
+        try {
+            orderService.addCoupon(authManager.getToken(), orderId, couponId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
+        }
+    }
+
+    /**
+     * Removes a coupon from the order.
+     *
+     * @param orderId the order id
+     * @return the result
+     */
+    @DeleteMapping("/remove_coupon/{orderId}/{couponId}")
+    public ResponseEntity<?> removeCoupon(@PathVariable long orderId, @PathVariable String couponId) {
+        try {
+            orderService.removeCoupon(orderId, couponId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());

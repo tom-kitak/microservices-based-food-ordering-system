@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
-import nl.tudelft.sem.group06b.order.domain.Location;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
@@ -115,16 +116,16 @@ public class OrderProcessorImpl implements OrderProcessor {
     }
 
     @Override
-    public void setOrderLocation(String token, Long orderId, Location location) throws Exception {
+    public void setOrderLocation(String token, Long orderId, String location) throws Exception {
         if (token.isEmpty()) {
             throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
         }
 
-        if (location.getAddress().isEmpty() && storeCommunication.validateLocation(location.getAddress(), token)) {
+        if (location.isEmpty() && storeCommunication.validateLocation(location, token)) {
             throw new IllegalArgumentException(INVALID_LOCATION_MESSAGE);
         }
 
-        Long storeId = storeCommunication.getStoreIdFromLocation(location.getAddress(), token);
+        Long storeId = storeCommunication.getStoreIdFromLocation(location, token);
         Order order = orderRepository.getOne(orderId);
 
         if (order.getStatus() != Status.ORDER_ONGOING) {
@@ -132,7 +133,7 @@ public class OrderProcessorImpl implements OrderProcessor {
         }
 
         order.setStoreId(storeId);
-        order.setLocation(location.getAddress());
+        order.setLocation(location);
         orderRepository.save(order);
     }
 
@@ -156,10 +157,10 @@ public class OrderProcessorImpl implements OrderProcessor {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
         }
 
-        if (order.getAppliedCoupon().isEmpty()) {
+        if (order.getAppliedCoupon() == null || order.getAppliedCoupon().isEmpty()) {
             // TODO: extract logic to an external class to generate request
             ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
-                    List.of(order.getAppliedCoupon()), token);
+                    new ArrayList<>(order.getCoupons()), token);
             if (applyCouponsToResponse.getCoupons() == null || !applyCouponsToResponse.getCoupons().isEmpty()) {
                 order.setAppliedCoupon(null);
             } else {
@@ -206,20 +207,23 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         Order order = orderRepository.getOne(orderId);
 
+        if (storeCommunication.validateManager(memberId, token)) {
+            roleName = "store_admin";
+        }
+
         switch (roleName) {
             case "regional_manager":
-                if (order.getStatus() != Status.ORDER_ONGOING || order.getStatus() != Status.ORDER_PLACED) {
+                if (order.getStatus() != Status.ORDER_ONGOING && order.getStatus() != Status.ORDER_PLACED) {
                     throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
                 }
                 break;
             case "store_admin":
-                //TODO: set proper access methods for the store: there is an endpoint for it
-
-                //if (order.getStoreId().equals(memberId)) {
-                //
-                //}
-                if (order.getStatus() != Status.ORDER_ONGOING || order.getStatus() != Status.ORDER_PLACED) {
+                if (order.getStatus() != Status.ORDER_ONGOING && order.getStatus() != Status.ORDER_PLACED) {
                     throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+                }
+                if (!orderRepository.getOne(orderId).getStoreId()
+                        .equals(storeCommunication.getStoreIdFromManager(memberId, token))) {
+                    throw new UnsupportedOperationException("Not the store manager of this store");
                 }
                 break;
             case "customer":
@@ -250,16 +254,47 @@ public class OrderProcessorImpl implements OrderProcessor {
         if (orderId == null) {
             throw new Exception(INVALID_ORDER_ID_MESSAGE);
         }
-        return orderRepository.getOne(orderId);
+        if (orderRepository.existsById(orderId)) {
+            return orderRepository.getOne(orderId);
+        }
+        throw new Exception(INVALID_ORDER_ID_MESSAGE);
     }
 
     @Override
-    public Collection<Order> fetchAllStoreOrders() {
-        return new ArrayList<>();
+    public Collection<Order> fetchAllStoreOrders(String token, String memberId,
+                                                 String roleName, Long storeId) throws Exception {
+
+        List<Order> orders = orderRepository.findAll().stream()
+                .filter(x -> Objects.equals(x.getStoreId(), storeId)).collect(Collectors.toList());
+
+        if (storeCommunication.validateManager(memberId, token)) {
+            if (!storeId.equals(storeCommunication.getStoreIdFromManager(memberId, token))) {
+                throw new UnsupportedOperationException("Not the store manager of this store");
+            }
+            return orders;
+        } else if (roleName.equals("regional_manager")) {
+            return orders;
+        }
+
+        throw new Exception("Customers can not view store orders");
     }
 
     @Override
-    public Collection<Order> fetchAllOrders() {
-        return new ArrayList<>();
+    public Collection<Order> fetchAllOrders(String token, String memberId,
+                                            String roleName) throws Exception {
+        if (roleName.equals("regional_manager")) {
+            return orderRepository.findAll();
+        }
+        throw new Exception("Only regional managers can view all orders");
+    }
+
+    @Override
+    public void addCoupon(String token, Long orderId, String coupon) throws Exception {
+
+    }
+
+    @Override
+    public void removeCoupon(Long orderId, String coupon) throws Exception {
+
     }
 }

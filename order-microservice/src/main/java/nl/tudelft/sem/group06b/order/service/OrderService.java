@@ -12,7 +12,7 @@ public interface OrderService {
 
     void setOrderTime(Long orderId, String selectedTime) throws Exception;
 
-    void setOrderLocation(String token, Long orderId, Location location) throws Exception;
+    void setOrderLocation(String token, Long orderId, String location) throws Exception;
 
     Order placeOrder(String token, Long orderId) throws Exception;
 
@@ -20,9 +20,9 @@ public interface OrderService {
 
     Order fetchOrder(Long orderId) throws Exception;
 
-    Collection<Order> fetchAllStoreOrders(Long storeId);
+    Collection<Order> fetchAllStoreOrders(String token, String memberId, String roleName, Long storeId) throws Exception;
 
-    Collection<Order> fetchAllOrders();
+    Collection<Order> fetchAllOrders(String token, String memberId, String roleName) throws Exception;
 
     Collection<Allergen> addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception;
 

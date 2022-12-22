@@ -42,7 +42,8 @@ public class CouponsController {
      */
     @PostMapping("/addCoupon")
     public ResponseEntity<?> addCoupon(@RequestBody NewCouponRequestModel coupon) {
-        if (authManager.getRoles().contains(new SimpleGrantedAuthority("customer"))) {
+        //Only regional managers can add coupons
+        if (!authManager.getRoles().contains(new SimpleGrantedAuthority("regional_manager"))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 

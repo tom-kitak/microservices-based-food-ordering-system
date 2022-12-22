@@ -1,7 +1,9 @@
 package nl.tudelft.sem.group06b.store.api;
 
 import java.util.List;
-import nl.tudelft.sem.group06b.store.domain.Email;
+import java.util.Locale;
+import nl.tudelft.sem.group06b.store.authentication.AuthManager;
+import nl.tudelft.sem.group06b.store.domain.email.Email;
 import nl.tudelft.sem.group06b.store.model.SendEmailRequestModel;
 import nl.tudelft.sem.group06b.store.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,11 @@ public class EmailController {
 
     private final transient EmailService emailService;
 
+    private final transient AuthManager authManager;
+
     private transient List<Email> dummyEmails;
+
+    private final transient String regionalManager = "regional_manager";
 
     /**
      * Instantiates a new controller.
@@ -31,7 +37,8 @@ public class EmailController {
      * @param emailService The email service.
      */
     @Autowired
-    public EmailController(EmailService emailService) {
+    public EmailController(AuthManager authManager, EmailService emailService) {
+        this.authManager = authManager;
         this.emailService = emailService;
     }
 
@@ -42,7 +49,10 @@ public class EmailController {
      */
     @GetMapping("/showAllEmails")
     public ResponseEntity<List<Email>> queryAllEmails() {
-        return ResponseEntity.ok(emailService.queryAllEmails());
+        if (authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            return ResponseEntity.ok(emailService.queryAllEmails());
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only regional managers can view all emails");
     }
 
     /**
@@ -53,7 +63,9 @@ public class EmailController {
      */
     @GetMapping("/showEmailsByStoreId/{id}")
     public ResponseEntity<List<Email>> queryEmailsByStore(@PathVariable("id") Long id) {
-
+        if (!authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only regional managers can view emails by store");
+        }
         try {
             dummyEmails = emailService.getEmailsFromStore(id);
         } catch (Exception e) {
@@ -70,7 +82,11 @@ public class EmailController {
      */
     @PostMapping("/sendEmail")
     public ResponseEntity<String> sendEmail(@RequestBody SendEmailRequestModel request) {
-
+        if (!emailService.validateManager(authManager.getMemberId())
+                && !authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Only store managers and regional managers can send emails");
+        }
         try {
             Long storeId = request.getStoreId();
             String message = request.getEmail();
@@ -89,9 +105,40 @@ public class EmailController {
      */
     @DeleteMapping("/deleteEmail/{emailId}")
     public ResponseEntity<String> deleteEmail(@PathVariable("emailId") Long id) {
-
+        if (!authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Only regional managers can delete emails");
+        }
         try {
             emailService.deleteEmail(id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok("Email deleted!");
+    }
+
+    /**
+     * Remove a dummy email from a specific store from the database.
+     *
+     * @param emailId The email id.
+     * @param storeId The store id.
+     * @return an HTTP response (200 if the email is removed, 400 otherwise).
+     * @throws Exception If store does not exist.
+     */
+    @DeleteMapping("/deleteEmailByStore/{emailId}/{storeId}")
+    public ResponseEntity<String> deleteEmailByStore(@PathVariable("emailId") Long emailId,
+                                                     @PathVariable("storeId") Long storeId)
+            throws Exception {
+        if (!emailService.validateManager(authManager.getMemberId())
+                && !emailService.getManagerFromStore(storeId).equals(authManager.getMemberId())
+                && !authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Store manager can only delete emails from his own store,"
+                            + " or you need to be a regional manager");
+        }
+        try {
+            emailService.deleteEmail(emailId);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

@@ -58,16 +58,13 @@ public class CouponCommunication {
     public Boolean validateCoupon(String coupon, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", String.format("Bearer %s", token));
-        HttpEntity request = new HttpEntity(headers);
+        HttpEntity<?> request = new HttpEntity<>(headers);
         ResponseEntity<Boolean> response = restTemplate.exchange(
                 couponUrl + "/checkAvailability/" + coupon,
                 HttpMethod.GET,
                 request,
                 Boolean.class
         );
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return false;
-        }
         return response.getBody();
     }
 }

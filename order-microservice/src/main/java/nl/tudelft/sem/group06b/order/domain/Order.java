@@ -1,9 +1,11 @@
 package nl.tudelft.sem.group06b.order.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -19,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "orders")
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
 
     @Id
@@ -29,11 +32,11 @@ public class Order {
     @Column(name = "memberId")
     private String memberId;
 
-    @Column(name = "pizzas")
+    @Column(name = "pizzas", length = 1000)
     @ElementCollection
     private List<Pizza> pizzas;
 
-    @Column(name = "selectedTime", nullable = false)
+    @Column(name = "selectedTime")
     private String selectedTime;
 
     @Column(name = "status")
@@ -41,6 +44,10 @@ public class Order {
 
     @Column(name = "coupon")
     private String appliedCoupon;
+
+    @Column(name = "coupons")
+    @ElementCollection
+    private Set<String> coupons;
 
     @Column(name = "price")
     private BigDecimal price;
@@ -63,7 +70,8 @@ public class Order {
      * @param location location of the store
      */
     public Order(String memberId, List<Pizza> pizzas, String selectedTime,
-                 Status status, BigDecimal price, Long storeId, String location, String appliedCoupon) {
+                 Status status, BigDecimal price, Long storeId,
+                 String location, String appliedCoupon, Set<String> coupons) {
         this.memberId = memberId;
         this.pizzas = pizzas;
         this.selectedTime = selectedTime;
@@ -72,6 +80,7 @@ public class Order {
         this.price = price;
         this.storeId = storeId;
         this.location = location;
+        this.coupons = coupons;
     }
 
     public Order(String memberId, Status status) {
@@ -101,7 +110,7 @@ public class Order {
         sb.append(", to be collected at " + this.selectedTime + "\n");
         sb.append("Order contains the following pizzas:\n");
         sb.append(pizzas.toString() + "\n");
-        if (appliedCoupon.isEmpty()) {
+        if (appliedCoupon == null || appliedCoupon.isEmpty()) {
             sb.append("No coupon was applied");
         } else {
             sb.append("Following coupon was applied: " + appliedCoupon);

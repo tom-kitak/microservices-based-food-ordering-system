@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Pizza implements Serializable {
 
     static final long serialVersionUID = -6470090944414208496L;
