@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group06b.store.domain;
+package nl.tudelft.sem.group06b.store.domain.email;
 
 import java.util.Objects;
 import javax.persistence.Column;
@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
+import nl.tudelft.sem.group06b.store.domain.store.Store;
 
 
 @Entity

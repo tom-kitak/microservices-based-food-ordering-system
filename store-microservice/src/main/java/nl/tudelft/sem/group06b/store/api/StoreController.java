@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import nl.tudelft.sem.group06b.store.authentication.AuthManager;
 import nl.tudelft.sem.group06b.store.domain.Location;
-import nl.tudelft.sem.group06b.store.domain.Store;
+import nl.tudelft.sem.group06b.store.domain.store.Store;
 import nl.tudelft.sem.group06b.store.model.ModifyStoreRequestModel;
 import nl.tudelft.sem.group06b.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;

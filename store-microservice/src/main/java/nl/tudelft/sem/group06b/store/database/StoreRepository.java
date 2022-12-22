@@ -2,7 +2,7 @@ package nl.tudelft.sem.group06b.store.database;
 
 import java.util.Optional;
 import nl.tudelft.sem.group06b.store.domain.Location;
-import nl.tudelft.sem.group06b.store.domain.Store;
+import nl.tudelft.sem.group06b.store.domain.store.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

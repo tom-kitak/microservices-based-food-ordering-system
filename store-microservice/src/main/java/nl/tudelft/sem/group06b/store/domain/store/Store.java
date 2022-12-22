@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group06b.store.domain;
+package nl.tudelft.sem.group06b.store.domain.store;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +13,9 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nl.tudelft.sem.group06b.store.domain.Location;
+import nl.tudelft.sem.group06b.store.domain.email.Email;
+
 
 
 @Entity

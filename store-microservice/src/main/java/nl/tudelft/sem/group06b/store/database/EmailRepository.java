@@ -1,7 +1,7 @@
 package nl.tudelft.sem.group06b.store.database;
 
 import java.util.List;
-import nl.tudelft.sem.group06b.store.domain.Email;
+import nl.tudelft.sem.group06b.store.domain.email.Email;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
