@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -44,6 +45,10 @@ public class Order {
     @Column(name = "coupon")
     private String appliedCoupon;
 
+    @Column(name = "coupons")
+    @ElementCollection
+    private Set<String> coupons;
+
     @Column(name = "price")
     private BigDecimal price;
 
@@ -65,7 +70,8 @@ public class Order {
      * @param location location of the store
      */
     public Order(String memberId, List<Pizza> pizzas, String selectedTime,
-                 Status status, BigDecimal price, Long storeId, String location, String appliedCoupon) {
+                 Status status, BigDecimal price, Long storeId,
+                 String location, String appliedCoupon, Set<String> coupons) {
         this.memberId = memberId;
         this.pizzas = pizzas;
         this.selectedTime = selectedTime;
@@ -74,6 +80,7 @@ public class Order {
         this.price = price;
         this.storeId = storeId;
         this.location = location;
+        this.coupons = coupons;
     }
 
     public Order(String memberId, Status status) {
