@@ -408,6 +408,25 @@ public class MenuService {
         this.allergyRepository.flush();
         return ret;
     }
+
+    /**
+     * removes an allergy with a specific id.
+     *
+     * @param id the id of the allergy to remove.
+     * @return true if deleted/false if couldn't.
+     */
+    public boolean removeAllergyById(Long id) {
+        try {
+            if (getAllergyById(id).isEmpty()) {
+                return false;
+            }
+            this.allergyRepository.deleteAllergyById(id);
+            this.allergyRepository.flush();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
 
 

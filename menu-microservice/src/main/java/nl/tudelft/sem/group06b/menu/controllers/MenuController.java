@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.menu.controllers;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,21 +45,11 @@ public class MenuController {
     private final transient MenuService menuService;
 
     /**
-     * Gets example by id.
-     *
-     * @return the example found in the database with the given id
-     */
-    @GetMapping("/hello")
-    public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello");
-    }
-
-    /**
      * fetches the topping that has a specific id.
      *
      * @return the topping with the specific id.
      */
-    @PostMapping("getToppingByID/{itemId}")
+    @GetMapping("getToppingById/{itemId}")
     public ResponseEntity<Optional<Topping>> getToppingById(@PathVariable Long itemId) throws ResponseStatusException {
         try {
             return ResponseEntity.ok(menuService.getToppingById(itemId));
@@ -74,7 +65,7 @@ public class MenuController {
      * @return Optional of the pizza.
      * @throws ResponseStatusException if itemId is null or there is an exception.
      */
-    @PostMapping("getPizzaByID/{itemId}")
+    @GetMapping("getPizzaByID/{itemId}")
     public ResponseEntity<Optional<Pizza>> getPizzaById(@PathVariable Long itemId) throws ResponseStatusException {
         try {
             return ResponseEntity.ok(menuService.getPizzaById(itemId));
@@ -179,7 +170,7 @@ public class MenuController {
      * @return encapsulated true if added/false if couldn't.
      * @throws ResponseStatusException if something went wrong.
      */
-    @PostMapping("add/Allergy")
+    @PostMapping("add/allergy")
     public ResponseEntity<Boolean> addAllergy(@RequestBody Allergy allergy) throws ResponseStatusException {
         try {
             return ResponseEntity.ok(menuService.addAllergy(allergy));
@@ -190,25 +181,12 @@ public class MenuController {
     }
 
     /**
-     * gets a static topping for testing.
-     *
-     * @return static topping.
-     */
-    @GetMapping("getStaticPizza")
-    public ResponseEntity<Pizza> pizza() {
-        Allergy a = new Allergy(42L, "Gluten");
-        Topping t1 = new Topping(12L, "Cheese", List.of(a), new BigDecimal("3.00"));
-        Pizza p = new Pizza(99L, List.of(t1), "Dough", new BigDecimal("11.00"));
-        return ResponseEntity.ok(p);
-    }
-
-    /**
      * gets prices for a pizza.
      *
      * @param request the ids of the pizza and toppings.
      * @return price of pizza and toppings.
      */
-    @PostMapping("getPrice")
+    @GetMapping("getPrice")
     public ResponseEntity<BigDecimal> getPrice(@RequestBody PriceModel request) {
         return ResponseEntity.ok(this.menuService.getPrice(request.getId(), request.getToppingIds()));
     }
@@ -305,20 +283,12 @@ public class MenuController {
         return ResponseEntity.ok(this.menuService.filterToppingsByAllergens(getAllergens(authManager.getMemberId())));
     }
 
-    /**
-     * removes a pizza with a specific id.
-     *
-     * @param itemId the item to remove.
-     * @return encapsulated true if successful, false if not.
-     */
-    @DeleteMapping("removePizzaById/{itemId}")
-    public ResponseEntity<Boolean> removePizzaById(@PathVariable Long itemId) {
-        try {
-            return ResponseEntity.ok(this.menuService.removePizzaById(itemId));
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+
+    @DeleteMapping("remove/allergy/{itemId}")
+    public ResponseEntity<Boolean> removeAllergyById(@PathVariable Long itemId) {
+        return ResponseEntity.ok(this.menuService.removeAllergyById(itemId));
     }
+
 
     /**
      * returns a list of allergens for a specific user.
@@ -327,19 +297,26 @@ public class MenuController {
      * @return list of allergies in a string format.
      */
     public List<String> getAllergens(String l) {
-        String url = "http://localhost:8082/user/" + l + "/getAllergens";
+        try {
+            String url = "http://localhost:8082/user/" + l + "/getAllergens";
 
-        final RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", String.format("Bearer %s", authManager.getToken()));
+            final RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", String.format("Bearer %s", authManager.getToken()));
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
-        return (List<String>) response.getBody().stream()
-                .map(x -> x.toString().split("=")[1].split("}")[0]).collect(Collectors.toList());
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
+            return (List<String>) response.getBody().stream()
+                    .map(x -> x.toString().split("=")[1].split("}")[0]).collect(Collectors.toList());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
 
     }
+
+
 
 
 }

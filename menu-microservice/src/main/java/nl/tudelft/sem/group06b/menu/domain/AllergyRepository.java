@@ -17,4 +17,6 @@ public interface AllergyRepository extends JpaRepository<Allergy, Long> {
     Optional<Allergy> findAllergyById(Long id);
 
     Optional<Allergy> findAllergyByNameIsIgnoreCase(String s);
+
+    void deleteAllergyById(Long id);
 }
