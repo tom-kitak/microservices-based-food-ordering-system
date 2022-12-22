@@ -127,14 +127,17 @@ public class Store {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
         Store store = (Store) o;
-        return Objects.equals(id, store.id) && name.equals(store.name) && storeLocation.equals(store.storeLocation);
+
+        if (!Objects.equals(id, store.id)) return false;
+        if (!Objects.equals(name, store.name)) return false;
+        if (!Objects.equals(storeLocation, store.storeLocation))
+            return false;
+        if (!Objects.equals(manager, store.manager)) return false;
+        return Objects.equals(dummyEmails, store.dummyEmails);
     }
 
     /**
