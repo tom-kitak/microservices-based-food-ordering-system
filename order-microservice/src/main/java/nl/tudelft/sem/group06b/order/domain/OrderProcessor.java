@@ -2,8 +2,10 @@ package nl.tudelft.sem.group06b.order.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,10 +28,13 @@ public class OrderProcessor {
 
     private final transient OrderRepository orderRepository;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private List<Long> activeOrders;
 
     private final transient RestTemplate restTemplate;
+
+    private final transient TaskScheduler taskScheduler;
 
     private final transient String valid = "VALID";
     private final transient String invalidOrderIdMessage = "Invalid order ID";
@@ -43,11 +49,20 @@ public class OrderProcessor {
      * Instantiates a new OrderProcessor.
      *
      * @param orderRepository repository of orders
+     * @param taskScheduler   scheduler for tasks
      */
-    public OrderProcessor(OrderRepository orderRepository) {
+    public OrderProcessor(OrderRepository orderRepository, TaskScheduler taskScheduler) {
         this.orderRepository = orderRepository;
+        this.taskScheduler = taskScheduler;
         this.activeOrders = new ArrayList<>();
         this.restTemplate = new RestTemplate();
+
+        orderRepository.findAll().forEach(order -> {
+            if (order.getStatus() == Status.ORDER_PLACED) {
+                activeOrders.add(order.getId());
+                scheduleOrderCompletion(order.getId());
+            }
+        });
     }
 
     /**
@@ -62,10 +77,10 @@ public class OrderProcessor {
     /**
      * Method that instantiates an order to ongoing stage.
      *
-     * @param location location of the order
-     * @param memberId member ID of the person placing the order
+     * @param location     location of the order
+     * @param memberId     member ID of the person placing the order
      * @param selectedTime selected time of the order
-     * @param token authentication token
+     * @param token        authentication token
      * @return confirmation response if the order was successful and details of what went wrong if not successful
      * @throws Exception when selectedTime or location is not valid
      */
@@ -108,7 +123,7 @@ public class OrderProcessor {
     /**
      * Changes the time of an order.
      *
-     * @param orderId id of the order
+     * @param orderId      id of the order
      * @param selectedTime selected time of the order
      * @return message of outcome
      */
@@ -136,8 +151,8 @@ public class OrderProcessor {
      * Changes the location of the order if the selected order is in ongoing phase.
      *
      * @param location new location
-     * @param orderId ID of the order
-     * @param token authentication token
+     * @param orderId  ID of the order
+     * @param token    authentication token
      * @return message of the outcome
      * @throws Exception when location is not valid
      */
@@ -168,9 +183,9 @@ public class OrderProcessor {
      * Add pizzas to the order.
      *
      * @param memberId ID of the member that placed the order
-     * @param orderId ID of the order
-     * @param pizzas list of pizzas to add
-     * @param token authentication token
+     * @param orderId  ID of the order
+     * @param pizzas   list of pizzas to add
+     * @param token    authentication token
      * @return message of the outcome with appropriate reminders of possible allergens
      * @throws Exception when pizza is not valid
      */
@@ -210,7 +225,7 @@ public class OrderProcessor {
     /**
      * Applies coupon to an order.
      *
-     * @param orderId id of the order
+     * @param orderId    id of the order
      * @param couponsIds ids of the coupons entered
      * @return message of outcome
      */
@@ -249,7 +264,7 @@ public class OrderProcessor {
      * Place the order.
      *
      * @param orderId ID of the order to place
-     * @param token authentication token
+     * @param token   authentication token
      * @return receipt of the order
      * @throws Exception when there are no Pizzas in the order
      */
@@ -282,6 +297,7 @@ public class OrderProcessor {
 
         order.calculateTotalPrice();
         order.setStatus(Status.ORDER_PLACED);
+        scheduleOrderCompletion(orderId);
         orderRepository.save(order);
         activeOrders.remove(orderId);
 
@@ -292,6 +308,25 @@ public class OrderProcessor {
         String receipt = order.formatReceipt();
 
         return receipt;
+    }
+
+    /**
+     * Schedules the order to be set to completed at the due date, if the date was changed reschedules the order.
+     *
+     * @param orderId ID of the order
+     */
+    public void scheduleOrderCompletion(long orderId) {
+        Order order = orderRepository.getOne(orderId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime due = LocalDateTime.parse(order.getSelectedTime(), formatter);
+        if (order.getStatus() == Status.ORDER_PLACED && due.isBefore(LocalDateTime.now())) {
+            order.setStatus(Status.ORDER_FINISHED);
+            orderRepository.save(order);
+        } else {
+            taskScheduler.schedule(() -> {
+                scheduleOrderCompletion(orderId);
+            }, Date.from(due.toInstant(ZoneOffset.UTC)));
+        }
     }
 
     /**
@@ -327,7 +362,7 @@ public class OrderProcessor {
     /**
      * Checks if the time is valid and makes sense.
      *
-     * @param time time to check
+     * @param time           time to check
      * @param deadlineOffset integer of how many minutes before the provided time is the deadline
      * @return String that indicates if the time is valid or not
      * @throws Exception indication the format of time is not correct
