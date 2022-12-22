@@ -5,17 +5,17 @@ import nl.tudelft.sem.group06b.order.domain.Order;
 
 public interface OrderProcessor {
 
-    void startOrder();
+    Long startOrder(String token, String memberId) throws Exception;
 
-    void changeOrderTime();
+    void setOrderTime(Long orderId, String selectedTime) throws Exception;
 
-    void changeOrderLocation();
+    void setOrderLocation(String token, String location, Long orderId) throws Exception;
 
-    void placeOrder();
+    Order placeOrder(String token, Long orderId) throws Exception;
 
-    void cancelOrder();
+    void cancelOrder(String token, Long orderId) throws Exception;
 
-    Order fetchOrder();
+    Order fetchOrder(Long orderId) throws Exception;
 
     Collection<Order> fetchAllStoreOrders();
 

@@ -219,6 +219,8 @@ public class OrderProcessor {
         order.getPizzas().addAll(pizzas);
         orderRepository.save(order);
 
+        // TODO
+        // encapsulate String responses of allergens to a List<Allergen>
         return allergensResponse.toString();
     }
 
@@ -307,6 +309,8 @@ public class OrderProcessor {
         // send receipt
         String receipt = order.formatReceipt();
 
+        // TODO
+        // Return order
         return receipt;
     }
 
@@ -455,7 +459,7 @@ public class OrderProcessor {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-        ResponseEntity<BigDecimal> response = restTemplate.postForEntity(couponUrl + "", entity, BigDecimal.class);
+        ResponseEntity<BigDecimal> response = restTemplate.postForEntity(menuUrl + "", entity, BigDecimal.class);
 
         return response.getBody();
     }
@@ -470,7 +474,7 @@ public class OrderProcessor {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-        ResponseEntity<ApplyCouponsToOrderModel> response = restTemplate.postForEntity(menuUrl + "/calculatePrice",
+        ResponseEntity<ApplyCouponsToOrderModel> response = restTemplate.postForEntity(couponUrl + "/calculatePrice",
                 entity, ApplyCouponsToOrderModel.class);
 
         return response.getBody();
