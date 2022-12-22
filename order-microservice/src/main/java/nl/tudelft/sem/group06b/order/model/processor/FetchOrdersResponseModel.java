@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import nl.tudelft.sem.group06b.order.domain.Order;
 
+import java.util.Collection;
+
 @Data
 @AllArgsConstructor
-public class FetchOrderResponseModel {
-    Order order;
+public class FetchOrdersResponseModel {
+    private Collection<Order> orders;
 }

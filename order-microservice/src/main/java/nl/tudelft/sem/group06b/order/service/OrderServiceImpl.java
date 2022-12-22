@@ -2,7 +2,9 @@ package nl.tudelft.sem.group06b.order.service;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.group06b.order.domain.Allergen;
 import nl.tudelft.sem.group06b.order.domain.Order;
+import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.service.coupon.OrderCoupon;
 import nl.tudelft.sem.group06b.order.service.editing.OrderEditor;
 import nl.tudelft.sem.group06b.order.service.processor.OrderProcessor;
@@ -58,23 +60,23 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void addPizza() {
-        orderEditor.addPizza();
+    public Collection<Allergen> addPizza(String token, Long orderId, Pizza pizza) {
+        return orderEditor.addPizza(token, orderId, pizza);
     }
 
     @Override
-    public void removePizza() {
-        orderEditor.removePizza();
+    public void removePizza(Long orderId, Pizza pizza) {
+        orderEditor.removePizza(orderId, pizza);
     }
 
     @Override
-    public void addTopping() {
-        orderEditor.addTopping();
+    public Collection<Allergen> addTopping(String token, Long orderId, Pizza pizza, Long toppingId) {
+        return orderEditor.addTopping(token, orderId, pizza, toppingId);
     }
 
     @Override
-    public void removeTopping() {
-        orderEditor.removeTopping();
+    public void removeTopping(Long orderId, Pizza pizza, Long toppingId) {
+        orderEditor.removeTopping(orderId, pizza, toppingId);
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class ChangeOrderTimeRequestModel {
+public class SetOrderTimeRequestModel {
+    private Long orderId;
     private Date orderTime;
 }

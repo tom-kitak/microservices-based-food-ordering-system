@@ -1,15 +1,19 @@
 package nl.tudelft.sem.group06b.order.service;
 
 import java.util.Collection;
+
+import nl.tudelft.sem.group06b.order.domain.Allergen;
+import nl.tudelft.sem.group06b.order.domain.Location;
 import nl.tudelft.sem.group06b.order.domain.Order;
+import nl.tudelft.sem.group06b.order.domain.Pizza;
 
 public interface OrderService {
 
     void startOrder();
 
-    void changeOrderTime();
+    void setOrderTime();
 
-    void changeOrderLocation();
+    void setOrderLocation();
 
     void placeOrder();
 
@@ -21,13 +25,13 @@ public interface OrderService {
 
     Collection<Order> fetchAllOrders();
 
-    void addPizza();
+    Collection<Allergen> addPizza(String token, Long orderId, Pizza pizza);
 
-    void removePizza();
+    void removePizza(Long orderId, Pizza pizza);
 
-    void addTopping();
+    Collection<Allergen> addTopping(String token, Long orderId, Pizza pizza, Long toppingId);
 
-    void removeTopping();
+    void removeTopping(Long orderId, Pizza pizza, Long toppingId);
 
     void addCoupon();
 
