@@ -12,14 +12,12 @@ import java.util.stream.Collectors;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
-import nl.tudelft.sem.group06b.order.domain.Location;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
 import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import nl.tudelft.sem.group06b.order.util.TimeValidation;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -162,7 +160,7 @@ public class OrderProcessorImpl implements OrderProcessor {
         if (order.getAppliedCoupon().isEmpty()) {
             // TODO: extract logic to an external class to generate request
             ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
-                    List.of(order.getAppliedCoupon()), token);
+                    new ArrayList<>(order.getCoupons()), token);
             if (applyCouponsToResponse.getCoupons() == null || !applyCouponsToResponse.getCoupons().isEmpty()) {
                 order.setAppliedCoupon(null);
             } else {
