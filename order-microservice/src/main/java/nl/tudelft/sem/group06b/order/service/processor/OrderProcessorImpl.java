@@ -208,6 +208,10 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         Order order = orderRepository.getOne(orderId);
 
+        if (storeCommunication.validateManager(memberId, token)) {
+            roleName = "store_admin";
+        }
+
         switch (roleName) {
             case "regional_manager":
                 if (order.getStatus() != Status.ORDER_ONGOING || order.getStatus() != Status.ORDER_PLACED) {
@@ -267,7 +271,11 @@ public class OrderProcessorImpl implements OrderProcessor {
     }
 
     @Override
-    public Collection<Order> fetchAllOrders() {
-        return new ArrayList<>();
+    public Collection<Order> fetchAllOrders(String token, String memberId,
+                                            String roleName) throws Exception {
+        if (roleName.equals("regional_manager")) {
+            return orderRepository.findAll();
+        }
+        throw new Exception("Only regional managers can view all orders");
     }
 }

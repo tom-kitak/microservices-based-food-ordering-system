@@ -160,7 +160,8 @@ public class OrderController {
     @GetMapping("/fetch_all")
     public ResponseEntity<FetchOrdersResponseModel> fetchOrders() {
         try {
-            return ResponseEntity.ok(new FetchOrdersResponseModel(orderService.fetchAllOrders()));
+            return ResponseEntity.ok(new FetchOrdersResponseModel(orderService.fetchAllOrders(
+                    authManager.getToken(), authManager.getMemberId(), authManager.getRole())));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }

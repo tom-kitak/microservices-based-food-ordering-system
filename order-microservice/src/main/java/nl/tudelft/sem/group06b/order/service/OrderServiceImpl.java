@@ -57,8 +57,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Collection<Order> fetchAllOrders() {
-        return orderProcessor.fetchAllOrders();
+    public Collection<Order> fetchAllOrders(String token, String memberId, String roleName) throws Exception {
+        return orderProcessor.fetchAllOrders(token, memberId, roleName);
     }
 
     @Override

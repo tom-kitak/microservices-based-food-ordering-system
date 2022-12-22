@@ -22,7 +22,7 @@ public interface OrderService {
 
     Collection<Order> fetchAllStoreOrders(String token, String memberId, String roleName, Long storeId) throws Exception;
 
-    Collection<Order> fetchAllOrders();
+    Collection<Order> fetchAllOrders(String token, String memberId, String roleName) throws Exception;
 
     Collection<Allergen> addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception;
 
