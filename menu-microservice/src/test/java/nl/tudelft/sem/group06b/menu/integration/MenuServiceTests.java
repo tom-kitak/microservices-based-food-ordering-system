@@ -68,13 +68,16 @@ public class MenuServiceTests {
         this.ccc = new Allergy(3L, "Food");
         this.t1 = new Topping(10L, "Potato", List.of(aaa, ccc), new BigDecimal("10.99"));
         this.t2 = new Topping(11L, "Fries", List.of(aaa), new BigDecimal("10.99"));
-        this.t3 = new Topping(12L, "Butter", new ArrayList<Allergy>(), new BigDecimal("3.2"));
+        this.t3 = new Topping(12L, "Butter", new ArrayList<>(), new BigDecimal("3.2"));
         when(this.toppingRepository.findToppingById(10L)).thenReturn(Optional.of(t1));
         when(this.toppingRepository.findToppingById(11L)).thenReturn(Optional.of(t2));
         when(this.toppingRepository.findToppingById(12L)).thenReturn(Optional.of(t3));
         when(this.allergyRepository.findAllergyByNameIsIgnoreCase("Peanuts")).thenReturn(Optional.of(aaa));
         when(this.allergyRepository.findAllergyByNameIsIgnoreCase("Hawaii")).thenReturn(Optional.of(bbb));
         when(this.allergyRepository.findAllergyByNameIsIgnoreCase("Food")).thenReturn(Optional.of(ccc));
+        when(this.allergyRepository.findAllergyById(1L)).thenReturn(Optional.of(aaa));
+        when(this.allergyRepository.findAllergyById(2L)).thenReturn(Optional.of(bbb));
+        when(this.allergyRepository.findAllergyById(3L)).thenReturn(Optional.of(ccc));
         this.p1 = new Pizza(40L, List.of(t1, t3), "Pepperoni", new BigDecimal("10.99"));
         this.p2 = new Pizza(41L, List.of(t3), "Bepperoni", new BigDecimal("8.99"));
         this.p3 = new Pizza(42L, List.of(t1, t2, t3), "Cepperoni", new BigDecimal("78.99"));
@@ -147,8 +150,55 @@ public class MenuServiceTests {
 
     @Test
     public void getAllergyByNameTest() {
-        Assertions.assertThat(this.menuService.getAllergyByName(null).isEmpty());
+        Assertions.assertThat(this.menuService.getAllergyByName(null)).isEmpty();
+        Assertions.assertThat(this.menuService.getAllergyByName("Peanuts")).isPresent();
 
+    }
+
+    @Test
+    public void addTopping() {
+        Allergy ddd = new Allergy(988L, "Something made up");
+        Topping t = new Topping(18L, "Potato", List.of(this.aaa, ddd), new BigDecimal("10.99"));
+        Assertions.assertThat(this.menuService.addTopping(t)).isFalse();
+        Topping t2 = new Topping(19L, "Potato", List.of(this.aaa, this.ccc), new BigDecimal("10.99"));
+        Assertions.assertThat(this.menuService.addTopping(t2)).isTrue();
+        Assertions.assertThat(this.menuService.addTopping(null)).isFalse();
+    }
+
+    @Test
+    public void getAllergyById() {
+        Assertions.assertThat(this.menuService.getAllergyById(null)).isEmpty();
+    }
+
+    @Test
+    public void getPizzaById() {
+        Assertions.assertThat(this.menuService.getPizzaById(null)).isEmpty();
+    }
+
+    @Test
+    public void getToppingById() {
+        Assertions.assertThat(this.menuService.getToppingById(null)).isEmpty();
+    }
+
+    @Test
+    public void removePizzaById() {
+        Assertions.assertThat(this.menuService.removePizzaById(null)).isFalse();
+        Assertions.assertThat(this.menuService.removePizzaById(3948793L)).isFalse();
+        Assertions.assertThat(this.menuService.removePizzaById(40L)).isTrue();
+    }
+
+    @Test
+    public void removeToppingById() {
+        Assertions.assertThat(this.menuService.removeToppingById(null)).isFalse();
+        Assertions.assertThat(this.menuService.removeToppingById(3948793L)).isFalse();
+        Assertions.assertThat(this.menuService.removeToppingById(10L)).isTrue();
+    }
+
+    @Test
+    public void removeAllergyById() {
+        Assertions.assertThat(this.menuService.removeAllergyById(null)).isFalse();
+        Assertions.assertThat(this.menuService.removeAllergyById(3948793L)).isFalse();
+        Assertions.assertThat(this.menuService.removeAllergyById(1L)).isTrue();
     }
 
 

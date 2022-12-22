@@ -3,14 +3,15 @@ package nl.tudelft.sem.group06b.menu.domain;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
+import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 /**
  * MenuService gets toppings/pizzas from repositories.
  */
 @Service
+@Transactional
 public class MenuService {
     /**
      * repository for pizzas.
@@ -91,7 +92,6 @@ public class MenuService {
      *
      * @param id of the topping.
      * @return topping object that has the id.
-     * @throws NoSuchElementException if no topping is found with that id.
      */
     public Optional<Topping> getToppingById(Long id) {
         Optional<Topping> ret = this.toppingRepository.findToppingById(id);
@@ -104,7 +104,6 @@ public class MenuService {
      *
      * @param id of pizza.
      * @return the pizza object that has the id.
-     * @throws NoSuchElementException if no pizza is found.
      */
     public Optional<Pizza> getPizzaById(Long id) {
         Optional<Pizza> ret = this.pizzaRepository.findPizzaById(id);
@@ -117,7 +116,6 @@ public class MenuService {
      *
      * @param id of the allergy
      * @return allergy with the given id.
-     * @throws NoSuchElementException if no allergy is found.
      */
     public Optional<Allergy> getAllergyById(Long id) {
         try {
@@ -150,9 +148,8 @@ public class MenuService {
      *
      * @param id of pizza to remove.
      * @return true if removed/false if no pizza with that id.
-     * @throws IllegalArgumentException if id is null
      */
-    public boolean removePizzaById(Long id) throws IllegalArgumentException {
+    public boolean removePizzaById(Long id) {
         try {
             if (this.pizzaRepository.findPizzaById(id).isEmpty()) {
                 return false;
@@ -161,7 +158,7 @@ public class MenuService {
             this.pizzaRepository.flush();
             return true;
         } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+            return false;
         }
 
     }
@@ -171,7 +168,6 @@ public class MenuService {
      *
      * @param id of the topping to remove.
      * @return true if removed/false if no topping with that id.
-     * @throws IllegalArgumentException if id is null
      */
     public boolean removeToppingById(Long id) {
         if (this.toppingRepository.findToppingById(id).isEmpty()) {
@@ -188,19 +184,23 @@ public class MenuService {
      *
      * @param t the topping to add.
      * @return true if added/false if couldn't
-     * @throws IllegalArgumentException if t is null.
      */
-    public boolean addTopping(Topping t) throws IllegalArgumentException {
+    public boolean addTopping(Topping t) {
         try {
             if (this.toppingRepository.findToppingById(t.getId()).isPresent()) {
                 return false;
+            }
+            for (Allergy a : t.getAllergies()) {
+                Optional<Allergy> optAll = this.allergyRepository.findAllergyById(a.getId());
+                if (optAll.isEmpty()) {
+                    return false;
+                }
             }
             this.toppingRepository.save(t);
             this.toppingRepository.flush();
             return true;
         } catch (Exception e) {
-            System.out.println("Message: " + e.getMessage());
-            throw new IllegalArgumentException(e.getMessage());
+            return false;
         }
     }
 
@@ -209,18 +209,26 @@ public class MenuService {
      *
      * @param p the pizza to add.
      * @return true if saved/false if there is a pizza with that id.
-     * @throws IllegalArgumentException if p is null.
      */
-    public boolean addPizza(Pizza p) throws IllegalArgumentException {
+    public boolean addPizza(Pizza p) {
         try {
             if (this.pizzaRepository.findPizzaById(p.getId()).isPresent()) {
                 return false;
+            }
+            for (Topping t : p.getToppings()) {
+                Optional<Topping> optTop = this.toppingRepository.findToppingById(t.getId());
+                if (optTop.isEmpty()) {
+                    return false;
+                }
+                if (!optTop.get().hasSameIds(t)) {
+                    return false;
+                }
             }
             this.pizzaRepository.save(p);
             this.pizzaRepository.flush();
             return true;
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException();
+            return false;
         }
     }
 
@@ -229,9 +237,8 @@ public class MenuService {
      *
      * @param a the allergy to be added.
      * @return true if added/false if allergy exists already.
-     * @throws IllegalArgumentException if allergy is null.
      */
-    public boolean addAllergy(Allergy a) throws IllegalArgumentException {
+    public boolean addAllergy(Allergy a) {
         try {
             if (getAllergyById(a.getId()).isPresent()) {
                 return false;
@@ -240,7 +247,7 @@ public class MenuService {
             this.allergyRepository.flush();
             return true;
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException();
+            return false;
         }
     }
 
@@ -250,9 +257,9 @@ public class MenuService {
      * @param pid the id of the pizza to check.
      * @param toppingIds the list of toppings to check.
      * @return true if they are valid/false if they aren't
-     * @throws IllegalArgumentException if one of the pizzas in the list is null.
+
      */
-    public boolean isValidPizzaList(Long pid, List<Long> toppingIds) throws IllegalArgumentException {
+    public boolean isValidPizzaList(Long pid, List<Long> toppingIds) {
         try {
             System.out.println(pid);
             System.out.println(toppingIds);
