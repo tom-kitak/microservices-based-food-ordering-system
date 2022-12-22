@@ -19,6 +19,7 @@ import nl.tudelft.sem.group06b.order.domain.Status;
 import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import nl.tudelft.sem.group06b.order.util.TimeValidation;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -117,16 +118,16 @@ public class OrderProcessorImpl implements OrderProcessor {
     }
 
     @Override
-    public void setOrderLocation(String token, Long orderId, Location location) throws Exception {
+    public void setOrderLocation(String token, Long orderId, String location) throws Exception {
         if (token.isEmpty()) {
             throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
         }
 
-        if (location.getAddress().isEmpty() && storeCommunication.validateLocation(location.getAddress(), token)) {
+        if (location.isEmpty() && storeCommunication.validateLocation(location, token)) {
             throw new IllegalArgumentException(INVALID_LOCATION_MESSAGE);
         }
 
-        Long storeId = storeCommunication.getStoreIdFromLocation(location.getAddress(), token);
+        Long storeId = storeCommunication.getStoreIdFromLocation(location, token);
         Order order = orderRepository.getOne(orderId);
 
         if (order.getStatus() != Status.ORDER_ONGOING) {
@@ -134,7 +135,7 @@ public class OrderProcessorImpl implements OrderProcessor {
         }
 
         order.setStoreId(storeId);
-        order.setLocation(location.getAddress());
+        order.setLocation(location);
         orderRepository.save(order);
     }
 
@@ -255,17 +256,28 @@ public class OrderProcessorImpl implements OrderProcessor {
         if (orderId == null) {
             throw new Exception(INVALID_ORDER_ID_MESSAGE);
         }
-        return orderRepository.getOne(orderId);
+        if (orderRepository.existsById(orderId)) {
+            return orderRepository.getOne(orderId);
+        }
+        throw new Exception(INVALID_ORDER_ID_MESSAGE);
     }
 
     @Override
     public Collection<Order> fetchAllStoreOrders(String token, String memberId,
                                                  String roleName, Long storeId) throws Exception {
 
-        if (storeCommunication.validateManager(memberId, token) || roleName.equals("regional_manager")) {
-            return orderRepository.findAll().stream()
-                    .filter(x -> Objects.equals(x.getStoreId(), storeId)).collect(Collectors.toList());
+        List<Order> orders = orderRepository.findAll().stream()
+                .filter(x -> Objects.equals(x.getStoreId(), storeId)).collect(Collectors.toList());
+
+        if (storeCommunication.validateManager(memberId, token)) {
+            if (!storeId.equals(storeCommunication.getStoreIdFromManager(memberId, token))) {
+                throw new UnsupportedOperationException("Not the store manager of this store");
+            }
+            return orders;
+        } else if (roleName.equals("regional_manager")) {
+            return orders;
         }
+
         throw new Exception("Customers can not view store orders");
     }
 
@@ -276,5 +288,15 @@ public class OrderProcessorImpl implements OrderProcessor {
             return orderRepository.findAll();
         }
         throw new Exception("Only regional managers can view all orders");
+    }
+
+    @Override
+    public void addCoupon(String token, Long orderId, String coupon) throws Exception {
+
+    }
+
+    @Override
+    public void removeCoupon(Long orderId, String coupon) throws Exception {
+
     }
 }

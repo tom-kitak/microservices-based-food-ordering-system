@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void setOrderLocation(String token, Long orderId, Location location) throws Exception {
+    public void setOrderLocation(String token, Long orderId, String location) throws Exception {
         orderProcessor.setOrderLocation(token, orderId, location);
     }
 

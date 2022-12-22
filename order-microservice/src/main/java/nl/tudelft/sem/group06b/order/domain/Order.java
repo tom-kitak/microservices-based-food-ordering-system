@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.order.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "orders")
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
 
     @Id
@@ -33,7 +35,7 @@ public class Order {
     @ElementCollection
     private List<Pizza> pizzas;
 
-    @Column(name = "selectedTime", nullable = false)
+    @Column(name = "selectedTime")
     private String selectedTime;
 
     @Column(name = "status")

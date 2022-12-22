@@ -12,7 +12,7 @@ public interface OrderService {
 
     void setOrderTime(Long orderId, String selectedTime) throws Exception;
 
-    void setOrderLocation(String token, Long orderId, Location location) throws Exception;
+    void setOrderLocation(String token, Long orderId, String location) throws Exception;
 
     Order placeOrder(String token, Long orderId) throws Exception;
 

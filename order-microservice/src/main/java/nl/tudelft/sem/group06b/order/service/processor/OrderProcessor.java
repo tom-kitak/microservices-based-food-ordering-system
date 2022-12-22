@@ -10,7 +10,7 @@ public interface OrderProcessor {
 
     void setOrderTime(Long orderId, String selectedTime) throws Exception;
 
-    void setOrderLocation(String token, Long orderId, Location location) throws Exception;
+    void setOrderLocation(String token, Long orderId, String location) throws Exception;
 
     Order placeOrder(String token, Long orderId) throws Exception;
 
@@ -23,4 +23,8 @@ public interface OrderProcessor {
     Collection<Order> fetchAllStoreOrders(String token, String memberId, String roleName, Long storeId) throws Exception;
 
     Collection<Order> fetchAllOrders(String token, String memberId, String roleName) throws Exception;
+
+    void addCoupon(String token, Long orderId, String coupon) throws Exception;
+
+    void removeCoupon(Long orderId, String coupon) throws Exception;
 }
