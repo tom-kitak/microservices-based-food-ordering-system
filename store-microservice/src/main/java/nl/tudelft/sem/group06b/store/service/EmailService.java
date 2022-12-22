@@ -69,4 +69,14 @@ public class EmailService {
         storeRepository.findById(storeId).orElseThrow(NoSuchStoreException::new);
         return emailRepository.retrieveEmailsByStoreId(storeId);
     }
+
+    /**
+     * Checks if the given manager memberId is valid.
+     *
+     * @param manager The input location.
+     * @return True if the input location is valid, false otherwise.
+     */
+    public boolean validateManager(String manager) {
+        return storeRepository.existsByManager(manager);
+    }
 }

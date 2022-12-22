@@ -1,6 +1,8 @@
 package nl.tudelft.sem.group06b.store.api;
 
 import java.util.List;
+import java.util.Locale;
+import nl.tudelft.sem.group06b.store.authentication.AuthManager;
 import nl.tudelft.sem.group06b.store.domain.Location;
 import nl.tudelft.sem.group06b.store.domain.Store;
 import nl.tudelft.sem.group06b.store.model.ModifyStoreRequestModel;
@@ -24,6 +26,10 @@ public class StoreController {
 
     private final transient StoreService storeService;
 
+    private final transient AuthManager authManager;
+
+    private final transient String regionalManager = "regional_manager";
+
     private transient Long storeId;
 
 
@@ -33,7 +39,8 @@ public class StoreController {
      * @param storeService The store service.
      */
     @Autowired
-    public StoreController(StoreService storeService) {
+    public StoreController(AuthManager authManager, StoreService storeService) {
+        this.authManager = authManager;
         this.storeService = storeService;
     }
 
@@ -44,7 +51,10 @@ public class StoreController {
      */
     @GetMapping("/showAllStores")
     public ResponseEntity<List<Store>> queryAllStores() {
-        return ResponseEntity.ok(storeService.queryAllStores());
+        if (authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            return ResponseEntity.ok(storeService.queryAllStores());
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only regional managers can view all stores");
     }
 
     /**
@@ -55,7 +65,9 @@ public class StoreController {
      */
     @PostMapping("/addStore")
     public ResponseEntity<String> addStore(@RequestBody ModifyStoreRequestModel request) {
-
+        if (!authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only regional managers can add stores");
+        }
         try {
             String name = request.getName();
             Location location = new Location(request.getStoreLocation());
@@ -75,7 +87,9 @@ public class StoreController {
      */
     @DeleteMapping("/removeStore/{storeId}")
     public ResponseEntity<String> removeStore(@PathVariable Long storeId) {
-
+        if (!authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only regional managers can remove stores");
+        }
         try {
             storeService.removeStore(storeId);
         } catch (Exception e) {
@@ -115,6 +129,11 @@ public class StoreController {
      */
     @GetMapping("/getStoreId/{address}")
     public ResponseEntity<Long> getStoreId(@PathVariable String address) {
+        if (!storeService.validateManager(authManager.getMemberId())
+                && !authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Only store managers and regional managers can get store Ids");
+        }
         try {
             Location location = new Location(address);
             storeId = storeService.retrieveStoreId(location);
@@ -132,6 +151,11 @@ public class StoreController {
      */
     @GetMapping("/getStoreIdManager/{manager}")
     public ResponseEntity<Long> getStoreIdFromManager(@PathVariable String manager) {
+        if (!storeService.validateManager(authManager.getMemberId())
+                && !authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Only store managers and regional managers can get store Ids");
+        }
         try {
             storeId = storeService.retrieveStoreId(manager);
         } catch (Exception e) {
