@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
@@ -18,11 +17,11 @@ import nl.tudelft.sem.group06b.order.domain.Status;
 import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import nl.tudelft.sem.group06b.order.util.TimeValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class OrderProcessorImpl implements OrderProcessor {
 
     private static final transient String INVALID_MEMBER_ID_MESSAGE = "Invalid member ID";
@@ -43,7 +42,30 @@ public class OrderProcessorImpl implements OrderProcessor {
     private final transient TaskScheduler taskScheduler;
     private final transient TimeValidation timeValidation;
 
+    /**
+     * Constructor for OrderProcessorImpl.
+     *
+     * @param orderRepository     the repository for orders
+     * @param taskScheduler       the scheduler for the order deadline
+     */
+    @Autowired
+    public OrderProcessorImpl(
+            OrderRepository orderRepository,
+            TaskScheduler taskScheduler
+    ) {
+        this.orderRepository = orderRepository;
+        this.menuCommunication = new MenuCommunication();
+        this.storeCommunication = new StoreCommunication();
+        this.couponCommunication = new CouponCommunication();
+        this.taskScheduler = taskScheduler;
+        this.timeValidation = new TimeValidation();
 
+        orderRepository.findAll().forEach(order -> {
+            if (order.getStatus() == Status.ORDER_PLACED) {
+                scheduleOrderCompletion(order.getId());
+            }
+        });
+    }
 
 
     /**
@@ -68,7 +90,7 @@ public class OrderProcessorImpl implements OrderProcessor {
     /**
      * Set the time of an order.
      *
-     * @param orderId ID of the order where the time will be set
+     * @param orderId      ID of the order where the time will be set
      * @param selectedTime time
      * @throws Exception if any of the inputs is invalid
      */
