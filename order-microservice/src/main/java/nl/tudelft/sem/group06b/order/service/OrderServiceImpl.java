@@ -51,8 +51,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Collection<Order> fetchAllStoreOrders(Long storeId) {
-        return orderProcessor.fetchAllStoreOrders();
+    public Collection<Order> fetchAllStoreOrders(String token, String memberId, String roleName, Long storeId) throws Exception {
+        return orderProcessor.fetchAllStoreOrders(token, memberId, roleName, storeId);
     }
 
     @Override

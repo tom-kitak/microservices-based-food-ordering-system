@@ -20,7 +20,7 @@ public interface OrderService {
 
     Order fetchOrder(Long orderId) throws Exception;
 
-    Collection<Order> fetchAllStoreOrders(Long storeId);
+    Collection<Order> fetchAllStoreOrders(String token, String memberId, String roleName, Long storeId) throws Exception;
 
     Collection<Order> fetchAllOrders();
 

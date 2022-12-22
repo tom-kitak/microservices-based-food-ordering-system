@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
@@ -254,8 +256,11 @@ public class OrderProcessorImpl implements OrderProcessor {
     }
 
     @Override
-    public Collection<Order> fetchAllStoreOrders() {
-        return new ArrayList<>();
+    public Collection<Order> fetchAllStoreOrders(String token, String memberId, String roleName, Long storeId) throws Exception {
+        if(storeCommunication.validateManager(memberId,token) || roleName.equals("regional_manager")){
+            return orderRepository.findAll().stream().filter(x-> Objects.equals(x.getStoreId(), storeId)).collect(Collectors.toList());
+        }
+       throw new Exception("Customers can not view store orders");
     }
 
     @Override

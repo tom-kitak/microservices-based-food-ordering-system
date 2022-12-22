@@ -145,7 +145,8 @@ public class OrderController {
             @RequestBody FetchStoreOrdersRequestModel request) {
         try {
             return ResponseEntity.ok(new FetchStoreOrdersResponseModel(
-                    orderService.fetchAllStoreOrders(request.getStoreId())));
+                    orderService.fetchAllStoreOrders(authManager.getToken(), authManager.getMemberId(),
+                            authManager.getRole(), request.getStoreId())));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }

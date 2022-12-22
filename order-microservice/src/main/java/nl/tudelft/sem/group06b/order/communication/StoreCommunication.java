@@ -42,6 +42,26 @@ public class StoreCommunication {
     }
 
     /**
+     * Checks if the user is a manager and updates their role.
+     *
+     * @param manager memberId of the user
+     * @param token authentication token
+     * @throws Exception if the location or response is not valid
+     */
+    public boolean validateManager(String manager, String token) {
+        HttpHeaders headerForValidation = new HttpHeaders();
+        headerForValidation.set("Authorization", String.format("Bearer %s", token));
+        HttpEntity requestValidation = new HttpEntity(headerForValidation);
+        ResponseEntity<Boolean> responseValidation = restTemplate.exchange(
+                storeUrl + "/validateManager/" + manager,
+                HttpMethod.GET,
+                requestValidation,
+                Boolean.class
+        );
+        return responseValidation.getBody();
+    }
+
+    /**
      * Gets store ID from the location provided.
      *
      * @param location location to get the store ID from

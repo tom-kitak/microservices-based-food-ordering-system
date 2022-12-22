@@ -20,7 +20,7 @@ public interface OrderProcessor {
 
     void scheduleOrderCompletion(long orderId);
 
-    Collection<Order> fetchAllStoreOrders();
+    Collection<Order> fetchAllStoreOrders(String token, String memberId, String roleName, Long storeId) throws Exception;
 
     Collection<Order> fetchAllOrders();
 }
