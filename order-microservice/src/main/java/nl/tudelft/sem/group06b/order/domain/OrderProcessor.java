@@ -2,6 +2,7 @@ package nl.tudelft.sem.group06b.order.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -323,9 +324,7 @@ public class OrderProcessor {
             order.setStatus(Status.ORDER_FINISHED);
             orderRepository.save(order);
         } else {
-            taskScheduler.schedule(() -> {
-                scheduleOrderCompletion(orderId);
-            }, Date.from(due.toInstant(ZoneOffset.UTC)));
+            taskScheduler.schedule(() -> scheduleOrderCompletion(orderId), Date.from(due.atZone(ZoneId.systemDefault()).toInstant()));
         }
     }
 
