@@ -14,7 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.group06b.authentication.domain.EntityEvents;
 import nl.tudelft.sem.group06b.authentication.domain.role.Role;
-import nl.tudelft.sem.group06b.authentication.domain.user.events.PasswordWasChangedEvent;
 import nl.tudelft.sem.group06b.authentication.domain.user.events.RoleWasChangedEvent;
 import nl.tudelft.sem.group06b.authentication.domain.user.events.UserWasCreatedEvent;
 
@@ -60,11 +59,6 @@ public class User extends EntityEvents {
         this.password = password;
         this.role = role;
         this.recordThat(new UserWasCreatedEvent(memberId));
-    }
-
-    public void changePassword(HashedPassword password) {
-        this.password = password;
-        this.recordThat(new PasswordWasChangedEvent(this));
     }
 
     public void changeRole(Role newRole) {

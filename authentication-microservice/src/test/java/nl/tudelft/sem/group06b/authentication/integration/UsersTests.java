@@ -191,7 +191,7 @@ public class UsersTests {
                 .content(JsonUtil.serialize(model)));
 
         // Assert
-        resultActions.andExpect(status().isUnauthorized());
+        resultActions.andExpect(status().isForbidden());
 
         verify(mockAuthenticationManager).authenticate(argThat(authentication ->
                            testUser.equals(authentication.getPrincipal().toString())

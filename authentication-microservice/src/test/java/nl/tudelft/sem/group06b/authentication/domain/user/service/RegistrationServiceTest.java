@@ -56,7 +56,11 @@ public class RegistrationServiceTest {
         // Assert
         User savedUser = userRepository.findByMemberId(testUser).orElseThrow();
 
+        assertThat(savedUser.getMemberId()).isNotEqualTo(null);
+        assertThat(savedUser.getMemberId()).isNotEqualTo(savedUser);
+        assertThat(savedUser.getMemberId()).isEqualTo(savedUser.getMemberId());
         assertThat(savedUser.getMemberId()).isEqualTo(testUser);
+        assertThat(savedUser.getMemberId().hashCode()).isEqualTo(testUser.hashCode());
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
     }
 
