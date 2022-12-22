@@ -80,6 +80,27 @@ public class StoreCommunication {
     }
 
     /**
+     * Gets store ID from the manager memberId provided.
+     *
+     * @param manager memberId of store manager
+     * @param token authentication token
+     * @return store ID of the location
+     * @throws Exception if invalid response
+     */
+    public Long getStoreIdFromManager(String manager, String token) throws Exception {
+        ResponseEntity<Long> responseStoreId = restTemplate.exchange(
+                storeUrl + "/getStoreIdManager/" + manager,
+                HttpMethod.GET,
+                createGetRequest(token),
+                Long.class
+        );
+        if (responseStoreId.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            throw new Exception("Problem with location, please try again");
+        }
+        return responseStoreId.getBody();
+    }
+
+    /**
      * Sends email to specified store.
      *
      * @param storeId store ID to send email to

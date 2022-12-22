@@ -214,18 +214,17 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         switch (roleName) {
             case "regional_manager":
-                if (order.getStatus() != Status.ORDER_ONGOING || order.getStatus() != Status.ORDER_PLACED) {
+                if (order.getStatus() != Status.ORDER_ONGOING && order.getStatus() != Status.ORDER_PLACED) {
                     throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
                 }
                 break;
             case "store_admin":
-                //TODO: set proper access methods for the store: there is an endpoint for it
-
-                //if (order.getStoreId().equals(memberId)) {
-                //
-                //}
-                if (order.getStatus() != Status.ORDER_ONGOING || order.getStatus() != Status.ORDER_PLACED) {
+                if (order.getStatus() != Status.ORDER_ONGOING && order.getStatus() != Status.ORDER_PLACED) {
                     throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+                }
+                if (!orderRepository.getOne(orderId).getStoreId()
+                        .equals(storeCommunication.getStoreIdFromManager(memberId, token))) {
+                    throw new UnsupportedOperationException("Not the store manager of this store");
                 }
                 break;
             case "customer":
