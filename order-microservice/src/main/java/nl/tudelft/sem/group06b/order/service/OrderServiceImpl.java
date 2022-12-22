@@ -2,7 +2,8 @@ package nl.tudelft.sem.group06b.order.service;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
-import nl.tudelft.sem.group06b.order.domain.AllergenResponse;
+import nl.tudelft.sem.group06b.order.domain.Allergen;
+import nl.tudelft.sem.group06b.order.domain.Location;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.service.coupon.OrderCoupon;
@@ -20,8 +21,8 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Long startOrder(String token, String memberId) throws Exception {
-        return orderProcessor.startOrder(token, memberId);
+    public Long startOrder(String memberId) throws Exception {
+        return orderProcessor.startOrder(memberId);
     }
 
     @Override
@@ -30,8 +31,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void setOrderLocation(String token, String location, Long orderId) throws Exception {
-        orderProcessor.setOrderLocation(token, location, orderId);
+    public void setOrderLocation(String token, Long orderId, Location location) throws Exception {
+        orderProcessor.setOrderLocation(token, orderId, location);
     }
 
     @Override
@@ -40,8 +41,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void cancelOrder(String token, Long orderId) throws Exception {
-        orderProcessor.cancelOrder(token, orderId);
+    public void cancelOrder(String token, String memberId, String roleName, Long orderId) throws Exception {
+        orderProcessor.cancelOrder(token, memberId, roleName, orderId);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Collection<Order> fetchAllStoreOrders() {
+    public Collection<Order> fetchAllStoreOrders(Long storeId) {
         return orderProcessor.fetchAllStoreOrders();
     }
 
@@ -60,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public AllergenResponse addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
+    public Collection<Allergen> addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
         return orderEditor.addPizza(token, memberId, orderId, pizza);
     }
 
@@ -70,14 +71,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public AllergenResponse addTopping(String token, Long orderId,
-                                       Long toppingId, Pizza pizza, String memberId) throws Exception {
-        return orderEditor.addTopping(token, orderId, toppingId, pizza, memberId);
+    public Collection<Allergen> addTopping(String token, String memberId, Long orderId,
+                                           Pizza pizza, Long toppingId) throws Exception {
+        return orderEditor.addTopping(token, memberId, orderId, pizza, toppingId);
     }
 
     @Override
-    public void removeTopping(Long orderId, Long toppingId, Pizza pizza)throws Exception {
-        orderEditor.removeTopping(orderId, toppingId, pizza);
+    public void removeTopping(Long orderId, Pizza pizza, Long toppingId) throws Exception {
+        orderEditor.removeTopping(orderId, pizza, toppingId);
     }
 
     @Override

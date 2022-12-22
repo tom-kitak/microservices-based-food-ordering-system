@@ -1,5 +1,4 @@
-package nl.tudelft.sem.group06b.store.config;
-
+package nl.tudelft.sem.group06b.order.config;
 
 import javax.sql.DataSource;
 import lombok.Getter;
@@ -16,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * The H2 config.
  */
 @Configuration
-@EnableJpaRepositories("nl.tudelft.sem.group06b.store.database")
+@EnableJpaRepositories("nl.tudelft.sem.group06b.order.domain")
 @PropertySource("classpath:application-dev.properties")
 @EnableTransactionManagement
 public class H2Config {
