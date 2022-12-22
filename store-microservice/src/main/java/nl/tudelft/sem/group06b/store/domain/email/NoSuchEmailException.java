@@ -1,4 +1,4 @@
-package nl.tudelft.sem.group06b.store.domain;
+package nl.tudelft.sem.group06b.store.domain.email;
 
 public class NoSuchEmailException extends Exception {
 
