@@ -2,7 +2,6 @@ package nl.tudelft.sem.group06b.coupons.integration;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,7 +60,6 @@ public class TestCouponsController {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getMemberIdFromToken(anyString())).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.getAuthoritiesFromToken(anyString())).thenReturn(new SimpleGrantedAuthority("customer"));
-        when(mockCouponsService.useCoupon(eq("2"), anyString())).thenReturn(true);
 
         ApplyCouponsRequestModel res = new ApplyCouponsRequestModel();
         res.setCoupons(List.of("2"));

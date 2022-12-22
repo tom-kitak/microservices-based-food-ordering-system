@@ -30,21 +30,43 @@ public class CouponsServiceImpl implements CouponsService {
      * @param couponType     the type of the coupon
      * @param discount       the discount of the coupon
      * @param expirationDate the expiration date of the coupon
-     * @return true if the coupon has been added
      */
-    public boolean addCoupon(String couponId, String couponType, double discount, Date expirationDate) {
+    public void addCoupon(String couponId, String couponType, double discount, Date expirationDate) {
         if (couponId.matches("(([a-z]|[A-Z]){4}[0-9]{2})")) {
             if (couponType.equals("DISCOUNT")) {
                 couponRepository.save(new Coupon(couponId, CouponType.DISCOUNT, discount, expirationDate, new HashSet<>()));
             } else if (couponType.equals("ONEOFF")) {
                 couponRepository.save(new Coupon(couponId, CouponType.ONE_OFF, 0, expirationDate, new HashSet<>()));
             } else {
-                return false;
+                throw new IllegalArgumentException("Invalid coupon type");
             }
-            return true;
+            return;
         }
 
-        return false;
+        throw new IllegalArgumentException("Invalid coupon id");
+    }
+
+    /**
+     * Removes the coupon from the database if it exists.
+     *
+     * @param couponId the id of the coupon
+     */
+    public void removeCoupon(String couponId) {
+        if (couponRepository.existsById(couponId)) {
+            couponRepository.deleteById(couponId);
+        } else {
+            throw new IllegalArgumentException("Coupon does not exist");
+        }
+    }
+
+    /**
+     * Queries the database for all coupons.
+     *
+     * @return all the coupons
+     */
+    @Override
+    public List<Coupon> queryAllCoupons() {
+        return couponRepository.findAll();
     }
 
     /**
@@ -69,19 +91,17 @@ public class CouponsServiceImpl implements CouponsService {
      *
      * @param couponId the id of the coupon
      * @param memberId the id of the customer
-     * @return if the coupon has been successfully used
      */
-    public boolean useCoupon(String couponId, String memberId) {
+    public void useCoupon(String couponId, String memberId) {
         if (!couponRepository.existsById(couponId)) {
-            return false;
+            throw new IllegalArgumentException("Coupon does not exist");
         }
         Coupon coupon = couponRepository.getOne(couponId);
         if (coupon.getUsedBy().contains(memberId)) {
-            return false;
+            throw new IllegalArgumentException("Coupon already used");
         }
         coupon.getUsedBy().add(memberId);
         couponRepository.save(coupon);
-        return true;
     }
 
     /**

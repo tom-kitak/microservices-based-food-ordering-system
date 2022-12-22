@@ -31,17 +31,16 @@ public class TestCouponsService {
 
     @Test
     public void testAddCoupon() {
-        boolean res = couponsService
+        couponsService
                 .addCoupon(
-                        "test99", "DISCOUNT", 0.5, Date.from(
-                                Instant.now().plusSeconds(30)
-                        )
-                );
+                        "test99",
+                        "DISCOUNT",
+                        0.5,
+                        Date.from(Instant.now().plusSeconds(30)));
         // Verify mock calls
         verify(mockCouponRepository, times(1))
                 .save(new Coupon("test99", CouponType.DISCOUNT, 0.5,
                         Date.from(Instant.now().plusSeconds(30)), new HashSet<>()
                 ));
-        assert res;
     }
 }
