@@ -1,11 +1,15 @@
 package nl.tudelft.sem.group06b.order.communication;
 
-import nl.tudelft.sem.group06b.order.domain.Pizza;
-import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
-
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import nl.tudelft.sem.group06b.order.domain.Pizza;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 public class MenuCommunication {
 
@@ -17,6 +21,13 @@ public class MenuCommunication {
         this.restTemplate = new RestTemplate();
     }
 
+    /**
+     * Validates the pizza.
+     *
+     * @param pizza pizza to validate
+     * @param token authentication token
+     * @throws Exception if pizza or response is not valid
+     */
     public void validatePizza(Pizza pizza, String token) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", String.format("Bearer %s", token));
@@ -34,6 +45,37 @@ public class MenuCommunication {
         }
     }
 
+    /**
+     * Price of the pizza without any coupons.
+     *
+     * @param pizza pizza for which price will be returned
+     * @param token authentication token
+     * @return price of the pizza
+     */
+    public BigDecimal getPizzaPriceFromMenu(Pizza pizza, String token) {
+        HttpHeaders headers =  new HttpHeaders();
+        headers.set("Authorization", String.format("Bearer %s", token));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", pizza.getPizzaId());
+        map.put("toppingIds", pizza.getToppings());
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<BigDecimal> response = restTemplate.postForEntity(menuUrl + "/getPrice", entity, BigDecimal.class);
+
+        return response.getBody();
+    }
+
+    /**
+     * Checks if pizza contains any allergens' member is allergic to.
+     *
+     * @param pizza pizza to check for allergens
+     * @param memberId check for allergens of this member
+     * @param token authentication token
+     * @return response message
+     */
     public String containsAllergen(Pizza pizza, String memberId, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", String.format("Bearer %s", token));

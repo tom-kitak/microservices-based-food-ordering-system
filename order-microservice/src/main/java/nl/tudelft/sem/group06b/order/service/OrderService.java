@@ -1,7 +1,9 @@
 package nl.tudelft.sem.group06b.order.service;
 
 import java.util.Collection;
+import nl.tudelft.sem.group06b.order.domain.Allergen;
 import nl.tudelft.sem.group06b.order.domain.Order;
+import nl.tudelft.sem.group06b.order.domain.Pizza;
 
 public interface OrderService {
 
@@ -11,9 +13,9 @@ public interface OrderService {
 
     void setOrderLocation(String token, String location, Long orderId) throws Exception;
 
-    void placeOrder();
+    Order placeOrder(String token, Long orderId) throws Exception;
 
-    void cancelOrder();
+    void cancelOrder(String token, Long orderId) throws Exception;
 
     Order fetchOrder();
 
@@ -21,7 +23,7 @@ public interface OrderService {
 
     Collection<Order> fetchAllOrders();
 
-    void addPizza();
+    Collection<Allergen> addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception;
 
     void removePizza();
 
@@ -29,7 +31,7 @@ public interface OrderService {
 
     void removeTopping();
 
-    void addCoupon();
+    void addCoupon(String token, Long orderId, String coupon) throws Exception;
 
     void removeCoupon();
 }

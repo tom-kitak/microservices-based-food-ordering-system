@@ -2,7 +2,9 @@ package nl.tudelft.sem.group06b.order.service;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import nl.tudelft.sem.group06b.order.domain.Allergen;
 import nl.tudelft.sem.group06b.order.domain.Order;
+import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.service.coupon.OrderCoupon;
 import nl.tudelft.sem.group06b.order.service.editing.OrderEditor;
 import nl.tudelft.sem.group06b.order.service.processor.OrderProcessor;
@@ -28,18 +30,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void setOrderLocation(String token, String location, Long orderId) throws Exception{
+    public void setOrderLocation(String token, String location, Long orderId) throws Exception {
         orderProcessor.setOrderLocation(token, location, orderId);
     }
 
     @Override
-    public void placeOrder() {
-        orderProcessor.placeOrder();
+    public Order placeOrder(String token, Long orderId) throws Exception {
+        return orderProcessor.placeOrder(token, orderId);
     }
 
     @Override
-    public void cancelOrder() {
-        orderProcessor.cancelOrder();
+    public void cancelOrder(String token, Long orderId) throws Exception {
+        orderProcessor.cancelOrder(token, orderId);
     }
 
     @Override
@@ -58,8 +60,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void addPizza() {
-        orderEditor.addPizza();
+    public Collection<Allergen> addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
+        return orderEditor.addPizza(token, memberId, orderId, pizza);
     }
 
     @Override
@@ -78,8 +80,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void addCoupon() {
-        orderCoupon.addCoupon();
+    public void addCoupon(String token, Long orderId, String coupon) throws Exception {
+        orderCoupon.addCoupon(token, orderId, coupon);
     }
 
     @Override

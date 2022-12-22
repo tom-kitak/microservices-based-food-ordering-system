@@ -1,8 +1,12 @@
 package nl.tudelft.sem.group06b.order.service.editing;
 
+import java.util.Collection;
+import nl.tudelft.sem.group06b.order.domain.Allergen;
+import nl.tudelft.sem.group06b.order.domain.Pizza;
+
 public interface OrderEditor {
 
-    void addPizza();
+    Collection<Allergen> addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception;
 
     void removePizza();
 

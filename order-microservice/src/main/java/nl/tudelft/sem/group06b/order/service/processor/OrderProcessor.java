@@ -11,9 +11,9 @@ public interface OrderProcessor {
 
     void setOrderLocation(String token, String location, Long orderId) throws Exception;
 
-    void placeOrder();
+    Order placeOrder(String token, Long orderId) throws Exception;
 
-    void cancelOrder();
+    void cancelOrder(String token, Long orderId) throws Exception;
 
     Order fetchOrder();
 
