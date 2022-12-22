@@ -1,21 +1,22 @@
 package nl.tudelft.sem.group06b.order.service.processor;
 
 import java.util.Collection;
+import nl.tudelft.sem.group06b.order.domain.Location;
 import nl.tudelft.sem.group06b.order.domain.Order;
 
 public interface OrderProcessor {
 
-    void startOrder();
+    Long startOrder(String memberId) throws Exception;
 
-    void changeOrderTime();
+    void setOrderTime(Long orderId, String selectedTime) throws Exception;
 
-    void changeOrderLocation();
+    void setOrderLocation(String token, Long orderId, Location location) throws Exception;
 
-    void placeOrder();
+    Order placeOrder(String token, Long orderId) throws Exception;
 
-    void cancelOrder();
+    void cancelOrder(String token, String memberId, String roleName, Long orderId) throws Exception;
 
-    Order fetchOrder();
+    Order fetchOrder(Long orderId) throws Exception;
 
     Collection<Order> fetchAllStoreOrders();
 

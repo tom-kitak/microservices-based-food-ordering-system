@@ -80,4 +80,9 @@ public class Pizza implements Serializable {
     public int hashCode() {
         return Objects.hash(pizzaId, toppings, price);
     }
+
+    @Override
+    public String toString() {
+        return "Pizza ID: " + pizzaId + ", topping IDs: " + toppings + ", price: " + price;
+    }
 }

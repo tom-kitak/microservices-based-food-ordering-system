@@ -7,5 +7,5 @@ import nl.tudelft.sem.group06b.order.domain.Pizza;
 @Data
 public class ApplyCouponsToOrderModel {
     List<Pizza> pizzas;
-    List<String> couponsIds;
+    List<String> coupons;
 }
