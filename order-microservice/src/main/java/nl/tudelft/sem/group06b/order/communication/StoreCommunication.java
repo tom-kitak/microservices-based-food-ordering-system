@@ -28,7 +28,7 @@ public class StoreCommunication {
      * @param token authentication token
      * @throws Exception if the location or response is not valid
      */
-    public void validateLocation(String location, String token) throws Exception {
+    public boolean validateLocation(String location, String token) {
         HttpHeaders headerForValidation = new HttpHeaders();
         headerForValidation.set("Authorization", String.format("Bearer %s", token));
         HttpEntity requestValidation = new HttpEntity(headerForValidation);
@@ -38,9 +38,7 @@ public class StoreCommunication {
                 requestValidation,
                 Boolean.class
         );
-        if (responseValidation.getBody() == false) {
-            throw new Exception("Location " + location + " is not valid");
-        }
+        return responseValidation.getBody();
     }
 
     /**

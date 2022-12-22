@@ -50,7 +50,7 @@ public class OrderCouponImpl implements OrderCoupon {
         couponCommunication.validateCoupon(coupon, token);
 
         Order order = orderRepository.getOne(orderId);
-        order.getCouponsIds().add(coupon);
+        order.setAppliedCoupon(coupon);
         orderRepository.save(order);
     }
 
@@ -66,7 +66,7 @@ public class OrderCouponImpl implements OrderCoupon {
         }
 
         Order order = orderRepository.getOne(orderId);
-        order.getCouponsIds().remove(coupon);
+        order.setAppliedCoupon(null);
         orderRepository.save(order);
     }
 }

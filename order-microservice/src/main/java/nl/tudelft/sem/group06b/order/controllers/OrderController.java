@@ -1,18 +1,32 @@
 package nl.tudelft.sem.group06b.order.controllers;
 
-import java.util.List;
-import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.group06b.order.authentication.AuthManager;
-import nl.tudelft.sem.group06b.order.domain.Order;
-import nl.tudelft.sem.group06b.order.domain.OrderProcessor;
-import nl.tudelft.sem.group06b.order.domain.Pizza;
+import nl.tudelft.sem.group06b.order.model.editing.AddPizzaRequestModel;
+import nl.tudelft.sem.group06b.order.model.editing.AddPizzaResponseModel;
+import nl.tudelft.sem.group06b.order.model.editing.AddToppingRequestModel;
+import nl.tudelft.sem.group06b.order.model.editing.AddToppingResponseModel;
+import nl.tudelft.sem.group06b.order.model.editing.RemovePizzaRequestModel;
+import nl.tudelft.sem.group06b.order.model.editing.RemoveToppingRequestModel;
+import nl.tudelft.sem.group06b.order.model.processor.CancelOrderRequestModel;
+import nl.tudelft.sem.group06b.order.model.processor.FetchOrderRequestModel;
+import nl.tudelft.sem.group06b.order.model.processor.FetchOrderResponseModel;
+import nl.tudelft.sem.group06b.order.model.processor.FetchOrdersResponseModel;
+import nl.tudelft.sem.group06b.order.model.processor.FetchStoreOrdersRequestModel;
+import nl.tudelft.sem.group06b.order.model.processor.FetchStoreOrdersResponseModel;
+import nl.tudelft.sem.group06b.order.model.processor.PlaceOrderRequestModel;
+import nl.tudelft.sem.group06b.order.model.processor.PlaceOrderResponseModel;
+import nl.tudelft.sem.group06b.order.model.processor.SetOrderLocationRequestModel;
+import nl.tudelft.sem.group06b.order.model.processor.SetOrderTimeRequestModel;
 import nl.tudelft.sem.group06b.order.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,170 +38,201 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/order")
 public class OrderController {
 
     private final transient AuthManager authManager;
 
     private final transient OrderService orderService;
 
-    private final transient OrderProcessor orderProcessor;
-
     /**
-     * Starts an order.
+     * Starts an empty order.
      *
-     * @param order The order requested
      * @return the outcome response
      */
-    @PostMapping("/startOrder")
-    public ResponseEntity<String> startOrder(@RequestBody Order order) {
+    @PostMapping("/start")
+    public ResponseEntity<?> startOrder() {
         try {
-            String selectedTime = order.getSelectedTime();
-            String location = order.getLocation();
-            String memberId = authManager.getMemberId();
-            String token = authManager.getToken();
-            String response = orderProcessor.startOrder(location, memberId, selectedTime, token);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return ResponseEntity.ok(orderService.startOrder(authManager.getMemberId()));
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Changes selected time of an order.
+     * Javadoc.
      *
-     * @param order The order requested
-     * @return the outcome response
+     * @param request the request
+     * @return the result
      */
-    @PostMapping("/changeSelectedTime")
-    public ResponseEntity<String> changeSelectedTime(@RequestBody Order order) {
+    @PutMapping("/change_time")
+    public ResponseEntity<?> setOrderTime(@RequestBody SetOrderTimeRequestModel request) {
         try {
-            String selectedTime = order.getSelectedTime();
-            Long orderId = order.getId();
-            String response = orderProcessor.changeSelectedTime(orderId, selectedTime);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            orderService.setOrderTime(request.getOrderId(), request.getOrderTime());
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Javadoc.
+     *
+     * @param request the request
+     * @return the result
+     */
+    @PutMapping("/change_location")
+    public ResponseEntity<?> setOrderLocation(@RequestBody SetOrderLocationRequestModel request) {
+        try {
+            orderService.setOrderLocation(authManager.getToken(), request.getOrderId(), request.getLocation());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Javadoc.
+     *
+     * @param request the request
+     * @return the result
+     */
+    @PostMapping("/place")
+    public ResponseEntity<PlaceOrderResponseModel> placeOrder(@RequestBody PlaceOrderRequestModel request) {
+        try {
+            return ResponseEntity.ok(new PlaceOrderResponseModel(
+                    orderService.placeOrder(authManager.getToken(), request.getOrderId())));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Changes selected location of an order.
+     * Javadoc.
      *
-     * @param order The order requested
-     * @return the outcome response
+     * @param request the request
+     * @return the result
      */
-    @PostMapping("/changeSelectedLocation")
-    public ResponseEntity<String> changeSelectedLocation(@RequestBody Order order) {
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancelOrder(@RequestBody CancelOrderRequestModel request) {
         try {
-            String location = order.getLocation();
-            Long orderId = order.getId();
-            String token = authManager.getToken();
-            String response = orderProcessor.changeSelectedLocation(location, orderId, token);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            orderService.cancelOrder(authManager.getToken(), authManager.getMemberId(),
+                                     authManager.getRole(), request.getOrderId());
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Javadoc.
+     *
+     * @param request the request
+     * @return the result
+     */
+    @GetMapping("/fetch_single")
+    public ResponseEntity<FetchOrderResponseModel> fetchOrder(@RequestBody FetchOrderRequestModel request) {
+        try {
+            return ResponseEntity.ok(new FetchOrderResponseModel(orderService.fetchOrder(request.getOrderId())));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Adds pizzas to an order.
+     * Javadoc.
      *
-     * @param order The order requested
-     * @return the outcome response
+     * @param request the request
+     * @return the result
      */
-    @PostMapping("/addPizzas")
-    public ResponseEntity<String> addPizzas(@RequestBody Order order) {
+    @GetMapping("/fetch_store")
+    public ResponseEntity<FetchStoreOrdersResponseModel> fetchStoreOrders(
+            @RequestBody FetchStoreOrdersRequestModel request) {
         try {
-            String memberId = order.getMemberId();
-            Long orderId = order.getId();
-            List<Pizza> pizzas = order.getPizzas();
-            String token = authManager.getToken();
-            String response = orderProcessor.addPizzas(memberId, orderId, pizzas, token);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return ResponseEntity.ok(new FetchStoreOrdersResponseModel(
+                    orderService.fetchAllStoreOrders(request.getStoreId())));
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Adds coupons to an order.
+     * Javadoc.
      *
-     * @param order The order requested
-     * @return the outcome response
+     * @return the result
      */
-    @PostMapping("/addCoupons")
-    public ResponseEntity<String> addCoupons(@RequestBody Order order) {
+    @GetMapping("/fetch_all")
+    public ResponseEntity<FetchOrdersResponseModel> fetchOrders() {
         try {
-            Long orderId = order.getId();
-            List<String> couponsIds = order.getCouponsIds();
-            String token = authManager.getToken();
-            String response = orderProcessor.addCoupons(orderId, couponsIds, token);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return ResponseEntity.ok(new FetchOrdersResponseModel(orderService.fetchAllOrders()));
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Places an order.
+     * Javadoc.
      *
-     * @param order The order requested
-     * @return the outcome response
+     * @param request the request
+     * @return the result
      */
-    @PostMapping("/placeOrder")
-    public ResponseEntity<String> placeOrder(@RequestBody Order order) {
+    @PostMapping("/add_pizza")
+    public ResponseEntity<AddPizzaResponseModel> addPizza(@RequestBody AddPizzaRequestModel request) {
         try {
-            Long orderId = order.getId();
-            String token = authManager.getToken();
-            String response = orderProcessor.placeOrder(orderId, token);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return ResponseEntity.ok(new AddPizzaResponseModel(
+                    orderService.addPizza(authManager.getToken(), authManager.getMemberId(),
+                                          request.getOrderId(), request.getPizza())));
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Cancels an order.
+     * Javadoc.
      *
-     * @param order The order requested
-     * @return the outcome response
+     * @param request the request
+     * @return the result
      */
-    @PostMapping("/cancelOrder")
-    public ResponseEntity<String> cancelOrder(@RequestBody Order order) {
+    @DeleteMapping("/remove_pizza")
+    public ResponseEntity<?> removePizza(@RequestBody RemovePizzaRequestModel request) {
         try {
-            Long orderId = order.getId();
-            String response = orderProcessor.cancelOrder(orderId);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            orderService.removePizza(request.getOrderId(), request.getPizza());
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 
     /**
-     * Gets all placed orders.
+     * Javadoc.
      *
-     * @return all currently placed orders
+     * @param request the request
+     * @return the result
      */
-    @GetMapping("/allOrders")
-    public ResponseEntity<List<Order>> getAllOrders() {
-
-        //Only admins and regional managers can view placed orders
-        if (authManager.getRole().toLowerCase(Locale.ROOT).equals("customer")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Customers can't view orders");
-        }
-
+    @PostMapping("/add_topping")
+    public ResponseEntity<AddToppingResponseModel> addTopping(@RequestBody AddToppingRequestModel request) {
         try {
-            List<Order> ordersInRepository = orderProcessor.getOrderRepository().findAll();
-            return new ResponseEntity<>(ordersInRepository, HttpStatus.OK);
+            return ResponseEntity.ok(new AddToppingResponseModel(
+                    orderService.addTopping(authManager.getToken(), authManager.getMemberId(),
+                                            request.getOrderId(), request.getPizza(), request.getToppingId())));
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
+        }
+    }
+
+    /**
+     * Javadoc.
+     *
+     * @param request the request
+     * @return the result
+     */
+    @DeleteMapping("/remove_topping")
+    public ResponseEntity<?> removeTopping(@RequestBody RemoveToppingRequestModel request) {
+        try {
+            orderService.removeTopping(request.getOrderId(), request.getPizza(), request.getToppingId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }
     }
 }
