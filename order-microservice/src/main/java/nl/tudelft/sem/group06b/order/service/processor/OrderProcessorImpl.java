@@ -256,11 +256,14 @@ public class OrderProcessorImpl implements OrderProcessor {
     }
 
     @Override
-    public Collection<Order> fetchAllStoreOrders(String token, String memberId, String roleName, Long storeId) throws Exception {
-        if(storeCommunication.validateManager(memberId,token) || roleName.equals("regional_manager")){
-            return orderRepository.findAll().stream().filter(x-> Objects.equals(x.getStoreId(), storeId)).collect(Collectors.toList());
+    public Collection<Order> fetchAllStoreOrders(String token, String memberId,
+                                                 String roleName, Long storeId) throws Exception {
+
+        if (storeCommunication.validateManager(memberId, token) || roleName.equals("regional_manager")) {
+            return orderRepository.findAll().stream()
+                    .filter(x -> Objects.equals(x.getStoreId(), storeId)).collect(Collectors.toList());
         }
-       throw new Exception("Customers can not view store orders");
+        throw new Exception("Customers can not view store orders");
     }
 
     @Override

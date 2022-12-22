@@ -29,17 +29,17 @@ public class StoreCommunication {
      * @throws Exception if the location or response is not valid
      */
     public boolean validateLocation(String location, String token) {
-        HttpHeaders headerForValidation = new HttpHeaders();
-        headerForValidation.set("Authorization", String.format("Bearer %s", token));
-        HttpEntity requestValidation = new HttpEntity(headerForValidation);
+
         ResponseEntity<Boolean> responseValidation = restTemplate.exchange(
                 storeUrl + "/validateLocation/" + location,
                 HttpMethod.GET,
-                requestValidation,
+                createGetRequest(token),
                 Boolean.class
         );
         return responseValidation.getBody();
     }
+
+
 
     /**
      * Checks if the user is a manager and updates their role.
@@ -49,13 +49,10 @@ public class StoreCommunication {
      * @throws Exception if the location or response is not valid
      */
     public boolean validateManager(String manager, String token) {
-        HttpHeaders headerForValidation = new HttpHeaders();
-        headerForValidation.set("Authorization", String.format("Bearer %s", token));
-        HttpEntity requestValidation = new HttpEntity(headerForValidation);
         ResponseEntity<Boolean> responseValidation = restTemplate.exchange(
                 storeUrl + "/validateManager/" + manager,
                 HttpMethod.GET,
-                requestValidation,
+                createGetRequest(token),
                 Boolean.class
         );
         return responseValidation.getBody();
@@ -70,13 +67,10 @@ public class StoreCommunication {
      * @throws Exception if invalid response
      */
     public Long getStoreIdFromLocation(String location, String token) throws Exception {
-        HttpHeaders headerForStoreId = new HttpHeaders();
-        headerForStoreId.set("Authorization", String.format("Bearer %s", token));
-        HttpEntity requestStoreId = new HttpEntity(headerForStoreId);
         ResponseEntity<Long> responseStoreId = restTemplate.exchange(
                 storeUrl + "/getStoreId/" + location,
                 HttpMethod.GET,
-                requestStoreId,
+                createGetRequest(token),
                 Long.class
         );
         if (responseStoreId.getStatusCode() == HttpStatus.BAD_REQUEST) {
@@ -109,6 +103,17 @@ public class StoreCommunication {
             System.out.println(response.getBody());
         }
         System.out.println("Problem with sending an email");
+    }
+
+    /**
+     * Creates GET request.
+     *
+     * @param token authentication token
+     */
+    public HttpEntity createGetRequest(String token) {
+        HttpHeaders headerForValidation = new HttpHeaders();
+        headerForValidation.set("Authorization", String.format("Bearer %s", token));
+        return new HttpEntity(headerForValidation);
     }
 
 }
