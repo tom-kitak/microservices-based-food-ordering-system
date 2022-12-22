@@ -186,7 +186,7 @@ public class MenuController {
      * @param request the ids of the pizza and toppings.
      * @return price of pizza and toppings.
      */
-    @GetMapping("getPrice")
+    @PostMapping("getPrice")
     public ResponseEntity<BigDecimal> getPrice(@RequestBody PriceModel request) {
         return ResponseEntity.ok(this.menuService.getPrice(request.getId(), request.getToppingIds()));
     }

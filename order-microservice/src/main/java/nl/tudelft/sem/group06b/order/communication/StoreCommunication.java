@@ -122,6 +122,7 @@ public class StoreCommunication {
 
         if (response.getStatusCode() == HttpStatus.OK) {
             System.out.println(response.getBody());
+            return;
         }
         System.out.println("Problem with sending an email");
     }

@@ -31,7 +31,7 @@ public class Order {
     @Column(name = "memberId")
     private String memberId;
 
-    @Column(name = "pizzas")
+    @Column(name = "pizzas", length = 1000)
     @ElementCollection
     private List<Pizza> pizzas;
 
@@ -103,7 +103,7 @@ public class Order {
         sb.append(", to be collected at " + this.selectedTime + "\n");
         sb.append("Order contains the following pizzas:\n");
         sb.append(pizzas.toString() + "\n");
-        if (appliedCoupon.isEmpty()) {
+        if (appliedCoupon == null || appliedCoupon.isEmpty()) {
             sb.append("No coupon was applied");
         } else {
             sb.append("Following coupon was applied: " + appliedCoupon);
