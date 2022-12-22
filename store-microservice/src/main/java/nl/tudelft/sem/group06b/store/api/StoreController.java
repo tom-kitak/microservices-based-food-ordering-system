@@ -129,8 +129,8 @@ public class StoreController {
      */
     @GetMapping("/getStoreId/{address}")
     public ResponseEntity<Long> getStoreId(@PathVariable String address) {
-        if (!Boolean.TRUE.equals(validateManager(authManager.getMemberId()).getBody())
-                || !authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+        if (!storeService.validateManager(authManager.getMemberId())
+                && !authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Only store managers and regional managers can get store Ids");
         }
@@ -151,8 +151,8 @@ public class StoreController {
      */
     @GetMapping("/getStoreIdManager/{manager}")
     public ResponseEntity<Long> getStoreIdFromManager(@PathVariable String manager) {
-        if (!Boolean.TRUE.equals(validateManager(authManager.getMemberId()).getBody())
-                || !authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
+        if (!storeService.validateManager(authManager.getMemberId())
+                && !authManager.getRole().toLowerCase(Locale.ROOT).equals(regionalManager)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Only store managers and regional managers can get store Ids");
         }
