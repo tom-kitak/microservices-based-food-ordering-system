@@ -42,8 +42,7 @@ public class CouponsController {
      */
     @PostMapping("/addCoupon")
     public ResponseEntity<?> addCoupon(@RequestBody NewCouponRequestModel coupon) {
-        if (!authManager.getRoles().contains(new SimpleGrantedAuthority("store_manager"))
-                && !authManager.getRoles().contains(new SimpleGrantedAuthority("regional_manager"))) {
+        if (!authManager.getRoles().contains(new SimpleGrantedAuthority("regional_manager"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to add coupons");
         }
 
@@ -69,8 +68,7 @@ public class CouponsController {
      */
     @DeleteMapping("/removeCoupon/{couponId}")
     public ResponseEntity<?> removeCoupon(@PathVariable String couponId) {
-        if (!authManager.getRoles().contains(new SimpleGrantedAuthority("store_manager"))
-                && !authManager.getRoles().contains(new SimpleGrantedAuthority("regional_manager"))) {
+        if (!authManager.getRoles().contains(new SimpleGrantedAuthority("regional_manager"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to remove coupons");
         }
 
@@ -90,8 +88,7 @@ public class CouponsController {
      */
     @GetMapping("/getCoupons")
     public ResponseEntity<List<Coupon>> getAllCoupons() {
-        if (!authManager.getRoles().contains(new SimpleGrantedAuthority("store_manager"))
-                && !authManager.getRoles().contains(new SimpleGrantedAuthority("regional_manager"))) {
+        if (!authManager.getRoles().contains(new SimpleGrantedAuthority("regional_manager"))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to remove coupons");
         }
 
