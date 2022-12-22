@@ -55,7 +55,18 @@ public class OrderCouponImpl implements OrderCoupon {
     }
 
     @Override
-    public void removeCoupon() {
+    public void removeCoupon(Long orderId, String coupon) throws Exception {
+        if (orderId == null) {
+            throw new Exception(invalidOrderId);
+        } else if (orderRepository.getOne(orderId) == null
+                || orderRepository.getOne(orderId).getStatus() != Status.ORDER_ONGOING) {
+            throw new Exception(noActiveOrderMessage);
+        } else if (coupon == null) {
+            throw new Exception("Please enter valid coupon");
+        }
 
+        Order order = orderRepository.getOne(orderId);
+        order.getCouponsIds().remove(coupon);
+        orderRepository.save(order);
     }
 }

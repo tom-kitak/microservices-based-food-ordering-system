@@ -15,7 +15,7 @@ public interface OrderProcessor {
 
     void cancelOrder(String token, Long orderId) throws Exception;
 
-    Order fetchOrder();
+    Order fetchOrder(Long orderId) throws Exception;
 
     Collection<Order> fetchAllStoreOrders();
 

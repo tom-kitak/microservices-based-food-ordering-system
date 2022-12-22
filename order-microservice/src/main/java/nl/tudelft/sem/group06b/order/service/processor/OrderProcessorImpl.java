@@ -165,12 +165,15 @@ public class OrderProcessorImpl implements OrderProcessor {
         if (orderId == null) {
             throw new Exception(invalidOrderId);
         } else if (orderRepository.getOne(orderId) == null
-                || orderRepository.getOne(orderId).getStatus() != Status.ORDER_ONGOING) {
+                || (orderRepository.getOne(orderId).getStatus() != Status.ORDER_ONGOING
+                && orderRepository.getOne(orderId).getStatus() != Status.ORDER_PLACED)) {
             throw new Exception(noActiveOrderMessage);
+        } else if (token == null) {
+            throw  new Exception(invalidToken);
         }
 
         // TODO
-        // If you are an admin you can cancel anytime and not just 30 min before
+        // If you are an admin you can cancel anytime as long as order is PLACED or ONGOING and not just 30 min before
 
         Order order = orderRepository.getOne(orderId);
 
@@ -189,8 +192,11 @@ public class OrderProcessorImpl implements OrderProcessor {
     }
 
     @Override
-    public Order fetchOrder() {
-        return null;
+    public Order fetchOrder(Long orderId) throws Exception {
+        if (orderId == null) {
+            throw new Exception(invalidOrderId);
+        }
+        return orderRepository.getOne(orderId);
     }
 
     @Override

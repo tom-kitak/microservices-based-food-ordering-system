@@ -4,5 +4,5 @@ public interface OrderCoupon {
 
     void addCoupon(String token, Long orderId, String coupon) throws Exception;
 
-    void removeCoupon();
+    void removeCoupon(Long orderId, String coupon) throws Exception;
 }

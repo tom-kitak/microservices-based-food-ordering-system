@@ -2,7 +2,7 @@ package nl.tudelft.sem.group06b.order.service;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
-import nl.tudelft.sem.group06b.order.domain.Allergen;
+import nl.tudelft.sem.group06b.order.domain.AllergenResponse;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.service.coupon.OrderCoupon;
@@ -45,8 +45,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order fetchOrder() {
-        return orderProcessor.fetchOrder();
+    public Order fetchOrder(Long orderId) throws Exception {
+        return orderProcessor.fetchOrder(orderId);
     }
 
     @Override
@@ -60,23 +60,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Collection<Allergen> addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
+    public AllergenResponse addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
         return orderEditor.addPizza(token, memberId, orderId, pizza);
     }
 
     @Override
-    public void removePizza() {
-        orderEditor.removePizza();
+    public void removePizza(Long orderId, Pizza pizza) throws Exception {
+        orderEditor.removePizza(orderId, pizza);
     }
 
     @Override
-    public void addTopping() {
-        orderEditor.addTopping();
+    public AllergenResponse addTopping(String token, Long orderId,
+                                       Long toppingId, Pizza pizza, String memberId) throws Exception {
+        return orderEditor.addTopping(token, orderId, toppingId, pizza, memberId);
     }
 
     @Override
-    public void removeTopping() {
-        orderEditor.removeTopping();
+    public void removeTopping(Long orderId, Long toppingId, Pizza pizza)throws Exception {
+        orderEditor.removeTopping(orderId, toppingId, pizza);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void removeCoupon() {
-        orderCoupon.removeCoupon();
+    public void removeCoupon(Long orderId, String coupon) throws Exception {
+        orderCoupon.removeCoupon(orderId, coupon);
     }
 }
