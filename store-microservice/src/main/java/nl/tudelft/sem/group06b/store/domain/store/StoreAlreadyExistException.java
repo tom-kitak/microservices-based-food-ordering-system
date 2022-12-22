@@ -1,4 +1,6 @@
-package nl.tudelft.sem.group06b.store.domain;
+package nl.tudelft.sem.group06b.store.domain.store;
+
+import nl.tudelft.sem.group06b.store.domain.Location;
 
 public class StoreAlreadyExistException extends Exception {
 
