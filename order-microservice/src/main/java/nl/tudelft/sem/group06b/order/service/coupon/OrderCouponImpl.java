@@ -49,7 +49,7 @@ public class OrderCouponImpl implements OrderCoupon {
         }
 
         // call to Coupon-microservice to see if coupon is valid
-        if(couponCommunication.validateCoupon(coupon, token)) {
+        if (couponCommunication.validateCoupon(coupon, token)) {
             Order order = orderRepository.getOne(orderId);
             order.getCoupons().add(coupon);
             orderRepository.save(order);
