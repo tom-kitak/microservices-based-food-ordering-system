@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
+import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,12 +18,16 @@ public class MenuService {
      * repository for pizzas.
      */
     private final transient PizzaRepository pizzaRepository;
+
+    private final transient AuthManager authManager;
     /**
      * repository for toppings.
      */
     private final transient ToppingRepository toppingRepository;
 
     private final transient AllergyRepository allergyRepository;
+
+    private final transient String regionalManager =  "regional_manager";
 
     /**
      * constructor for menuservice.
@@ -31,7 +36,8 @@ public class MenuService {
      * @param pr repository for pizzas.
      * @param tr repository for toppings.
      */
-    public MenuService(PizzaRepository pr, ToppingRepository tr, AllergyRepository ar) {
+    public MenuService(AuthManager authManager, PizzaRepository pr, ToppingRepository tr, AllergyRepository ar) {
+        this.authManager = authManager;
         this.pizzaRepository = pr;
         this.toppingRepository = tr;
         this.allergyRepository = ar;
@@ -150,6 +156,9 @@ public class MenuService {
      * @return true if removed/false if no pizza with that id.
      */
     public boolean removePizzaById(Long id) {
+        if (!authManager.getRole().equals(regionalManager)) {
+            return false;
+        }
         try {
             if (this.pizzaRepository.findPizzaById(id).isEmpty()) {
                 return false;
@@ -170,6 +179,10 @@ public class MenuService {
      * @return true if removed/false if no topping with that id.
      */
     public boolean removeToppingById(Long id) {
+        if (!authManager.getRole().equals(regionalManager)) {
+            return false;
+        }
+
         if (this.toppingRepository.findToppingById(id).isEmpty()) {
             return false;
         }
@@ -186,6 +199,9 @@ public class MenuService {
      * @return true if added/false if couldn't
      */
     public boolean addTopping(Topping t) {
+        if (!authManager.getRole().equals(regionalManager)) {
+            return false;
+        }
         try {
             if (this.toppingRepository.findToppingById(t.getId()).isPresent()) {
                 return false;
@@ -211,6 +227,9 @@ public class MenuService {
      * @return true if saved/false if there is a pizza with that id.
      */
     public boolean addPizza(Pizza p) {
+        if (!authManager.getRole().equals(regionalManager)) {
+            return false;
+        }
         try {
             if (this.pizzaRepository.findPizzaById(p.getId()).isPresent()) {
                 return false;
@@ -239,6 +258,9 @@ public class MenuService {
      * @return true if added/false if allergy exists already.
      */
     public boolean addAllergy(Allergy a) {
+        if (!authManager.getRole().equals(regionalManager)) {
+            return false;
+        }
         try {
             if (getAllergyById(a.getId()).isPresent()) {
                 return false;
@@ -423,6 +445,9 @@ public class MenuService {
      * @return true if deleted/false if couldn't.
      */
     public boolean removeAllergyById(Long id) {
+        if (!authManager.getRole().equals(regionalManager)) {
+            return false;
+        }
         try {
             if (getAllergyById(id).isEmpty()) {
                 return false;

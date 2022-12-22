@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
 import nl.tudelft.sem.group06b.menu.domain.Allergy;
 import nl.tudelft.sem.group06b.menu.domain.AllergyRepository;
 import nl.tudelft.sem.group06b.menu.domain.MenuService;
@@ -33,6 +34,9 @@ public class MenuServiceTests {
 
     @Mock
     PizzaRepository pizzaRepository;
+
+    @Mock
+    AuthManager authManager;
 
     @InjectMocks
     MenuService menuService;
@@ -63,6 +67,7 @@ public class MenuServiceTests {
         this.toppingRepository = Mockito.mock(ToppingRepository.class);
         this.pizzaRepository = Mockito.mock(PizzaRepository.class);
         this.allergyRepository = Mockito.mock(AllergyRepository.class);
+        this.authManager = Mockito.mock(AuthManager.class);
         this.aaa = new Allergy(1L, "Peanuts");
         this.bbb = new Allergy(2L, "Hawaii");
         this.ccc = new Allergy(3L, "Food");
@@ -85,7 +90,8 @@ public class MenuServiceTests {
         when(this.pizzaRepository.findPizzaById(41L)).thenReturn(Optional.of(p2));
         when(this.pizzaRepository.findAll()).thenReturn(List.of(p1, p2, p3));
         when(this.toppingRepository.findAll()).thenReturn(List.of(t1, t2, t3));
-        this.menuService = new MenuService(pizzaRepository, toppingRepository, allergyRepository);
+        when(authManager.getRole()).thenReturn("regional_manager");
+        this.menuService = new MenuService(authManager, pizzaRepository, toppingRepository, allergyRepository);
 
     }
 
