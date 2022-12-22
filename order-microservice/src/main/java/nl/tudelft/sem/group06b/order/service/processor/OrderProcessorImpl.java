@@ -1,7 +1,11 @@
 package nl.tudelft.sem.group06b.order.service.processor;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
@@ -14,6 +18,7 @@ import nl.tudelft.sem.group06b.order.domain.Status;
 import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import nl.tudelft.sem.group06b.order.util.TimeValidation;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +40,7 @@ public class OrderProcessorImpl implements OrderProcessor {
     private final transient MenuCommunication menuCommunication;
     private final transient StoreCommunication storeCommunication;
     private final transient CouponCommunication couponCommunication;
+    private final transient TaskScheduler taskScheduler;
     private final transient TimeValidation timeValidation;
 
 
@@ -45,7 +51,7 @@ public class OrderProcessorImpl implements OrderProcessor {
      *
      * @param memberId ID of member placing the order
      * @return ID of the order created
-     * @throws Exception any of the inputs is invalid
+     * @throws IllegalArgumentException if the member ID is invalid
      */
     @Override
     public Long startOrder(String memberId) throws IllegalArgumentException {
@@ -142,12 +148,32 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         order.calculateTotalPrice();
         order.setStatus(Status.ORDER_PLACED);
+        scheduleOrderCompletion(orderId);
         orderRepository.save(order);
 
         // notify the store
         storeCommunication.sendEmailToStore(order.getStoreId(), order.formatEmail(), token);
 
         return order;
+    }
+
+    /**
+     * Schedules the order to be set to completed at the due date, if the date was changed reschedules the order.
+     *
+     * @param orderId ID of the order
+     */
+    @Override
+    public void scheduleOrderCompletion(long orderId) {
+        Order order = orderRepository.getOne(orderId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime due = LocalDateTime.parse(order.getSelectedTime(), formatter);
+        if (order.getStatus() == Status.ORDER_PLACED && due.isBefore(LocalDateTime.now())) {
+            order.setStatus(Status.ORDER_FINISHED);
+            orderRepository.save(order);
+        } else {
+            taskScheduler.schedule(() ->
+                    scheduleOrderCompletion(orderId), Date.from(due.atZone(ZoneId.systemDefault()).toInstant()));
+        }
     }
 
     @Override
