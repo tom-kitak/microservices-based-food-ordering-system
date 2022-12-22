@@ -249,10 +249,10 @@ public class MenuController {
      * @param itemId the id to check.
      * @return string of everything/empty if no allergy.
      */
-    @GetMapping("containsAllergenTopping/{itemId}")
-    public ResponseEntity<String> containsAllergenTopping(@PathVariable Long itemId) {
+    @PostMapping("containsAllergenTopping/{itemId}/{memberId}")
+    public ResponseEntity<String> containsAllergenTopping(@PathVariable Long itemId, @PathVariable String memberId) {
         Optional<String> ret =
-                this.menuService.checkForAllergiesTopping(itemId, getAllergens(this.authManager.getMemberId()));
+                this.menuService.checkForAllergiesTopping(itemId, getAllergens(memberId));
         if (ret.isEmpty()) {
             return ResponseEntity.ok("");
         }
@@ -303,6 +303,21 @@ public class MenuController {
     @GetMapping("filteredToppingsByAllergens")
     public ResponseEntity<List<Topping>> filterToppingsByAllergens() {
         return ResponseEntity.ok(this.menuService.filterToppingsByAllergens(getAllergens(authManager.getMemberId())));
+    }
+
+    /**
+     * removes a pizza with a specific id.
+     *
+     * @param itemId the item to remove.
+     * @return encapsulated true if successful, false if not.
+     */
+    @DeleteMapping("removePizzaById/{itemId}")
+    public ResponseEntity<Boolean> removePizzaById(@PathVariable Long itemId) {
+        try {
+            return ResponseEntity.ok(this.menuService.removePizzaById(itemId));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**

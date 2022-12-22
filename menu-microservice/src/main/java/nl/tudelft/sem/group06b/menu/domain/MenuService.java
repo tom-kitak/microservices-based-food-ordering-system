@@ -65,8 +65,8 @@ public class MenuService {
     public List<Pizza> filterPizzasByAllergens(List<String> strings) {
         ArrayList<Allergy> allergyList = new ArrayList<>();
         for (String s : strings) {
-            if (allergyRepository.findAllergyByNameIsIgnoreCase(s).isPresent()) {
-                allergyList.add(allergyRepository.findAllergyByNameIsIgnoreCase(s).get());
+            if (getAllergyByName(s).isPresent()) {
+                allergyList.add(getAllergyByName(s).get());
             }
         }
 
@@ -120,9 +120,13 @@ public class MenuService {
      * @throws NoSuchElementException if no allergy is found.
      */
     public Optional<Allergy> getAllergyById(Long id) {
-        Optional<Allergy> ret = this.allergyRepository.findAllergyById(id);
-        this.allergyRepository.flush();
-        return ret;
+        try {
+            Optional<Allergy> ret = this.allergyRepository.findAllergyById(id);
+            this.allergyRepository.flush();
+            return ret;
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -132,9 +136,13 @@ public class MenuService {
      * @return optional of allergy/empty if not there.
      */
     public Optional<Allergy> getAllergyByName(String name) {
-        Optional<Allergy> ret = this.allergyRepository.findAllergyByNameIsIgnoreCase(name);
-        this.allergyRepository.flush();
-        return ret;
+        try {
+            Optional<Allergy> ret = this.allergyRepository.findAllergyByNameIsIgnoreCase(name);
+            this.allergyRepository.flush();
+            return ret;
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -144,13 +152,17 @@ public class MenuService {
      * @return true if removed/false if no pizza with that id.
      * @throws IllegalArgumentException if id is null
      */
-    public boolean removePizzaById(Long id) {
-        if (this.pizzaRepository.findPizzaById(id).isEmpty()) {
-            return false;
+    public boolean removePizzaById(Long id) throws IllegalArgumentException {
+        try {
+            if (this.pizzaRepository.findPizzaById(id).isEmpty()) {
+                return false;
+            }
+            this.pizzaRepository.deleteById(id);
+            this.pizzaRepository.flush();
+            return true;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
-        this.pizzaRepository.deleteById(id);
-        this.pizzaRepository.flush();
-        return true;
 
     }
 
@@ -221,7 +233,7 @@ public class MenuService {
      */
     public boolean addAllergy(Allergy a) throws IllegalArgumentException {
         try {
-            if (this.allergyRepository.findAllergyById(a.getId()).isPresent()) {
+            if (getAllergyById(a.getId()).isPresent()) {
                 return false;
             }
             this.allergyRepository.save(a);
@@ -311,8 +323,8 @@ public class MenuService {
         ArrayList<Allergy> allergyList = new ArrayList<>();
         //adds allergies to list
         for (String s : allergies) {
-            if (this.allergyRepository.findAllergyByNameIsIgnoreCase(s).isPresent()) {
-                allergyList.add(this.allergyRepository.findAllergyByNameIsIgnoreCase(s).get());
+            if (getAllergyByName(s).isPresent()) {
+                allergyList.add(getAllergyByName(s).get());
             }
         }
         return allergyList;
@@ -376,8 +388,8 @@ public class MenuService {
     public List<Topping> filterToppingsByAllergens(List<String> strings) {
         ArrayList<Allergy> allergyList = new ArrayList<>();
         for (String s : strings) {
-            if (allergyRepository.findAllergyByNameIsIgnoreCase(s).isPresent()) {
-                allergyList.add(allergyRepository.findAllergyByNameIsIgnoreCase(s).get());
+            if (getAllergyByName(s).isPresent()) {
+                allergyList.add(getAllergyByName(s).get());
             }
         }
 
