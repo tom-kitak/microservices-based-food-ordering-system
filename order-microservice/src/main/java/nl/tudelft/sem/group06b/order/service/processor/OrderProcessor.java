@@ -18,6 +18,8 @@ public interface OrderProcessor {
 
     Order fetchOrder(Long orderId) throws Exception;
 
+    void scheduleOrderCompletion(long orderId);
+
     Collection<Order> fetchAllStoreOrders();
 
     Collection<Order> fetchAllOrders();
