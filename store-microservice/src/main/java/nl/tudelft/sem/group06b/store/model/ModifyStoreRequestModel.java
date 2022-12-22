@@ -6,4 +6,5 @@ import lombok.Data;
 public class ModifyStoreRequestModel {
     private String name;
     private String storeLocation;
+    private String manager;
 }
