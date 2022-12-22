@@ -1,10 +1,8 @@
 package nl.tudelft.sem.group06b.store.api;
 
 import java.util.List;
-import nl.tudelft.sem.group06b.store.database.StoreRepository;
 import nl.tudelft.sem.group06b.store.domain.Location;
 import nl.tudelft.sem.group06b.store.domain.Store;
-import nl.tudelft.sem.group06b.store.model.LocationRequestModel;
 import nl.tudelft.sem.group06b.store.model.ModifyStoreRequestModel;
 import nl.tudelft.sem.group06b.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +22,18 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/stores")
 public class StoreController {
 
-    private final transient StoreRepository storeRepository;
     private final transient StoreService storeService;
+
+    private transient Long storeId;
 
 
     /**
      * Instantiates a new controller.
      *
-     * @param storeRepository The store repo.
      * @param storeService The store service.
      */
     @Autowired
-    public StoreController(StoreRepository storeRepository, StoreService storeService) {
-        this.storeRepository = storeRepository;
+    public StoreController(StoreService storeService) {
         this.storeService = storeService;
     }
 
@@ -47,7 +44,7 @@ public class StoreController {
      */
     @GetMapping("/showAllStores")
     public ResponseEntity<List<Store>> queryAllStores() {
-        return ResponseEntity.ok(storeRepository.findAll());
+        return ResponseEntity.ok(storeService.queryAllStores());
     }
 
     /**
@@ -57,7 +54,7 @@ public class StoreController {
      * @return an HTTP response (200 if the store is saved, 400 otherwise)
      */
     @PostMapping("/addStore")
-    public ResponseEntity<?> addStore(@RequestBody ModifyStoreRequestModel request) {
+    public ResponseEntity<String> addStore(@RequestBody ModifyStoreRequestModel request) {
 
         try {
             String name = request.getName();
@@ -76,7 +73,7 @@ public class StoreController {
      * @return an HTTP response (200 if the store is removed, 400 otherwise)
      */
     @DeleteMapping("/removeStore/{storeId}")
-    public ResponseEntity<?> removeStore(@PathVariable Long storeId) {
+    public ResponseEntity<String> removeStore(@PathVariable Long storeId) {
 
         try {
             storeService.removeStore(storeId);
@@ -89,13 +86,30 @@ public class StoreController {
     /**
      * Validates if the store locations.
      *
-     * @param request serialized Location object in the form of a JSON in the request body.
+     * @param address address of the store.
      * @return True if the given store location exists.
      */
-    @GetMapping("/validateLocation")
-    public ResponseEntity<Boolean> validateLocation(@RequestBody LocationRequestModel request) {
-        Location location = new Location(request.getStoreLocation());
-        return ResponseEntity.ok(storeRepository.existsByStoreLocation(location));
+    @GetMapping("/validateLocation/{address}")
+    public ResponseEntity<Boolean> validateLocation(@PathVariable String address) {
+        Location location = new Location(address);
+        return ResponseEntity.ok(storeService.validateStoreLocation(location));
+    }
+
+    /**
+     * Gets the store id from the database.
+     *
+     * @param address address of the store.
+     * @return The store id.
+     */
+    @GetMapping("/getStoreId/{address}")
+    public ResponseEntity<Long> getStoreId(@PathVariable String address) {
+        try {
+            Location location = new Location(address);
+            storeId = storeService.retrieveStoreId(location);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return ResponseEntity.ok(storeId);
     }
 
 }

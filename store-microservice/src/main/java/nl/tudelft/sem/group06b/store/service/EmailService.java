@@ -28,6 +28,10 @@ public class EmailService {
         this.storeRepository = storeRepository;
     }
 
+    public List<Email> queryAllEmails() {
+        return emailRepository.findAll();
+    }
+
     /**
      * Receive a dummy email to a specific store.
      *

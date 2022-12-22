@@ -1,6 +1,7 @@
 package nl.tudelft.sem.group06b.store.service;
 
 import java.util.ArrayList;
+import java.util.List;
 import nl.tudelft.sem.group06b.store.database.StoreRepository;
 import nl.tudelft.sem.group06b.store.domain.Location;
 import nl.tudelft.sem.group06b.store.domain.NoSuchStoreException;
@@ -21,6 +22,15 @@ public class StoreService {
      */
     public StoreService(StoreRepository storeRepository) {
         this.storeRepository = storeRepository;
+    }
+
+    /**
+     * Query all stores from the database.
+     *
+     * @return A list of stores.
+     */
+    public List<Store> queryAllStores() {
+        return storeRepository.findAll();
     }
 
     /**
@@ -60,5 +70,28 @@ public class StoreService {
      */
     public boolean checkLocationIsUnique(Location location) {
         return !storeRepository.existsByStoreLocation(location);
+    }
+
+    /**
+     * Checks if the given store location is valid.
+     *
+     * @param location The input location.
+     * @return True if the input location is valid, false otherwise.
+     */
+    public boolean validateStoreLocation(Location location) {
+        return storeRepository.existsByStoreLocation(location);
+    }
+
+    /**
+     * Retrieves the id of the store.
+     *
+     * @param location The preffered location by user.
+     * @return The store id.
+     * @throws Exception If the given store location does not exist.
+     */
+    public Long retrieveStoreId(Location location) throws Exception {
+        Store store = storeRepository.findByStoreLocation(location)
+                 .orElseThrow(NoSuchStoreException::new);
+        return store.getId();
     }
 }

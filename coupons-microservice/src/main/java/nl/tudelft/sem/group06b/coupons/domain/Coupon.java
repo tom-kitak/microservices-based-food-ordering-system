@@ -7,42 +7,28 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Class representing a coupon and its effects.
  */
 @Entity
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Coupon {
     @Id
-    @Getter
-    @Setter
     private String code;
 
-    @Getter
-    @Setter
     private CouponType type;
 
-    @Getter
-    @Setter
     private double discount;
 
-    @Getter
-    @Setter
     private Date expirationDate;
 
     @ElementCollection
-    @Getter
-    @Setter
     private Set<String> usedBy;
-
-    /**
-     * No args constructor for JPA.
-     */
-    public Coupon() {
-    }
 
     /**
      * Get the effect of the coupon.
