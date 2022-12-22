@@ -27,7 +27,7 @@ public class ToppingTests {
     @Test
     public void containsAllergen() {
         Assertions.assertThat(topping1.containsAllergy(new Allergy(43L, "Gluten")).isPresent()).isTrue();
-        Assertions.assertThat(topping1.containsAllergy(new Allergy(43L, "Gluten")).get()).isEqualTo("Gluten, Pepperoni");
+        Assertions.assertThat(topping1.containsAllergy(new Allergy(43L, "Gluten")).get()).isEqualTo("Gluten,Pepperoni");
         Assertions.assertThat(topping1.containsAllergy(new Allergy(44L, "Peanuts")).isPresent()).isFalse();
     }
 

@@ -31,7 +31,7 @@ public class PizzaTests {
     @Test
     public void containsAllergenTest() {
         Assertions.assertThat(pizza1.containsAllergen(new Allergy(42L, "Gluten")).isPresent()).isTrue();
-        Assertions.assertThat(pizza1.containsAllergen(new Allergy(42L, "Gluten")).get()).isEqualTo("Gluten, Pepperoni, 41");
+        Assertions.assertThat(pizza1.containsAllergen(new Allergy(42L, "Gluten")).get()).isEqualTo("Gluten,Pepperoni,41");
         Assertions.assertThat(pizza1.containsAllergen(new Allergy(52L, "Gluten")).isPresent()).isFalse();
     }
 

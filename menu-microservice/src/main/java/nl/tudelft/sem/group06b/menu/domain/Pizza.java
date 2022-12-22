@@ -69,7 +69,7 @@ public class Pizza implements Serializable {
     public Optional<String> containsAllergen(Allergy a) {
         for (Topping t : this.toppings) {
             if (t.containsAllergy(a).isPresent()) {
-                return Optional.of(t.containsAllergy(a).get() + ", " + this.getId());
+                return Optional.of(t.containsAllergy(a).get() + "," + this.getId());
             }
         }
         return Optional.empty();

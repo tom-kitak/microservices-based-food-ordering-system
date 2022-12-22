@@ -1,7 +1,6 @@
 package nl.tudelft.sem.group06b.menu.controllers;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,7 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -112,7 +111,7 @@ public class MenuController {
      *      False if there is no item with that ID.
      * @throws ResponseStatusException bad request if itemId is null
      */
-    @PostMapping("remove/pizza/{itemId}")
+    @DeleteMapping("remove/pizza/{itemId}")
     public ResponseEntity<Boolean> removePizza(@PathVariable Long itemId) throws IllegalArgumentException {
         try {
             return ResponseEntity.ok(menuService.removePizzaById(itemId));
@@ -129,7 +128,7 @@ public class MenuController {
         False if there is no item with that ID.
      * @throws ResponseStatusException bad request if itemId is null
      */
-    @PostMapping("remove/topping/{itemId}")
+    @DeleteMapping("remove/topping/{itemId}")
     public ResponseEntity<Boolean> removeTopping(@PathVariable Long itemId) throws ResponseStatusException {
         try {
             return ResponseEntity.ok(menuService.removeToppingById(itemId));
@@ -230,6 +229,39 @@ public class MenuController {
     }
 
     /**
+     * returns if a topping is valid.
+     *
+     * @param itemId of the topping.
+     * @return encapsulated true/false.
+     */
+    @GetMapping("isValidTopping/{itemId}")
+    public ResponseEntity<Boolean> isValidTopping(@PathVariable Long itemId) {
+        try {
+            return ResponseEntity.ok(this.menuService.getToppingById(itemId).isPresent());
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
+    }
+
+    /**
+     * checks if a topping contains an allergy.
+     *
+     * @param itemId the id to check.
+     * @return string of everything/empty if no allergy.
+     */
+    @GetMapping("containsAllergenTopping/{itemId}")
+    public ResponseEntity<String> containsAllergenTopping(@PathVariable Long itemId) {
+        Optional<String> ret =
+                this.menuService.checkForAllergiesTopping(itemId, getAllergens(this.authManager.getMemberId()));
+        if (ret.isEmpty()) {
+            return ResponseEntity.ok("");
+        }
+        return ResponseEntity.ok(
+                this.menuService.checkForAllergiesTopping(
+                        itemId, getAllergens(this.authManager.getMemberId())).get());
+    }
+
+    /**
      * checks if a pizza contains allergens.
      *
      * @param request the pizza, toppings and the memberId.
@@ -258,7 +290,7 @@ public class MenuController {
      *
      * @return list of pizzas.
      */
-    @PostMapping("filteredPizzasByAllergens")
+    @GetMapping("filteredPizzasByAllergens")
     public ResponseEntity<List<Pizza>> filterPizzasByAllergens() {
         return ResponseEntity.ok(this.menuService.filterPizzasByAllergens(getAllergens(authManager.getMemberId())));
     }
@@ -268,7 +300,7 @@ public class MenuController {
      *
      * @return list of toppings.
      */
-    @PostMapping("filteredToppingsByAllergens")
+    @GetMapping("filteredToppingsByAllergens")
     public ResponseEntity<List<Topping>> filterToppingsByAllergens() {
         return ResponseEntity.ok(this.menuService.filterToppingsByAllergens(getAllergens(authManager.getMemberId())));
     }

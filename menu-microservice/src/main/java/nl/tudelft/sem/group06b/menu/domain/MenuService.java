@@ -51,7 +51,9 @@ public class MenuService {
      * @return list of all toppings in repository.
      */
     public List<Topping> getAllToppings() {
-        return this.toppingRepository.findAll();
+        List<Topping> ret = this.toppingRepository.findAll();
+        this.toppingRepository.flush();
+        return ret;
     }
 
     /**
@@ -80,6 +82,7 @@ public class MenuService {
                 ret.add(p);
             }
         }
+        this.allergyRepository.flush();
         return ret;
     }
 
@@ -91,7 +94,9 @@ public class MenuService {
      * @throws NoSuchElementException if no topping is found with that id.
      */
     public Optional<Topping> getToppingById(Long id) {
-        return this.toppingRepository.findToppingById(id);
+        Optional<Topping> ret = this.toppingRepository.findToppingById(id);
+        this.toppingRepository.flush();
+        return ret;
     }
 
     /**
@@ -102,7 +107,9 @@ public class MenuService {
      * @throws NoSuchElementException if no pizza is found.
      */
     public Optional<Pizza> getPizzaById(Long id) {
-        return this.pizzaRepository.findPizzaById(id);
+        Optional<Pizza> ret = this.pizzaRepository.findPizzaById(id);
+        this.pizzaRepository.flush();
+        return ret;
     }
 
     /**
@@ -113,7 +120,9 @@ public class MenuService {
      * @throws NoSuchElementException if no allergy is found.
      */
     public Optional<Allergy> getAllergyById(Long id) {
-        return this.allergyRepository.findAllergyById(id);
+        Optional<Allergy> ret = this.allergyRepository.findAllergyById(id);
+        this.allergyRepository.flush();
+        return ret;
     }
 
     /**
@@ -123,7 +132,9 @@ public class MenuService {
      * @return optional of allergy/empty if not there.
      */
     public Optional<Allergy> getAllergyByName(String name) {
-        return this.allergyRepository.findAllergyByNameIsIgnoreCase(name);
+        Optional<Allergy> ret = this.allergyRepository.findAllergyByNameIsIgnoreCase(name);
+        this.allergyRepository.flush();
+        return ret;
     }
 
     /**
@@ -138,6 +149,7 @@ public class MenuService {
             return false;
         }
         this.pizzaRepository.deleteById(id);
+        this.pizzaRepository.flush();
         return true;
 
     }
@@ -154,6 +166,7 @@ public class MenuService {
             return false;
         }
         this.toppingRepository.deleteToppingById(id);
+        this.toppingRepository.flush();
         return true;
 
     }
@@ -171,6 +184,7 @@ public class MenuService {
                 return false;
             }
             this.toppingRepository.save(t);
+            this.toppingRepository.flush();
             return true;
         } catch (Exception e) {
             System.out.println("Message: " + e.getMessage());
@@ -191,6 +205,7 @@ public class MenuService {
                 return false;
             }
             this.pizzaRepository.save(p);
+            this.pizzaRepository.flush();
             return true;
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException();
@@ -210,6 +225,7 @@ public class MenuService {
                 return false;
             }
             this.allergyRepository.save(a);
+            this.allergyRepository.flush();
             return true;
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException();
@@ -237,6 +253,8 @@ public class MenuService {
                     return false;
                 }
             }
+            this.toppingRepository.flush();
+            this.pizzaRepository.flush();
             return true;
         } catch (Exception e) {
             throw new IllegalArgumentException();
@@ -254,17 +272,16 @@ public class MenuService {
      */
     public Optional<String> checkForAllergies(Long pizzaId, List<Long> toppingList, List<String> allergies) {
         String ret = "";
-
-        ArrayList<Allergy> allergyList = new ArrayList<>();
-        for (String s : allergies) {
-            if (getAllergyByName(s).isPresent()) {
-                allergyList.add(getAllergyByName(s).get());
-            }
-        }
+        List<Allergy> allergyList = getAllergiesFromStrings(allergies);
+        System.out.println(allergyList);
 
         Optional<Pizza> currPizza = getPizzaById(pizzaId);
+        System.out.println(currPizza);
         if (currPizza.isPresent()) {
+            System.out.println("isPresent");
             for (Allergy a : allergyList) {
+                System.out.println(a);
+                System.out.println(currPizza.get().containsAllergen(a));
                 if (currPizza.get().containsAllergen(a).isPresent()) {
                     ret += currPizza.get().containsAllergen(a).get() + ";";
                 }
@@ -272,16 +289,53 @@ public class MenuService {
         }
 
         for (Long l : toppingList) {
-            Optional<Topping> curr = getToppingById(l);
-            if (curr.isPresent()) {
-                for (Allergy a : allergyList) {
-                    if (curr.get().containsAllergy(a).isPresent()) {
-                        ret += curr.get().containsAllergy(a).get() + ";";
-                    }
-                }
+            Optional<String> s = checkForAllergiesTopping(l, allergies);
+            if (s.isPresent()) {
+                ret += s.get();
             }
         }
 
+        if (ret.equals("")) {
+            return Optional.empty();
+        }
+        return Optional.of(ret);
+    }
+
+    /**
+     * gets allergies from a list of strings.
+     *
+     * @param allergies strings to check.
+     * @return list of allergies.
+     */
+    public List<Allergy> getAllergiesFromStrings(List<String> allergies) {
+        ArrayList<Allergy> allergyList = new ArrayList<>();
+        //adds allergies to list
+        for (String s : allergies) {
+            if (this.allergyRepository.findAllergyByNameIsIgnoreCase(s).isPresent()) {
+                allergyList.add(this.allergyRepository.findAllergyByNameIsIgnoreCase(s).get());
+            }
+        }
+        return allergyList;
+    }
+
+    /**
+     * checks if an allergy has a topping.
+     *
+     * @param id the id of the topping.
+     * @param allergies the allergies in strings.
+     * @return string of allergies/empty if none.
+     */
+    public Optional<String> checkForAllergiesTopping(Long id, List<String> allergies) {
+        String ret = "";
+        List<Allergy> allergyList = getAllergiesFromStrings(allergies);
+        Optional<Topping> curr = getToppingById(id);
+        if (curr.isPresent()) {
+            for (Allergy a : allergyList) {
+                if (curr.get().containsAllergy(a).isPresent()) {
+                    ret += curr.get().containsAllergy(a).get() + ";";
+                }
+            }
+        }
         if (ret.equals("")) {
             return Optional.empty();
         }
@@ -339,6 +393,7 @@ public class MenuService {
                 ret.add(t);
             }
         }
+        this.allergyRepository.flush();
         return ret;
     }
 }
