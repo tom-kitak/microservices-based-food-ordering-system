@@ -105,9 +105,12 @@ public class CouponsController {
      * @return whether the user can use the coupon
      */
     @GetMapping("/checkAvailability/{code}")
-    public ResponseEntity<Boolean> checkAvailability(@PathVariable String code) {
+    public ResponseEntity<?> checkAvailability(@PathVariable String code) {
         boolean available = couponsService.isCouponAvailable(code, authManager.getMemberId());
-        return ResponseEntity.ok(available);
+        if (!available) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Coupon is not available");
+        }
+        return ResponseEntity.ok().build();
     }
 
     /**
