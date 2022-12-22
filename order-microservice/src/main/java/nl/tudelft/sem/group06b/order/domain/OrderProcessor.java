@@ -204,6 +204,8 @@ public class OrderProcessor {
         order.getPizzas().addAll(pizzas);
         orderRepository.save(order);
 
+        // TODO
+        // encapsulate String responses of allergens to a List<Allergen>
         return allergensResponse.toString();
     }
 
@@ -291,6 +293,8 @@ public class OrderProcessor {
         // send receipt
         String receipt = order.formatReceipt();
 
+        // TODO
+        // Return order
         return receipt;
     }
 

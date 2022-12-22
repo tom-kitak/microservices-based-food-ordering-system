@@ -18,18 +18,18 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public void startOrder() {
-        orderProcessor.startOrder();
+    public Long startOrder(String token, String memberId) throws Exception {
+        return orderProcessor.startOrder(token, memberId);
     }
 
     @Override
-    public void changeOrderTime() {
-        orderProcessor.changeOrderTime();
+    public void setOrderTime(Long orderId, String selectedTime) throws Exception {
+        orderProcessor.setOrderTime(orderId, selectedTime);
     }
 
     @Override
-    public void changeOrderLocation() {
-        orderProcessor.changeOrderLocation();
+    public void setOrderLocation(String token, String location, Long orderId) throws Exception{
+        orderProcessor.setOrderLocation(token, location, orderId);
     }
 
     @Override
