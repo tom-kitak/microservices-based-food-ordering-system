@@ -65,6 +65,6 @@ public class CouponCommunication {
                 request,
                 Boolean.class
         );
-        return response.getStatusCode() == HttpStatus.OK;
+        return response.getBody();
     }
 }
