@@ -135,5 +135,22 @@ public class MenuServiceTests {
                 this.menuService.filterToppingsByAllergens(List.of("Sugar"))).hasSameElementsAs(List.of(t1, t2, t3));
     }
 
+    @Test
+    public void isValidPizzaList() {
+        Assertions.assertThat(this.menuService.isValidPizzaList(40L, List.of(11L, 12L))).isTrue();
+        Assertions.assertThat(this.menuService.isValidPizzaList(99L, List.of())).isFalse();
+        Assertions.assertThat(this.menuService.isValidPizzaList(40L, List.of(99999L))).isFalse();
+        Assertions.assertThat(this.menuService.isValidPizzaList(40L, List.of(11L, 99999L))).isFalse();
+        Assertions.assertThat(this.menuService.isValidPizzaList(null, null)).isFalse();
+
+    }
+
+    @Test
+    public void getAllergyByNameTest() {
+        Assertions.assertThat(this.menuService.getAllergyByName(null).isEmpty());
+
+    }
+
+
 
 }

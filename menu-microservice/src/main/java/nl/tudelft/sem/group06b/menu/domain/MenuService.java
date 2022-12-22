@@ -269,7 +269,7 @@ public class MenuService {
             this.pizzaRepository.flush();
             return true;
         } catch (Exception e) {
-            throw new IllegalArgumentException();
+            return false;
         }
     }
 
