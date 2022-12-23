@@ -3,7 +3,9 @@ package nl.tudelft.sem.group06b.order.service.coupon;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
+import nl.tudelft.sem.group06b.order.domain.Builder;
 import nl.tudelft.sem.group06b.order.domain.Order;
+import nl.tudelft.sem.group06b.order.domain.OrderBuilder;
 import nl.tudelft.sem.group06b.order.domain.Status;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -49,13 +51,17 @@ public class OrderCouponImpl implements OrderCoupon {
         }
 
         // call to Coupon-microservice to see if coupon is valid
-        if (couponCommunication.validateCoupon(coupon, token)) {
-            Order order = orderRepository.getOne(orderId);
-            order.getCoupons().add(coupon);
-            orderRepository.save(order);
-        } else {
+        if (!couponCommunication.validateCoupon(coupon, token)) {
             throw new Exception("Coupon unavailable for use");
         }
+
+        Order order = orderRepository.getOne(orderId);
+
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.addCoupon(coupon);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
     }
 
     @Override
@@ -72,7 +78,11 @@ public class OrderCouponImpl implements OrderCoupon {
         }
 
         Order order = orderRepository.getOne(orderId);
-        order.getCoupons().remove(coupon);
-        orderRepository.save(order);
+
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.removeCoupon(coupon);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
     }
 }

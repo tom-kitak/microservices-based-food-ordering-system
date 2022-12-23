@@ -4,7 +4,9 @@ import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
 import nl.tudelft.sem.group06b.order.domain.Allergens;
+import nl.tudelft.sem.group06b.order.domain.Builder;
 import nl.tudelft.sem.group06b.order.domain.Order;
+import nl.tudelft.sem.group06b.order.domain.OrderBuilder;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
@@ -63,8 +65,11 @@ public class OrderEditorImpl implements OrderEditor {
         }
 
         Order order = orderRepository.getOne(orderId);
-        order.getPizzas().add(pizza);
-        orderRepository.save(order);
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.addPizza(pizza);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
 
         return allergens;
     }
@@ -81,8 +86,11 @@ public class OrderEditorImpl implements OrderEditor {
         }
 
         Order order = orderRepository.getOne(orderId);
-        order.getPizzas().remove(pizza);
-        orderRepository.save(order);
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.removePizza(pizza);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
     }
 
     @Override
@@ -112,8 +120,11 @@ public class OrderEditorImpl implements OrderEditor {
         }
 
         Order order = orderRepository.getOne(orderId);
-        order.getPizzas().get(order.getPizzas().indexOf(pizza)).getToppings().add(toppingId);
-        orderRepository.save(order);
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.addTopping(pizza, toppingId);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
 
         return allergens;
     }
@@ -136,9 +147,12 @@ public class OrderEditorImpl implements OrderEditor {
         if (!order.getPizzas().contains(pizza)) {
             throw new Exception(invalidPizza);
         }
-        Pizza pizzaToEdit = order.getPizzas().remove(order.getPizzas().indexOf(pizza));
-        pizzaToEdit.getToppings().remove(toppingId);
-        order.getPizzas().add(pizzaToEdit);
+
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.removeTopping(pizza, toppingId);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
 
         orderRepository.save(order);
     }
