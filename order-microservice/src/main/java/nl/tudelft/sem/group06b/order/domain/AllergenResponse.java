@@ -1,15 +1,26 @@
 package nl.tudelft.sem.group06b.order.domain;
 
+import lombok.Data;
+
+@Data
 public class AllergenResponse {
 
     private String allergenContent;
     private boolean containsResponse;
 
+    /**
+     * Creates allergen response.
+     *
+     * @param allergenContent content of allergen response
+     */
     public AllergenResponse(String allergenContent) {
         this.allergenContent = allergenContent;
         this.containsResponse = true;
     }
 
+    /**
+     * Creates allergen response without content.
+     */
     public AllergenResponse() {
         this.containsResponse = false;
     }

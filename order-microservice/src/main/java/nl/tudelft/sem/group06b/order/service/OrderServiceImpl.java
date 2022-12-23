@@ -2,8 +2,7 @@ package nl.tudelft.sem.group06b.order.service;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
-import nl.tudelft.sem.group06b.order.domain.Allergen;
-import nl.tudelft.sem.group06b.order.domain.Location;
+import nl.tudelft.sem.group06b.order.domain.AllergenResponse;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.service.coupon.OrderCoupon;
@@ -62,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Collection<Allergen> addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
+    public AllergenResponse addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
         return orderEditor.addPizza(token, memberId, orderId, pizza);
     }
 
@@ -72,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Collection<Allergen> addTopping(String token, String memberId, Long orderId,
+    public AllergenResponse addTopping(String token, String memberId, Long orderId,
                                            Pizza pizza, Long toppingId) throws Exception {
         return orderEditor.addTopping(token, memberId, orderId, pizza, toppingId);
     }
