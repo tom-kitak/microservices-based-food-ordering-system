@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
+import nl.tudelft.sem.group06b.order.domain.Builder;
 import nl.tudelft.sem.group06b.order.domain.Order;
+import nl.tudelft.sem.group06b.order.domain.OrderBuilder;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
 import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
@@ -82,7 +84,11 @@ public class OrderProcessorImpl implements OrderProcessor {
             throw new IllegalArgumentException(INVALID_MEMBER_ID_MESSAGE);
         }
 
-        Order newOrder = new Order(memberId, Status.ORDER_ONGOING);
+        OrderBuilder orderBuilder = new OrderBuilder();
+        orderBuilder.setMemberId(memberId);
+        orderBuilder.setOrderStatus(Status.ORDER_ONGOING);
+
+        Order newOrder = orderBuilder.build();
         orderRepository.save(newOrder);
 
         return newOrder.getId();
@@ -111,8 +117,11 @@ public class OrderProcessorImpl implements OrderProcessor {
             throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
         }
 
-        order.setSelectedTime(selectedTime);
-        orderRepository.save(order);
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.setOrderTime(selectedTime);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
     }
 
     @Override
@@ -132,13 +141,16 @@ public class OrderProcessorImpl implements OrderProcessor {
             throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
         }
 
-        order.setStoreId(storeId);
-        order.setLocation(location);
-        orderRepository.save(order);
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.setOrderLocation(location);
+        orderBuilder.setOrderStoreId(storeId);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
     }
 
     @Override
-    public Order placeOrder(String token, Long orderId) throws Exception {
+    public Order placeOrder(String token, Long orderId) throws IllegalArgumentException {
         if (token.isEmpty()) {
             throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
         }
@@ -165,22 +177,28 @@ public class OrderProcessorImpl implements OrderProcessor {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
         }
 
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+
         if (order.getAppliedCoupon() == null && !order.getCoupons().isEmpty()) {
             ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
                     new ArrayList<>(order.getCoupons()), token);
             if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
+                orderBuilder.setAppliedCoupon(null);
                 order.setAppliedCoupon(null);
             } else {
+                orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
                 order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
             }
+            orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
             order.setPizzas(applyCouponsToResponse.getPizzas());
         }
 
-
-        order.calculateTotalPrice();
-        order.setStatus(Status.ORDER_PLACED);
+        orderBuilder.setPrice(order.calculateTotalPrice());
+        orderBuilder.setOrderStatus(Status.ORDER_PLACED);
         scheduleOrderCompletion(orderId);
-        orderRepository.save(order);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
 
         // notify the store
         storeCommunication.sendEmailToStore(order.getStoreId(), order.formatEmail(), token);
@@ -196,11 +214,14 @@ public class OrderProcessorImpl implements OrderProcessor {
     @Override
     public void scheduleOrderCompletion(long orderId) {
         Order order = orderRepository.getOne(orderId);
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         LocalDateTime due = LocalDateTime.parse(order.getSelectedTime(), formatter);
         if (order.getStatus() == Status.ORDER_PLACED && due.isBefore(LocalDateTime.now())) {
-            order.setStatus(Status.ORDER_FINISHED);
-            orderRepository.save(order);
+            orderBuilder.setOrderStatus(Status.ORDER_FINISHED);
+            Order newOrder = orderBuilder.build();
+            orderRepository.save(newOrder);
         } else {
             taskScheduler.schedule(() ->
                     scheduleOrderCompletion(orderId), Date.from(due.atZone(ZoneId.systemDefault()).toInstant()));
@@ -249,8 +270,11 @@ public class OrderProcessorImpl implements OrderProcessor {
                 throw new IllegalArgumentException("Role is not handled");
         }
 
-        order.setStatus(Status.ORDER_CANCELED);
-        orderRepository.save(order);
+        OrderBuilder orderBuilder = Builder.toBuilder(order);
+        orderBuilder.setOrderStatus(Status.ORDER_CANCELED);
+
+        Order newOrder = orderBuilder.build();
+        orderRepository.save(newOrder);
 
         // notify the store about the cancellation
         String email = "Order with ID " + order.getId() + " canceled";
@@ -294,15 +318,5 @@ public class OrderProcessorImpl implements OrderProcessor {
             return orderRepository.findAll();
         }
         throw new Exception("Only regional managers can view all orders");
-    }
-
-    @Override
-    public void addCoupon(String token, Long orderId, String coupon) throws Exception {
-
-    }
-
-    @Override
-    public void removeCoupon(Long orderId, String coupon) throws Exception {
-
     }
 }
