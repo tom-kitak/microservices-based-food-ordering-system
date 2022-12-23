@@ -61,7 +61,7 @@ public class OrderEditorImpl implements OrderEditor {
         // Query the Menu to see if pizza contains allergens and store the response to inform the user
         String responseMessage = menuCommunication.containsAllergen(pizza, memberId, token);
         if (responseMessage != null && !responseMessage.equals("")) {
-            allergens.setAllergens(responseMessage);
+            allergens.setAllergensContent(responseMessage);
         }
 
         Order order = orderRepository.getOne(orderId);
@@ -116,10 +116,13 @@ public class OrderEditorImpl implements OrderEditor {
         // Query the Menu to see if topping contains allergens and store the response to inform the user
         String responseMessage = menuCommunication.containsAllergenTopping(toppingId, memberId, token);
         if (responseMessage != null && !responseMessage.equals("")) {
-            allergens.setAllergens(responseMessage);
+            allergens.setAllergensContent(responseMessage);
         }
 
         Order order = orderRepository.getOne(orderId);
+        if (!order.getPizzas().contains(pizza)) {
+            throw new Exception(invalidPizza);
+        }
         OrderBuilder orderBuilder = Builder.toBuilder(order);
         orderBuilder.addTopping(pizza, toppingId);
 
@@ -153,7 +156,5 @@ public class OrderEditorImpl implements OrderEditor {
 
         Order newOrder = orderBuilder.build();
         orderRepository.save(newOrder);
-
-        orderRepository.save(order);
     }
 }

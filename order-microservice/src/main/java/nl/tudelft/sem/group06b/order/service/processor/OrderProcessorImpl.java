@@ -165,21 +165,32 @@ public class OrderProcessorImpl implements OrderProcessor {
             throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
         }
 
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new UnsupportedOperationException("No store location is selected");
+        }
+
+        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
+            throw new UnsupportedOperationException("No order time is selected");
+        }
+
         for (Pizza pizza : order.getPizzas()) {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
         }
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
 
-        if (order.getAppliedCoupon() != null && !order.getAppliedCoupon().isEmpty()) {
+        if (order.getAppliedCoupon() == null && !order.getCoupons().isEmpty()) {
             ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
                     new ArrayList<>(order.getCoupons()), token);
             if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
                 orderBuilder.setAppliedCoupon(null);
+                order.setAppliedCoupon(null);
             } else {
                 orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
+                order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
             }
             orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
+            order.setPizzas(applyCouponsToResponse.getPizzas());
         }
 
         orderBuilder.setPrice(order.calculateTotalPrice());
