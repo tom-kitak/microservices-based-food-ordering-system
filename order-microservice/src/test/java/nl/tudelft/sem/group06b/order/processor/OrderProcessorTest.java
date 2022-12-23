@@ -12,15 +12,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
+import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import nl.tudelft.sem.group06b.order.service.processor.OrderProcessor;
 import nl.tudelft.sem.group06b.order.service.processor.OrderProcessorImpl;
@@ -546,4 +550,150 @@ public class OrderProcessorTest {
         verify(mockOrderRepository, never()).save(any());
         verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
     }
+    @Test
+    public void testPlaceOrderSuccessNoCoupons() throws Exception {
+        Long orderId = 1L;
+        Pizza pizza1 = new Pizza(1L, List.of(10L, 20L));
+        Pizza pizza2 = new Pizza(2L, List.of(20L));
+        List<Pizza> pizzas = List.of(pizza1, pizza2);
+        String time = "20/12/2022 12:30:20";
+        Status status = Status.ORDER_ONGOING;
+        Long storeId = 2L;
+        String location = "Valid location 49";
+
+        Order order = new Order();
+        order.setId(orderId);
+        order.setPizzas(pizzas);
+        order.setSelectedTime(time);
+        order.setStatus(status);
+        order.setStoreId(storeId);
+        order.setLocation(location);
+
+        when(mockOrderRepository.getOne(orderId)).thenReturn(order);
+        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza1, "token")).thenReturn(new BigDecimal(9.00));
+        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza2, "token")).thenReturn(new BigDecimal(10.42));
+
+        Order target = new Order();
+        target.setId(orderId);
+        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal(9.00).setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        List<Pizza> pizzasTarget = List.of(pizza1Target, pizza2Target);
+        target.setPizzas(pizzasTarget);
+        target.setSelectedTime(time);
+        target.setStatus(Status.ORDER_PLACED);
+        target.setPrice(target.calculateTotalPrice());
+        target.setStoreId(storeId);
+        target.setLocation(location);
+
+        Order placed = orderProcessor.placeOrder("token", orderId);
+        assert placed.getPrice().compareTo(new BigDecimal(19.42).setScale(2, RoundingMode.HALF_UP)) == 0;
+        assert placed.equals(target);
+
+        verify(mockOrderRepository, times(1)).save(target);
+    }
+
+    @Test
+    public void testPlaceOrderSuccessWithCoupons() throws Exception {
+        Long orderId = 1L;
+        Pizza pizza1 = new Pizza(1L, List.of(10L, 20L));
+        Pizza pizza2 = new Pizza(2L, List.of(20L));
+        List<Pizza> pizzas = List.of(pizza1, pizza2);
+        String time = "20/12/2022 12:30:20";
+        Status status = Status.ORDER_ONGOING;
+        Long storeId = 2L;
+        String location = "Valid location 49";
+        Set<String> coupons = Set.of("c1", "oneFree");
+
+        Order order = new Order();
+        order.setId(orderId);
+        order.setPizzas(pizzas);
+        order.setSelectedTime(time);
+        order.setStatus(status);
+        order.setStoreId(storeId);
+        order.setLocation(location);
+        order.setCoupons(coupons);
+
+        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal(0.00).setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        List<Pizza> pizzasTarget = List.of(pizza1Target, pizza2Target);
+
+        when(mockOrderRepository.getOne(orderId)).thenReturn(order);
+        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza1, "token"))
+                .thenReturn(new BigDecimal(9.00).setScale(2, RoundingMode.HALF_UP));
+        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza2, "token"))
+                .thenReturn(new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        when(mockCouponCommunication.applyCouponsToOrder(order.getPizzas(),
+                new ArrayList<>(order.getCoupons()), "token")).thenReturn(
+                        new ApplyCouponsToOrderModel(pizzasTarget, List.of("oneFree")));
+
+
+        Order target = new Order();
+        target.setId(orderId);
+        target.setPizzas(pizzasTarget);
+        target.setSelectedTime(time);
+        target.setStatus(Status.ORDER_PLACED);
+        target.setPrice(new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        target.setStoreId(storeId);
+        target.setLocation(location);
+        target.setCoupons(coupons);
+
+        Order placed = orderProcessor.placeOrder("token", orderId);
+        assert placed.getPrice().compareTo(new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP)) == 0;
+        assert placed.equals(target);
+
+        verify(mockOrderRepository, times(1)).save(target);
+    }
+
+    @Test
+    public void testPlaceOrderSuccessWithNoValidCoupons() throws Exception {
+        Long orderId = 1L;
+        Pizza pizza1 = new Pizza(1L, List.of(10L, 20L));
+        Pizza pizza2 = new Pizza(2L, List.of(20L));
+        List<Pizza> pizzas = List.of(pizza1, pizza2);
+        String time = "20/12/2022 12:30:20";
+        Status status = Status.ORDER_ONGOING;
+        Long storeId = 2L;
+        String location = "Valid location 49";
+        Set<String> coupons = Set.of("notValid2", "notValid1");
+
+        Order order = new Order();
+        order.setId(orderId);
+        order.setPizzas(pizzas);
+        order.setSelectedTime(time);
+        order.setStatus(status);
+        order.setStoreId(storeId);
+        order.setLocation(location);
+        order.setCoupons(coupons);
+
+        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal(9.00).setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        List<Pizza> pizzasTarget = List.of(pizza1Target, pizza2Target);
+
+        when(mockOrderRepository.getOne(orderId)).thenReturn(order);
+        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza1, "token"))
+                .thenReturn(new BigDecimal(9.00).setScale(2, RoundingMode.HALF_UP));
+        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza2, "token"))
+                .thenReturn(new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        when(mockCouponCommunication.applyCouponsToOrder(order.getPizzas(),
+                new ArrayList<>(order.getCoupons()), "token")).thenReturn(
+                new ApplyCouponsToOrderModel(pizzasTarget, List.of()));
+
+        Order target = new Order();
+        target.setId(orderId);
+        target.setPizzas(pizzasTarget);
+        target.setSelectedTime(time);
+        target.setStatus(Status.ORDER_PLACED);
+        target.setPrice(new BigDecimal(19.42).setScale(2, RoundingMode.HALF_UP));
+        target.setStoreId(storeId);
+        target.setLocation(location);
+        target.setCoupons(coupons);
+
+        Order placed = orderProcessor.placeOrder("token", orderId);
+        assert placed.getPrice().compareTo(new BigDecimal(19.42).setScale(2, RoundingMode.HALF_UP)) == 0;
+        assert placed.equals(target);
+
+        verify(mockOrderRepository, times(1)).save(target);
+    }
+
+
 }
