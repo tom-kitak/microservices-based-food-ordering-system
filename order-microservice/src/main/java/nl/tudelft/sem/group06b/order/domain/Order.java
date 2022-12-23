@@ -33,7 +33,7 @@ public class Order {
     @Column(name = "memberId")
     private String memberId;
 
-    @Column(name = "pizzas", length = 1000)
+    @Column(name = "pizzas", length = 20000)
     @ElementCollection
     private List<Pizza> pizzas;
 

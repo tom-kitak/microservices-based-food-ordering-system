@@ -324,7 +324,7 @@ public class MenuService {
                 System.out.println(a);
                 System.out.println(currPizza.get().containsAllergen(a));
                 if (currPizza.get().containsAllergen(a).isPresent()) {
-                    ret += currPizza.get().containsAllergen(a).get() + ";";
+                    ret += "Pizza name: " + currPizza.get().getName() + "; ";
                 }
             }
         }
@@ -332,7 +332,7 @@ public class MenuService {
         for (Long l : toppingList) {
             Optional<String> s = checkForAllergiesTopping(l, allergies);
             if (s.isPresent()) {
-                ret += s.get();
+                ret += "Topping: " + s.get();
             }
         }
 
@@ -373,7 +373,7 @@ public class MenuService {
         if (curr.isPresent()) {
             for (Allergy a : allergyList) {
                 if (curr.get().containsAllergy(a).isPresent()) {
-                    ret += curr.get().containsAllergy(a).get() + ";";
+                    ret += curr.get().containsAllergy(a).get() + "; ";
                 }
             }
         }

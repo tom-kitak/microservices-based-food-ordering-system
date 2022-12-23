@@ -23,7 +23,7 @@ public class Email {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, length = 20000)
     private String dummyEmail;
 
     @ManyToOne()
