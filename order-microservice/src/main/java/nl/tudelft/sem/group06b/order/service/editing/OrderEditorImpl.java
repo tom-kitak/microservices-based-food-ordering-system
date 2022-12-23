@@ -3,7 +3,7 @@ package nl.tudelft.sem.group06b.order.service.editing;
 import nl.tudelft.sem.group06b.order.communication.CouponCommunication;
 import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
-import nl.tudelft.sem.group06b.order.domain.AllergenResponse;
+import nl.tudelft.sem.group06b.order.domain.Allergens;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
@@ -37,7 +37,7 @@ public class OrderEditorImpl implements OrderEditor {
     }
 
     @Override
-    public AllergenResponse addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
+    public Allergens addPizza(String token, String memberId, Long orderId, Pizza pizza) throws Exception {
         if (token == null) {
             throw new Exception(invalidToken);
         } else if (orderId == null) {
@@ -51,7 +51,7 @@ public class OrderEditorImpl implements OrderEditor {
             throw new Exception(invalidMemberId);
         }
 
-        AllergenResponse allergenResponse = new AllergenResponse();
+        Allergens allergens = new Allergens("No allergens");
 
         // Query the Menu to see if pizza is valid
         menuCommunication.validatePizza(pizza, token);
@@ -59,14 +59,14 @@ public class OrderEditorImpl implements OrderEditor {
         // Query the Menu to see if pizza contains allergens and store the response to inform the user
         String responseMessage = menuCommunication.containsAllergen(pizza, memberId, token);
         if (responseMessage != null && !responseMessage.equals("")) {
-            allergenResponse.setAllergenContent(responseMessage);
+            allergens.setAllergens(responseMessage);
         }
 
         Order order = orderRepository.getOne(orderId);
         order.getPizzas().add(pizza);
         orderRepository.save(order);
 
-        return allergenResponse;
+        return allergens;
     }
 
     @Override
@@ -86,8 +86,8 @@ public class OrderEditorImpl implements OrderEditor {
     }
 
     @Override
-    public AllergenResponse addTopping(String token, String memberId,
-                                           Long orderId, Pizza pizza, Long toppingId) throws Exception {
+    public Allergens addTopping(String token, String memberId,
+                                Long orderId, Pizza pizza, Long toppingId) throws Exception {
         if (orderId == null) {
             throw new Exception(invalidOrderId);
         } else if (orderRepository.getOne(orderId) == null
@@ -100,7 +100,7 @@ public class OrderEditorImpl implements OrderEditor {
         } else if (token == null) {
             throw new Exception(invalidToken);
         }
-        AllergenResponse allergenResponse = new AllergenResponse();
+        Allergens allergens = new Allergens("No allergens");
 
         // Query the Menu to see if topping is valid
         menuCommunication.validateTopping(toppingId, token);
@@ -108,14 +108,14 @@ public class OrderEditorImpl implements OrderEditor {
         // Query the Menu to see if topping contains allergens and store the response to inform the user
         String responseMessage = menuCommunication.containsAllergenTopping(toppingId, memberId, token);
         if (responseMessage != null && !responseMessage.equals("")) {
-            allergenResponse.setAllergenContent(responseMessage);
+            allergens.setAllergens(responseMessage);
         }
 
         Order order = orderRepository.getOne(orderId);
         order.getPizzas().get(order.getPizzas().indexOf(pizza)).getToppings().add(toppingId);
         orderRepository.save(order);
 
-        return allergenResponse;
+        return allergens;
     }
 
     @Override

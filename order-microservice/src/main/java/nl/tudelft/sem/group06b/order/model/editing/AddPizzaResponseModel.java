@@ -2,10 +2,10 @@ package nl.tudelft.sem.group06b.order.model.editing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import nl.tudelft.sem.group06b.order.domain.AllergenResponse;
+import nl.tudelft.sem.group06b.order.domain.Allergens;
 
 @Data
 @AllArgsConstructor
 public class AddPizzaResponseModel {
-    AllergenResponse allergens;
+    Allergens allergens;
 }
