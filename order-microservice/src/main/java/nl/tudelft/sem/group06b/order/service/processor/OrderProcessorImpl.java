@@ -134,7 +134,7 @@ public class OrderProcessorImpl implements OrderProcessor {
             throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
         }
 
-        if (location.isEmpty() && storeCommunication.validateLocation(location, token)) {
+        if (location.isEmpty() || !storeCommunication.validateLocation(location, token)) {
             throw new IllegalArgumentException(INVALID_LOCATION_MESSAGE);
         }
 
@@ -165,8 +165,20 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         Order order = orderRepository.getOne(orderId);
 
-        if (order.getPizzas().isEmpty()) {
+        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
             throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
+        }
+
+        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
+            throw new UnsupportedOperationException("No order time is selected");
+        }
+
+        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
+            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+        }
+
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new UnsupportedOperationException("No store location is selected");
         }
 
         for (Pizza pizza : order.getPizzas()) {
@@ -175,15 +187,18 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
 
-        if (order.getAppliedCoupon() != null && !order.getAppliedCoupon().isEmpty()) {
+        if (order.getCoupons() != null && !order.getCoupons().isEmpty()) {
             ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
                     new ArrayList<>(order.getCoupons()), token);
             if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
                 orderBuilder.setAppliedCoupon(null);
+                order.setAppliedCoupon(null);
             } else {
                 orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
+                order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
             }
             orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
+            order.setPizzas(applyCouponsToResponse.getPizzas());
         }
 
         orderBuilder.setPrice(order.calculateTotalPrice());
