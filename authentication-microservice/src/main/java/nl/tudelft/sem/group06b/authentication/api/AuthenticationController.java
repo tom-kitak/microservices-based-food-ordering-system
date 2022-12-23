@@ -47,7 +47,7 @@ public class AuthenticationController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "USER_DISABLED", disabledException);
         } catch (BadCredentialsException badCredentialsException) {
             System.out.println("Bad credentials exception");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", badCredentialsException);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "INVALID_CREDENTIALS", badCredentialsException);
         }
 
     }
@@ -78,7 +78,6 @@ public class AuthenticationController {
      */
     @PostMapping("/create_role")
     private ResponseEntity<?> createRole(@RequestBody RoleCreationRequestModel request) {
-        //TODO: add authorization for this endpoint so that only the regional manager can query this.
         try {
             authenticationService.createRole(new RoleName(request.getRoleName()));
         } catch (Exception e) {
@@ -95,7 +94,6 @@ public class AuthenticationController {
      */
     @PutMapping("/change_role")
     private ResponseEntity<?> changeRole(@RequestBody ChangeRoleRequestModel request) {
-        //TODO: add authorization for this endpoint so that only the regional manager can query this.
         try {
             authenticationService.changeRole(new MemberId(request.getMemberId()), new RoleName(request.getNewRoleName()));
         } catch (Exception e) {

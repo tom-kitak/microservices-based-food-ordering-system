@@ -35,7 +35,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
             // Create new account
             Role role = roleRepository.findByRoleName(new RoleName("customer")).orElseThrow();
-            User user = new User(memberId, hashedPassword, role.getId());
+            User user = new User(memberId, hashedPassword, role);
             userRepository.save(user);
 
             return;
@@ -54,7 +54,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         var user = optionalUser.get();
         Role role = roleRepository.findByRoleName(roleName).orElseThrow();
-        user.changeRole(role.getId());
+        user.changeRole(role);
         userRepository.save(user);
     }
 

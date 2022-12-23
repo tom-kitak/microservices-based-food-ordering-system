@@ -24,12 +24,10 @@ public class RoleCreationServiceImpl implements RoleCreationService {
 
     @Override
     public void addRole(RoleName roleName) throws Exception {
-
         if (!checkRoleNameIsUnique(roleName)) {
             throw new RoleAlreadyExistsException(roleName);
         }
         roleRepository.save(new Role(roleName));
-
     }
 
     private boolean checkRoleNameIsUnique(RoleName roleName) {

@@ -23,4 +23,30 @@ public class Allergy implements Serializable {
      * name for the allergy.
      */
     private @Getter String name;
+
+    /**
+     * Constructor for the pizza.
+     *
+     * @param id of the pizza.
+     * @param allergen name of the allergen.
+     */
+    public Allergy(long id, String allergen) {
+        this.id = id;
+        this.name = allergen;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Allergy) {
+            Allergy that = (Allergy) other;
+            return this.getId().equals(that.getId())
+                    && this.name.equalsIgnoreCase(that.getName());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

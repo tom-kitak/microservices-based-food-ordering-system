@@ -32,6 +32,7 @@ public class RoleCreationServiceTest {
     public void createRole_withValidData_worksCorrectly() throws Exception {
         // Arrange
         final RoleName roleName = new RoleName("member");
+        final Role role = new Role(roleName);
 
         // Act
         roleCreationService.addRole(roleName);
@@ -39,6 +40,11 @@ public class RoleCreationServiceTest {
         // Assert
         Role savedRole = roleRepository.findByRoleName(roleName).orElseThrow();
 
+        assertThat(savedRole).isNotEqualTo(null);
+        assertThat(savedRole).isNotEqualTo(roleName);
+        assertThat(savedRole).isEqualTo(savedRole);
+        assertThat(savedRole).isEqualTo(role);
+        assertThat(savedRole.hashCode()).isEqualTo(role.hashCode());
         assertThat(savedRole.getName()).isEqualTo(roleName);
     }
 
@@ -58,8 +64,9 @@ public class RoleCreationServiceTest {
 
         Role savedRole = roleRepository.findByRoleName(roleName).orElseThrow();
 
-        assertThat(savedRole.getName()).isEqualTo(roleName);
-
-        assertThat(roleRepository.count()).isEqualTo(1);
+        assertThat(savedRole.getName()).isNotEqualTo(null);
+        assertThat(savedRole.getName()).isNotEqualTo(role);
+        assertThat(savedRole.getName()).isEqualTo(savedRole.getName());
+        assertThat(savedRole).isEqualTo(role);
     }
 }
