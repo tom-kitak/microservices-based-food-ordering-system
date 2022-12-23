@@ -119,12 +119,13 @@ public class Order {
     /**
      * Calculates the total price of the pizzas currently in the Order.
      */
-    public void calculateTotalPrice() {
+    public BigDecimal calculateTotalPrice() {
         BigDecimal priceSum = new BigDecimal(0).setScale(2, RoundingMode.HALF_DOWN);
         for (Pizza pizza : pizzas) {
             priceSum = priceSum.add(pizza.getPrice());
         }
         this.price = priceSum;
+        return priceSum;
     }
 
     /**
