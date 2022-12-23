@@ -48,20 +48,28 @@ public class OrderProcessorImpl implements OrderProcessor {
     /**
      * Constructor for OrderProcessorImpl.
      *
-     * @param orderRepository     the repository for orders
+     * @param orderRepository     the repository of orders
      * @param taskScheduler       the scheduler for the order deadline
+     * @param menuCommunication   the communication with the menu microservice
+     * @param storeCommunication  the communication with the store microservice
+     * @param couponCommunication the communication with the coupon microservice
+     * @param timeValidation      the validation of the time
      */
     @Autowired
     public OrderProcessorImpl(
             OrderRepository orderRepository,
-            TaskScheduler taskScheduler
+            TaskScheduler taskScheduler,
+            MenuCommunication menuCommunication,
+            StoreCommunication storeCommunication,
+            CouponCommunication couponCommunication,
+            TimeValidation timeValidation
     ) {
         this.orderRepository = orderRepository;
-        this.menuCommunication = new MenuCommunication();
-        this.storeCommunication = new StoreCommunication();
-        this.couponCommunication = new CouponCommunication();
+        this.menuCommunication = menuCommunication;
+        this.storeCommunication = storeCommunication;
+        this.couponCommunication = couponCommunication;
         this.taskScheduler = taskScheduler;
-        this.timeValidation = new TimeValidation();
+        this.timeValidation = timeValidation;
 
         orderRepository.findAll().forEach(order -> {
             if (order.getStatus() == Status.ORDER_PLACED) {
@@ -130,7 +138,7 @@ public class OrderProcessorImpl implements OrderProcessor {
             throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
         }
 
-        if (location.isEmpty() && storeCommunication.validateLocation(location, token)) {
+        if (location.isEmpty() || !storeCommunication.validateLocation(location, token)) {
             throw new IllegalArgumentException(INVALID_LOCATION_MESSAGE);
         }
 
@@ -161,16 +169,20 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         Order order = orderRepository.getOne(orderId);
 
-        if (order.getPizzas().isEmpty()) {
+        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
             throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
-        }
-
-        if (order.getLocation() == null || order.getLocation().isEmpty()) {
-            throw new UnsupportedOperationException("No store location is selected");
         }
 
         if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
             throw new UnsupportedOperationException("No order time is selected");
+        }
+
+        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
+            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+        }
+
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new UnsupportedOperationException("No store location is selected");
         }
 
         for (Pizza pizza : order.getPizzas()) {
@@ -179,7 +191,7 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
 
-        if (order.getAppliedCoupon() == null && !order.getCoupons().isEmpty()) {
+        if (order.getCoupons() != null && !order.getCoupons().isEmpty()) {
             ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
                     new ArrayList<>(order.getCoupons()), token);
             if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
@@ -277,7 +289,7 @@ public class OrderProcessorImpl implements OrderProcessor {
         orderRepository.save(newOrder);
 
         // notify the store about the cancellation
-        String email = "Order with ID " + order.getId() + " canceled";
+        String email = "Order with ID " + order.getId() + " cancelled";
         storeCommunication.sendEmailToStore(order.getStoreId(), email, token);
     }
 
