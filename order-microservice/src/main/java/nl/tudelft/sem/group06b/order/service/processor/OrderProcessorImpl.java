@@ -48,8 +48,12 @@ public class OrderProcessorImpl implements OrderProcessor {
     /**
      * Constructor for OrderProcessorImpl.
      *
-     * @param orderRepository     the repository for orders
+     * @param orderRepository     the repository of orders
      * @param taskScheduler       the scheduler for the order deadline
+     * @param menuCommunication   the communication with the menu microservice
+     * @param storeCommunication  the communication with the store microservice
+     * @param couponCommunication the communication with the coupon microservice
+     * @param timeValidation      the validation of the time
      */
     @Autowired
     public OrderProcessorImpl(
@@ -285,7 +289,7 @@ public class OrderProcessorImpl implements OrderProcessor {
         orderRepository.save(newOrder);
 
         // notify the store about the cancellation
-        String email = "Order with ID " + order.getId() + " canceled";
+        String email = "Order with ID " + order.getId() + " cancelled";
         storeCommunication.sendEmailToStore(order.getStoreId(), email, token);
     }
 
