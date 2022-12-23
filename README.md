@@ -76,11 +76,11 @@ To add/delete stores you have to be a regional manager.
 
 ![image](instructions/send_emails.png)
 
-#### Viewing emails of a specific store:
+#### Viewing emails of a specific store: (Only if you are the store_manager of that store, or the regional_manager)
 
 ![image](instructions/email_by_store.png)
 
-#### Viewing emails of all stores:
+#### Viewing emails of all stores: (Only if you are the regional_manager)
 
 ![image](instructions/get_all_emails.png)
 
