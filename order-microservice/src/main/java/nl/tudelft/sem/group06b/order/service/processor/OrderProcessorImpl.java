@@ -134,7 +134,7 @@ public class OrderProcessorImpl implements OrderProcessor {
             throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
         }
 
-        if (location.isEmpty() && storeCommunication.validateLocation(location, token)) {
+        if (location.isEmpty() || !storeCommunication.validateLocation(location, token)) {
             throw new IllegalArgumentException(INVALID_LOCATION_MESSAGE);
         }
 
