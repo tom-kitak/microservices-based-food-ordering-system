@@ -29,18 +29,4 @@ public class Coupon {
 
     @ElementCollection
     private Set<String> usedBy;
-
-    /**
-     * Get the effect of the coupon.
-     *
-     * @return The effect of the coupon. A discount percentage for a discount coupon if the coupon is a discount coupon.
-     *      A -1 if the coupon is a one-off coupon.
-     */
-    public double getEffect() {
-        if (type == CouponType.DISCOUNT) {
-            return discount;
-        } else {
-            return -1;
-        }
-    }
 }

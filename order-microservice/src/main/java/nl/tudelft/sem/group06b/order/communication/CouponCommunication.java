@@ -42,8 +42,11 @@ public class CouponCommunication {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-        ResponseEntity<ApplyCouponsToOrderModel> response = restTemplate.postForEntity(couponUrl + "/calculatePrice",
-                entity, ApplyCouponsToOrderModel.class);
+        ResponseEntity<ApplyCouponsToOrderModel> response = restTemplate.exchange(
+                couponUrl + "/calculatePrice",
+                HttpMethod.POST,
+                entity,
+                ApplyCouponsToOrderModel.class);
 
         return response.getBody();
     }
