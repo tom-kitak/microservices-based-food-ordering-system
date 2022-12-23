@@ -89,7 +89,7 @@ public class CouponsController {
     @GetMapping("/getCoupons")
     public ResponseEntity<List<Coupon>> getAllCoupons() {
         if (!authManager.getRoles().contains(new SimpleGrantedAuthority("regional_manager"))) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to remove coupons");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to get all coupons");
         }
 
         List<Coupon> coupons = couponsService.queryAllCoupons();
