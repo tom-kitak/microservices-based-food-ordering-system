@@ -460,7 +460,7 @@ public class OrderProcessorTest {
         when(mockStoreCommunication.validateManager("man", "token")).thenReturn(false);
 
         assertThrows(Exception.class, () -> orderProcessor
-                .fetchAllStoreOrders("token", "man", "customer", 1L),
+                        .fetchAllStoreOrders("token", "man", "customer", 1L),
                 "Customers can not view store orders");
     }
 
@@ -492,7 +492,7 @@ public class OrderProcessorTest {
     @Test
     public void testCancelOrderEmptyOrderId() {
         assertThrows(IllegalArgumentException.class, () -> orderProcessor
-                .cancelOrder("token", "deity", "regional_manager", null),
+                        .cancelOrder("token", "deity", "regional_manager", null),
                 "Invalid order ID");
     }
 
@@ -544,12 +544,13 @@ public class OrderProcessorTest {
         when(mockOrderRepository.getOne(1L)).thenReturn(order);
         when(mockStoreCommunication.validateManager("deity", "token")).thenReturn(false);
         assertThrows(IllegalArgumentException.class, () -> orderProcessor
-                .cancelOrder("token", "deity", "regional_manager", 1L),
+                        .cancelOrder("token", "deity", "regional_manager", 1L),
                 "No active order with this ID");
 
         verify(mockOrderRepository, never()).save(any());
         verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
     }
+
     @Test
     public void testPlaceOrderSuccessNoCoupons() throws Exception {
         Long orderId = 1L;
@@ -570,13 +571,13 @@ public class OrderProcessorTest {
         order.setLocation(location);
 
         when(mockOrderRepository.getOne(orderId)).thenReturn(order);
-        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza1, "token")).thenReturn(new BigDecimal(9.00));
-        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza2, "token")).thenReturn(new BigDecimal(10.42));
+        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza1, "token")).thenReturn(new BigDecimal("9.00"));
+        when(mockMenuCommunication.getPizzaPriceFromMenu(pizza2, "token")).thenReturn(new BigDecimal("10.42"));
 
         Order target = new Order();
         target.setId(orderId);
-        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal(9.00).setScale(2, RoundingMode.HALF_UP));
-        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal("9.00").setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal("10.42").setScale(2, RoundingMode.HALF_UP));
         List<Pizza> pizzasTarget = List.of(pizza1Target, pizza2Target);
         target.setPizzas(pizzasTarget);
         target.setSelectedTime(time);
@@ -586,7 +587,7 @@ public class OrderProcessorTest {
         target.setLocation(location);
 
         Order placed = orderProcessor.placeOrder("token", orderId);
-        assert placed.getPrice().compareTo(new BigDecimal(19.42).setScale(2, RoundingMode.HALF_UP)) == 0;
+        assert placed.getPrice().compareTo(new BigDecimal("19.42").setScale(2, RoundingMode.HALF_UP)) == 0;
         assert placed.equals(target);
 
         verify(mockOrderRepository, times(1)).save(target);
@@ -613,18 +614,18 @@ public class OrderProcessorTest {
         order.setLocation(location);
         order.setCoupons(coupons);
 
-        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal(0.00).setScale(2, RoundingMode.HALF_UP));
-        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal("10.42").setScale(2, RoundingMode.HALF_UP));
         List<Pizza> pizzasTarget = List.of(pizza1Target, pizza2Target);
 
         when(mockOrderRepository.getOne(orderId)).thenReturn(order);
         when(mockMenuCommunication.getPizzaPriceFromMenu(pizza1, "token"))
-                .thenReturn(new BigDecimal(9.00).setScale(2, RoundingMode.HALF_UP));
+                .thenReturn(new BigDecimal("9.00").setScale(2, RoundingMode.HALF_UP));
         when(mockMenuCommunication.getPizzaPriceFromMenu(pizza2, "token"))
-                .thenReturn(new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+                .thenReturn(new BigDecimal("10.42").setScale(2, RoundingMode.HALF_UP));
         when(mockCouponCommunication.applyCouponsToOrder(order.getPizzas(),
                 new ArrayList<>(order.getCoupons()), "token")).thenReturn(
-                        new ApplyCouponsToOrderModel(pizzasTarget, List.of("oneFree")));
+                new ApplyCouponsToOrderModel(pizzasTarget, List.of("oneFree")));
 
 
         Order target = new Order();
@@ -632,13 +633,13 @@ public class OrderProcessorTest {
         target.setPizzas(pizzasTarget);
         target.setSelectedTime(time);
         target.setStatus(Status.ORDER_PLACED);
-        target.setPrice(new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        target.setPrice(new BigDecimal("10.42").setScale(2, RoundingMode.HALF_UP));
         target.setStoreId(storeId);
         target.setLocation(location);
         target.setCoupons(coupons);
 
         Order placed = orderProcessor.placeOrder("token", orderId);
-        assert placed.getPrice().compareTo(new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP)) == 0;
+        assert placed.getPrice().compareTo(new BigDecimal("10.42").setScale(2, RoundingMode.HALF_UP)) == 0;
         assert placed.equals(target);
 
         verify(mockOrderRepository, times(1)).save(target);
@@ -665,15 +666,15 @@ public class OrderProcessorTest {
         order.setLocation(location);
         order.setCoupons(coupons);
 
-        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal(9.00).setScale(2, RoundingMode.HALF_UP));
-        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza1Target = new Pizza(1L, List.of(10L, 20L), new BigDecimal("9.00").setScale(2, RoundingMode.HALF_UP));
+        Pizza pizza2Target = new Pizza(2L, List.of(20L), new BigDecimal("10.42").setScale(2, RoundingMode.HALF_UP));
         List<Pizza> pizzasTarget = List.of(pizza1Target, pizza2Target);
 
         when(mockOrderRepository.getOne(orderId)).thenReturn(order);
         when(mockMenuCommunication.getPizzaPriceFromMenu(pizza1, "token"))
-                .thenReturn(new BigDecimal(9.00).setScale(2, RoundingMode.HALF_UP));
+                .thenReturn(new BigDecimal("9.00").setScale(2, RoundingMode.HALF_UP));
         when(mockMenuCommunication.getPizzaPriceFromMenu(pizza2, "token"))
-                .thenReturn(new BigDecimal(10.42).setScale(2, RoundingMode.HALF_UP));
+                .thenReturn(new BigDecimal("10.42").setScale(2, RoundingMode.HALF_UP));
         when(mockCouponCommunication.applyCouponsToOrder(order.getPizzas(),
                 new ArrayList<>(order.getCoupons()), "token")).thenReturn(
                 new ApplyCouponsToOrderModel(pizzasTarget, List.of()));
@@ -683,13 +684,13 @@ public class OrderProcessorTest {
         target.setPizzas(pizzasTarget);
         target.setSelectedTime(time);
         target.setStatus(Status.ORDER_PLACED);
-        target.setPrice(new BigDecimal(19.42).setScale(2, RoundingMode.HALF_UP));
+        target.setPrice(new BigDecimal("19.42").setScale(2, RoundingMode.HALF_UP));
         target.setStoreId(storeId);
         target.setLocation(location);
         target.setCoupons(coupons);
 
         Order placed = orderProcessor.placeOrder("token", orderId);
-        assert placed.getPrice().compareTo(new BigDecimal(19.42).setScale(2, RoundingMode.HALF_UP)) == 0;
+        assert placed.getPrice().compareTo(new BigDecimal("19.42").setScale(2, RoundingMode.HALF_UP)) == 0;
         assert placed.equals(target);
 
         verify(mockOrderRepository, times(1)).save(target);
