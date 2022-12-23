@@ -120,7 +120,9 @@ public class StoreControllerTest {
                 Collections.singleton(new SimpleGrantedAuthority("regional_manager"));
         when(mockJwtTokenVerifier.validateToken("token")).thenReturn(true);
         when(mockJwtTokenVerifier.getUsernameFromToken("token")).thenReturn("user");
-        doThrow(new StoreAlreadyExistException(new Location("l1"))).when(mockStoreService).addStore(request.getName(), new Location(request.getStoreLocation()), request.getManager());
+        doThrow(new StoreAlreadyExistException(new Location("l1")))
+                .when(mockStoreService)
+                .addStore(request.getName(), new Location(request.getStoreLocation()), request.getManager());
         doReturn(roles).when(mockJwtTokenVerifier).getRoleFromToken("token");
 
         ResultActions result = mockMvc.perform(post("/api/stores/addStore")
@@ -314,7 +316,8 @@ public class StoreControllerTest {
                 .header("Authorization", "Bearer token")
                 .contentType("application/json"));
 
-        result.andExpect(status().isBadRequest()).andExpect(status().reason("Only store managers and regional managers can get store Ids"));
+        result.andExpect(status().isBadRequest()).andExpect(status()
+                .reason("Only store managers and regional managers can get store Ids"));
     }
 
     @Test
@@ -388,7 +391,8 @@ public class StoreControllerTest {
                 .header("Authorization", "Bearer token")
                 .contentType("application/json"));
 
-        result.andExpect(status().isBadRequest()).andExpect(status().reason("Only store managers and regional managers can get store Ids"));
+        result.andExpect(status().isBadRequest()).andExpect(status()
+                .reason("Only store managers and regional managers can get store Ids"));
     }
 }
 

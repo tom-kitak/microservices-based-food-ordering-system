@@ -21,12 +21,12 @@ public class ValidateManagerServiceTest {
     @Test
     public void testValidateManager() {
         when(mockStoreRepository.existsByManager(eq("test"))).thenReturn(true);
-        assert(validateManagerService.validateManager("test"));
+        assert (validateManagerService.validateManager("test"));
     }
 
     @Test
     public void testValidateNonExistentManager() {
         when(mockStoreRepository.existsByManager(eq("test"))).thenReturn(false);
-        assert(!validateManagerService.validateManager("test"));
+        assert (!validateManagerService.validateManager("test"));
     }
 }

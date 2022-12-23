@@ -1,6 +1,5 @@
 package nl.tudelft.sem.group06b.store.domain;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -22,24 +21,24 @@ public class ValidateStoreServiceTest {
     @Test
     public void testValidateStoreLocation() {
         when(mockStoreRepository.existsByStoreLocation(eq(new Location("test")))).thenReturn(true);
-        assert(validateStoreService.validateStoreLocation(new Location("test")));
+        assert (validateStoreService.validateStoreLocation(new Location("test")));
     }
 
     @Test
     public void testValidateNonExistentLocation() {
         when(mockStoreRepository.existsByStoreLocation(eq(new Location("test")))).thenReturn(false);
-        assert(!validateStoreService.validateStoreLocation(new Location("test")));
+        assert (!validateStoreService.validateStoreLocation(new Location("test")));
     }
 
     @Test
     public void testValidateManager() {
         when(mockStoreRepository.existsByManager(eq("test"))).thenReturn(true);
-        assert(validateStoreService.validateManager("test"));
+        assert (validateStoreService.validateManager("test"));
     }
 
     @Test
     public void testValidateNonExistentManager() {
         when(mockStoreRepository.existsByManager(eq("test"))).thenReturn(false);
-        assert(!validateStoreService.validateManager("test"));
+        assert (!validateStoreService.validateManager("test"));
     }
 }

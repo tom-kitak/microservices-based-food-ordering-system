@@ -35,7 +35,7 @@ public class EmailServiceTest {
         Store s = new Store("store", new Location("hell"), new ArrayList<>(), "legit satan");
         List<Email> emails = List.of(new Email("email", s), new Email("test", s));
         when(mockQueryEmailService.queryAllEmails()).thenReturn(emails);
-        assert(emailService.queryAllEmails().equals(emails));
+        assert (emailService.queryAllEmails().equals(emails));
         verify(mockQueryEmailService).queryAllEmails();
     }
 
@@ -56,7 +56,7 @@ public class EmailServiceTest {
         Store s = new Store("store", new Location("hell"), new ArrayList<>(), "legit satan");
         List<Email> emails = List.of(new Email("email", s), new Email("test", s));
         when(mockQueryEmailService.getEmailsFromStore(1L)).thenReturn(emails);
-        assert(emailService.getEmailsFromStore(1L).equals(emails));
+        assert (emailService.getEmailsFromStore(1L).equals(emails));
         verify(mockQueryEmailService).getEmailsFromStore(1L);
     }
 

@@ -33,7 +33,7 @@ public class QueryEmailServiceTest {
         List<Email> emails = List.of(new Email("test", s), new Email("test2", s));
         when(mockEmailRepository.findAll()).thenReturn(emails);
         List<Email> result = queryEmailService.queryAllEmails();
-        assert(result.size() == 2);
+        assert (result.size() == 2);
         assert result.equals(emails);
     }
 
@@ -45,7 +45,7 @@ public class QueryEmailServiceTest {
         when(mockStoreRepository.findById(1L)).thenReturn(java.util.Optional.of(s));
 
         List<Email> result = queryEmailService.getEmailsFromStore(1L);
-        assert(result.size() == 2);
+        assert (result.size() == 2);
         assert result.equals(emails);
     }
 
