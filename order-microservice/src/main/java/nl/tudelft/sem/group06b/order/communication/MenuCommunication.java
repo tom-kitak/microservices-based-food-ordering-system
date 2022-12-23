@@ -129,7 +129,7 @@ public class MenuCommunication {
         HttpEntity request = new HttpEntity(headers);
         ResponseEntity<String> response = restTemplate.exchange(
                 menuUrl + "/containsAllergenTopping/" + toppingId + "/" + memberId,
-                HttpMethod.GET,
+                HttpMethod.POST,
                 request,
                 String.class
         );

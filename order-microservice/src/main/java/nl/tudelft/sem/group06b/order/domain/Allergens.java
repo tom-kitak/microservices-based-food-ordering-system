@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Allergen {
-    private String allergenName;
+public class Allergens {
+
+    private String allergensContent;
+
 }

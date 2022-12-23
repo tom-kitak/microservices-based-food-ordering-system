@@ -140,13 +140,13 @@ public class CouponsServiceImpl implements CouponsService {
                     .orElse(null));
 
             if (discountCoupon != null && oneOffCoupon != null) {
-                if (totalPrice.multiply(BigDecimal.valueOf(discountCoupon.getDiscount()))
+                if (totalPrice.multiply(BigDecimal.valueOf(1 - discountCoupon.getDiscount()))
                         .compareTo(totalPrice.subtract(bigPrice)) < 0) {
                     pizzasAndCoupons.setCoupons(List.of(discountCoupon.getCode()));
                     pizzasAndCoupons.getPizzas()
                             .forEach(
                                     pizza -> pizza.setPrice(
-                                            pizza.getPrice().multiply(BigDecimal.valueOf(discountCoupon.getDiscount()))
+                                            pizza.getPrice().multiply(BigDecimal.valueOf(1 - discountCoupon.getDiscount()))
                                     ));
                 } else {
                     pizzasAndCoupons.setCoupons(List.of(oneOffCoupon.getCode()));
@@ -157,7 +157,7 @@ public class CouponsServiceImpl implements CouponsService {
                 pizzasAndCoupons.getPizzas()
                         .forEach(
                                 pizza -> pizza.setPrice(
-                                        pizza.getPrice().multiply(BigDecimal.valueOf(discountCoupon.getDiscount()))
+                                        pizza.getPrice().multiply(BigDecimal.valueOf(1 - discountCoupon.getDiscount()))
                                 ));
             } else if (oneOffCoupon != null) {
                 pizzasAndCoupons.setCoupons(List.of(oneOffCoupon.getCode()));

@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 
 @Entity
@@ -32,7 +33,7 @@ public class Order {
     @Column(name = "memberId")
     private String memberId;
 
-    @Column(name = "pizzas", length = 1000)
+    @Column(name = "pizzas", length = 20000)
     @ElementCollection
     private List<Pizza> pizzas;
 
@@ -83,6 +84,33 @@ public class Order {
         this.coupons = coupons;
     }
 
+    /**
+     * Instantiates a new Order.
+     *
+     * @param id ID of the order in case there is no need to autogenerate it
+     * @param memberId ID of the member placing the order
+     * @param pizzas pizzas of the order
+     * @param orderTime selected time of the order
+     * @param status current status of the order
+     * @param price price of the order
+     * @param storeId ID of the store of the order
+     * @param location location of the store
+     */
+    public Order(Long id, String memberId, List<Pizza> pizzas, String orderTime,
+                 Status status, BigDecimal price, Long storeId, String location,
+                 String appliedCoupon, Set<String> coupons) {
+        this.id = id;
+        this.memberId = memberId;
+        this.pizzas = pizzas;
+        this.selectedTime = orderTime;
+        this.status = status;
+        this.appliedCoupon = appliedCoupon;
+        this.price = price;
+        this.storeId = storeId;
+        this.location = location;
+        this.coupons = coupons;
+    }
+
     public Order(String memberId, Status status) {
         this.memberId = memberId;
         this.status = status;
@@ -91,12 +119,13 @@ public class Order {
     /**
      * Calculates the total price of the pizzas currently in the Order.
      */
-    public void calculateTotalPrice() {
+    public BigDecimal calculateTotalPrice() {
         BigDecimal priceSum = new BigDecimal(0).setScale(2, RoundingMode.HALF_DOWN);
         for (Pizza pizza : pizzas) {
             priceSum = priceSum.add(pizza.getPrice());
         }
         this.price = priceSum;
+        return priceSum;
     }
 
     /**
