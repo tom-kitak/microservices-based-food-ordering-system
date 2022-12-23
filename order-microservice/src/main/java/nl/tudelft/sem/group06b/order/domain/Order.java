@@ -122,10 +122,10 @@ public class Order {
     public BigDecimal calculateTotalPrice() {
         BigDecimal priceSum = new BigDecimal(0).setScale(2, RoundingMode.HALF_DOWN);
         for (Pizza pizza : pizzas) {
-            priceSum = priceSum.add(pizza.getPrice());
+            priceSum = priceSum.add(pizza.getPrice().setScale(2, RoundingMode.HALF_DOWN));
         }
-        this.price = priceSum;
-        return priceSum;
+        this.price = priceSum.setScale(2, RoundingMode.HALF_DOWN);
+        return priceSum.setScale(2, RoundingMode.HALF_DOWN);
     }
 
     /**
