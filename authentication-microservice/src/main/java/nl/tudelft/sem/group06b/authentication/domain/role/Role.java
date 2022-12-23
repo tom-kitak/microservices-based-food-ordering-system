@@ -59,7 +59,7 @@ public class Role extends EntityEvents {
             return false;
         }
         Role role = (Role) o;
-        return Objects.equals(id, role.id);
+        return Objects.equals(roleName, role.roleName);
     }
 
     @Override

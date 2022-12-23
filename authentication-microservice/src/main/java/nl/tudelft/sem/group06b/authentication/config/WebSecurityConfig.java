@@ -1,6 +1,9 @@
 package nl.tudelft.sem.group06b.authentication.config;
 
+import static org.springframework.http.HttpMethod.POST;
+
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.group06b.authentication.domain.user.service.PasswordHashingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +17,19 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * The type Web security config.
  */
 @Configuration
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Getter
     @Setter(onMethod = @__({@Autowired})) // add autowired annotation on setter
     private transient UserDetailsService userDetailsService;
+
+
 
     /**
      * Password encoder password encoder.
@@ -52,11 +59,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //TODO: add authorization for the 2 role related endpoints
-        http.csrf().disable()
-                .authorizeRequests().anyRequest().permitAll()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        UsernamePasswordAuthenticationFilter authenticationFilter = new UsernamePasswordAuthenticationFilter();
+        authenticationFilter.setFilterProcessesUrl("/api/authentication/authenticate");
+        authenticationFilter.setFilterProcessesUrl("/api/authentication/register");
+
+        http.csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.authorizeRequests().antMatchers(POST, "/api/authentication/authenticate").permitAll();
+        http.authorizeRequests().antMatchers(POST, "/api/authentication/register").permitAll();
     }
 }
 
