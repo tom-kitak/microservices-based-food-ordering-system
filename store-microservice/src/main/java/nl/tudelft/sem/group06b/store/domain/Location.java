@@ -2,40 +2,19 @@ package nl.tudelft.sem.group06b.store.domain;
 
 import java.io.Serializable;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Location implements Serializable {
 
     static final long serialVersionUID = -4238572935769182641L;
 
     private String address;
 
-    /**
-     * Instantiates a new location.
-     *
-     * @param address the address of the store
-     *
-     */
-    public Location(String address) {
-        this.address = address;
-    }
-
-    /**
-     * Gets the address of the store.
-     *
-     * @return The address of the store.
-     */
-    public String getAddress() {
-        return address;
-    }
-
-    /**
-     * Sets the address of the store.
-     *
-     * @param address The input address.
-     */
-    public void setAddress(String address) {
-        this.address = address;
-    }
 
     /**
      * Returns true if two stores are equal.

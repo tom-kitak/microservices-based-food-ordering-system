@@ -8,9 +8,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * The type Web security config.
- */
 @Configuration
 public class RequestAuthenticationConfig extends WebSecurityConfigurerAdapter {
     private final transient JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

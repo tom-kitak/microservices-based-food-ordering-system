@@ -16,4 +16,13 @@ public class AuthManager {
     public String getMemberId() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
+
+    public String getToken() {
+        return SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
+    }
+
+    public String getRole() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .toArray()[0].toString().split("=")[1].split("}")[0];
+    }
 }

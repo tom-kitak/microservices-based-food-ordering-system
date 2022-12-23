@@ -1,9 +1,11 @@
 package nl.tudelft.sem.group06b.order.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -11,12 +13,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
 @Entity
+@Data
 @Table(name = "orders")
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
 
     @Id
@@ -24,115 +29,115 @@ public class Order {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "customerId")
-    private Long customerId;
+    @Column(name = "memberId")
+    private String memberId;
 
-    @Column(name = "pizzas")
+    @Column(name = "pizzas", length = 1000)
     @ElementCollection
     private List<Pizza> pizzas;
 
-    @Column(name = "completionTime")
-    private Date completionTime;
+    @Column(name = "selectedTime")
+    private String selectedTime;
 
     @Column(name = "status")
     private Status status;
 
-    @Column(name = "couponsIds")
+    @Column(name = "coupon")
+    private String appliedCoupon;
+
+    @Column(name = "coupons")
     @ElementCollection
-    private List<String> couponsIds;
+    private Set<String> coupons;
 
     @Column(name = "price")
     private BigDecimal price;
 
     @Column(name = "storeId")
-    private String storeId;
+    private Long storeId;
+
+    @Column(name = "location")
+    private String location;
 
     /**
      * Instantiates a new Order.
      *
-     * @param customerId ID of the customer
-     * @param pizzas list of pizzas in the order
-     * @param completionTime time when the order is completed
+     * @param memberId ID of the member placing the order
+     * @param pizzas pizzas of the order
+     * @param selectedTime selected time of the order
      * @param status current status of the order
-     * @param couponsIds all the coupons applied to the order
      * @param price price of the order
-     * @param storeId store of the order
+     * @param storeId ID of the store of the order
+     * @param location location of the store
      */
-    public Order(Long customerId, List<Pizza> pizzas, Date completionTime, Status status,
-                 List<String> couponsIds, BigDecimal price, String storeId) {
-        this.customerId = customerId;
+    public Order(String memberId, List<Pizza> pizzas, String selectedTime,
+                 Status status, BigDecimal price, Long storeId,
+                 String location, String appliedCoupon, Set<String> coupons) {
+        this.memberId = memberId;
         this.pizzas = pizzas;
-        this.completionTime = completionTime;
+        this.selectedTime = selectedTime;
         this.status = status;
-        this.couponsIds = couponsIds;
+        this.appliedCoupon = appliedCoupon;
         this.price = price;
         this.storeId = storeId;
+        this.location = location;
+        this.coupons = coupons;
     }
 
-    /**
-     * Returns the ID of the customer that placed the order.
-     *
-     * @return ID of the costumer
-     */
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    /**
-     * Changes the costumer ID to another costumer.
-     *
-     * @param customerId ID of the new customer
-     */
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public List<Pizza> getPizzas() {
-        return pizzas;
-    }
-
-    public void setPizzas(List<Pizza> pizzas) {
-        this.pizzas = pizzas;
-    }
-
-    public Date getCompletionTime() {
-        return completionTime;
-    }
-
-    public void setCompletionTime(Date completionTime) {
-        this.completionTime = completionTime;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
+    public Order(String memberId, Status status) {
+        this.memberId = memberId;
         this.status = status;
     }
 
-    public List<String> getCouponsIds() {
-        return couponsIds;
+    /**
+     * Calculates the total price of the pizzas currently in the Order.
+     */
+    public void calculateTotalPrice() {
+        BigDecimal priceSum = new BigDecimal(0).setScale(2, RoundingMode.HALF_DOWN);
+        for (Pizza pizza : pizzas) {
+            priceSum = priceSum.add(pizza.getPrice());
+        }
+        this.price = priceSum;
     }
 
-    public void setCouponsIds(List<String> couponsIds) {
-        this.couponsIds = couponsIds;
+    /**
+     * Formats order details into an email.
+     *
+     * @return formatted email
+     */
+    public String formatEmail() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Order with an ID of " + this.id + " has been placed by " + this.memberId);
+        sb.append(", to be collected at " + this.selectedTime + "\n");
+        sb.append("Order contains the following pizzas:\n");
+        sb.append(pizzas.toString() + "\n");
+        if (appliedCoupon == null || appliedCoupon.isEmpty()) {
+            sb.append("No coupon was applied");
+        } else {
+            sb.append("Following coupon was applied: " + appliedCoupon);
+        }
+        sb.append("Final price of the order is " + this.price);
+        return sb.toString();
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
+    /**
+     * Formats the receipt with Order details.
+     *
+     * @return formatted receipt
+     */
+    public String formatReceipt() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Order ID: " + this.id + "\n");
+        sb.append("Date: " + this.selectedTime + "\n");
+        sb.append("Location: " + this.location + "\n");
+        sb.append("Pizzas: " + this.pizzas.toString() + "\n");
+        sb.append("Final price: " + this.price);
+        if (appliedCoupon.isEmpty()) {
+            sb.append("No coupon was applied");
+        } else {
+            sb.append("Following coupon was applied: " + this.appliedCoupon);
+        }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(String storeId) {
-        this.storeId = storeId;
+        return sb.toString();
     }
 
     @Override

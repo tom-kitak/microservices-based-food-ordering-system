@@ -1,35 +1,31 @@
 package nl.tudelft.sem.group06b.store.service;
 
 import java.util.List;
-import nl.tudelft.sem.group06b.store.database.EmailRepository;
-import nl.tudelft.sem.group06b.store.database.StoreRepository;
-import nl.tudelft.sem.group06b.store.domain.Email;
-import nl.tudelft.sem.group06b.store.domain.NoSuchEmailException;
-import nl.tudelft.sem.group06b.store.domain.NoSuchStoreException;
-import nl.tudelft.sem.group06b.store.domain.Store;
+import lombok.AllArgsConstructor;
+import nl.tudelft.sem.group06b.store.domain.email.Email;
+import nl.tudelft.sem.group06b.store.domain.email.ProcessEmailService;
+import nl.tudelft.sem.group06b.store.domain.email.QueryEmailService;
+import nl.tudelft.sem.group06b.store.domain.email.ValidateManagerService;
 import org.springframework.stereotype.Service;
 
 
 
 @Service
+@AllArgsConstructor
 public class EmailService {
 
-    private final transient EmailRepository emailRepository;
-    private final transient StoreRepository storeRepository;
+    private final transient ProcessEmailService processEmailService;
+    private final transient QueryEmailService queryEmailService;
+    private final transient ValidateManagerService validateManagerService;
+
 
     /**
-     * Instantiate a email service.
+     * Query all emails from the database.
      *
-     * @param emailRepository The email repo.
-     * @param storeRepository The store repo.
+     * @return A list of emails.
      */
-    public EmailService(EmailRepository emailRepository, StoreRepository storeRepository) {
-        this.emailRepository = emailRepository;
-        this.storeRepository = storeRepository;
-    }
-
     public List<Email> queryAllEmails() {
-        return emailRepository.findAll();
+        return queryEmailService.queryAllEmails();
     }
 
     /**
@@ -40,10 +36,7 @@ public class EmailService {
      * @throws Exception If the store does not exist.
      */
     public void receiveEmail(String email, Long storeId) throws Exception {
-        Store store = storeRepository.findById(storeId).orElseThrow(NoSuchStoreException::new);
-        Email dummyEmail = new Email(email, store);
-        emailRepository.save(dummyEmail);
-        emailRepository.flush();
+        processEmailService.receiveEmail(email, storeId);
     }
 
     /**
@@ -53,9 +46,7 @@ public class EmailService {
      * @throws Exception If the email does not exist.
      */
     public void deleteEmail(Long emailId) throws Exception {
-        Email dummyEmail = emailRepository.findById(emailId).orElseThrow(NoSuchEmailException::new);
-        emailRepository.delete(dummyEmail);
-        emailRepository.flush();
+        processEmailService.deleteEmail(emailId);
     }
 
     /**
@@ -66,7 +57,28 @@ public class EmailService {
      * @throws Exception If the store does not exist.
      */
     public List<Email> getEmailsFromStore(Long storeId) throws Exception {
-        storeRepository.findById(storeId).orElseThrow(NoSuchStoreException::new);
-        return emailRepository.retrieveEmailsByStoreId(storeId);
+        return queryEmailService.getEmailsFromStore(storeId);
     }
+
+    /**
+     * Checks if the given manager memberId is valid.
+     *
+     * @param manager The input location.
+     * @return True if the input location is valid, false otherwise.
+     */
+    public boolean validateManager(String manager) {
+        return validateManagerService.validateManager(manager);
+    }
+
+    /**
+     * Gets a manager from a specific store.
+     *
+     * @param storeId The store id.
+     * @return The store manager.
+     * @throws Exception If the store does not exist.
+     */
+    public String getManagerFromStore(Long storeId) throws Exception {
+        return queryEmailService.getManagerFromStore(storeId);
+    }
+
 }

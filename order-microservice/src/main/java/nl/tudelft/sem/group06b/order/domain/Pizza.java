@@ -4,76 +4,56 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Pizza implements Serializable {
 
-    static final long serialVersionUID = -3387516993124229945L;
+    static final long serialVersionUID = -6470090944414208496L;
 
-    private String nameId;
-
-    private List<Topping> toppings;
-
-    private Set<String> allergenIds;
-
+    private Long pizzaId;
+    private List<Long> toppings;
     private BigDecimal price;
 
     /**
-     * Instantiates a new Pizza. Allergens from toppings are automatically added to allergens set.
+     * Instantiates a pizza.
      *
-     * @param nameId name or type of the pizza, serves as an ID
-     * @param toppings list of all toppings
-     * @param allergenIds set of all allergens
-     * @param price price
+     * @param pizzaId ID of the pizza
+     * @param toppings list of toppings on the pizza
+     * @param price price of the pizza
      */
-    public Pizza(String nameId, List<Topping> toppings, Set<String> allergenIds, BigDecimal price) {
-        this.nameId = nameId;
+    public Pizza(Long pizzaId, List<Long> toppings, BigDecimal price) {
+        this.pizzaId = pizzaId;
         this.toppings = toppings;
-        this.allergenIds = allergenIds;
         this.price = price;
-        for (Topping t : toppings) {
-            for (String allergen : t.getAllergenIds()) {
-                allergenIds.add(allergen);
-            }
-        }
     }
 
     /**
-     * Adds list of toppings to the pizza and also adds the allergies.
+     * Constructor for a pizza that does not involve the price.
      *
-     * @param toppings list of toppings to add to the pizza
+     * @param pizzaId the id of the new pizza
+     * @param toppings the toppings for the pizza
      */
-    public void addToppings(List<Topping> toppings) {
-        this.toppings.addAll(toppings);
-        for (Topping t : toppings) {
-            for (String allergen : t.getAllergenIds()) {
-                allergenIds.add(allergen);
-            }
-        }
+    public Pizza(Long pizzaId, List<Long> toppings) {
+        this.pizzaId = pizzaId;
+        this.toppings = toppings;
+        this.price = new BigDecimal(0);
     }
 
-    public String getNameId() {
-        return nameId;
+    public Long getPizzaId() {
+        return pizzaId;
     }
 
-    public void setNameId(String nameId) {
-        this.nameId = nameId;
+    public void setPizzaId(Long pizzaId) {
+        this.pizzaId = pizzaId;
     }
 
-    public List<Topping> getToppings() {
+    public List<Long> getToppings() {
         return toppings;
     }
 
-    public void setToppings(List<Topping> toppings) {
+    public void setToppings(List<Long> toppings) {
         this.toppings = toppings;
-    }
-
-    public Set<String> getAllergenIds() {
-        return allergenIds;
-    }
-
-    public void setAllergenIds(Set<String> allergenIds) {
-        this.allergenIds = allergenIds;
     }
 
     public BigDecimal getPrice() {
@@ -93,11 +73,18 @@ public class Pizza implements Serializable {
             return false;
         }
         Pizza pizza = (Pizza) o;
-        return Objects.equals(nameId, pizza.nameId);
+        return Objects.equals(pizzaId, pizza.pizzaId)
+                && Objects.equals(toppings, pizza.toppings)
+                && Objects.equals(price, pizza.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nameId);
+        return Objects.hash(pizzaId, toppings, price);
+    }
+
+    @Override
+    public String toString() {
+        return "Pizza ID: " + pizzaId + ", topping IDs: " + toppings + ", price: " + price;
     }
 }
