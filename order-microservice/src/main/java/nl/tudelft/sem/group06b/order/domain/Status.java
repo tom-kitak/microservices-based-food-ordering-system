@@ -1,8 +1,8 @@
 package nl.tudelft.sem.group06b.order.domain;
 
 public enum Status {
-    ORDER_DELIVERED,
+    ORDER_ONGOING,
+    ORDER_PLACED,
     ORDER_CANCELED,
-    ORDER_READY,
-    ORDER_PROCESSING
+    ORDER_FINISHED
 }

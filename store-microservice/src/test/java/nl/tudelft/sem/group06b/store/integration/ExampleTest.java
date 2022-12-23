@@ -36,7 +36,6 @@ public class ExampleTest {
     @Autowired
     private transient AuthManager mockAuthenticationManager;
 
-
 //    @Test
 //    public void helloWorld() throws Exception {
 //        // Arrange
