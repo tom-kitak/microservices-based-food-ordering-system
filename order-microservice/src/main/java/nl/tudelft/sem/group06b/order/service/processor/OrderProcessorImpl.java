@@ -157,7 +157,7 @@ public class OrderProcessorImpl implements OrderProcessor {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
         }
 
-        if (order.getAppliedCoupon() == null || order.getAppliedCoupon().isEmpty()) {
+        if (order.getAppliedCoupon() == null && !order.getCoupons().isEmpty()) {
             ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
                     new ArrayList<>(order.getCoupons()), token);
             if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
