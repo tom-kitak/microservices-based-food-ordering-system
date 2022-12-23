@@ -165,16 +165,20 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         Order order = orderRepository.getOne(orderId);
 
-        if (order.getPizzas().isEmpty()) {
+        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
             throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
-        }
-
-        if (order.getLocation() == null || order.getLocation().isEmpty()) {
-            throw new UnsupportedOperationException("No store location is selected");
         }
 
         if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
             throw new UnsupportedOperationException("No order time is selected");
+        }
+
+        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
+            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+        }
+
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new UnsupportedOperationException("No store location is selected");
         }
 
         for (Pizza pizza : order.getPizzas()) {
