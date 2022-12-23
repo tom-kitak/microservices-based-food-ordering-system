@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.store.domain.email.Email;
 import nl.tudelft.sem.group06b.store.domain.email.ProcessEmailService;
 import nl.tudelft.sem.group06b.store.domain.email.QueryEmailService;
-import nl.tudelft.sem.group06b.store.domain.email.ValidateEmailService;
+import nl.tudelft.sem.group06b.store.domain.email.ValidateManagerService;
 import org.springframework.stereotype.Service;
 
 
@@ -16,7 +16,7 @@ public class EmailService {
 
     private final transient ProcessEmailService processEmailService;
     private final transient QueryEmailService queryEmailService;
-    private final transient ValidateEmailService validateEmailService;
+    private final transient ValidateManagerService validateManagerService;
 
 
     /**
@@ -67,7 +67,7 @@ public class EmailService {
      * @return True if the input location is valid, false otherwise.
      */
     public boolean validateManager(String manager) {
-        return validateEmailService.validateManager(manager);
+        return validateManagerService.validateManager(manager);
     }
 
     /**

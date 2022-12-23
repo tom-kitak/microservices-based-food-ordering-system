@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class ValidateEmailService {
+public class ValidateManagerService {
 
     private final transient StoreRepository storeRepository;
 

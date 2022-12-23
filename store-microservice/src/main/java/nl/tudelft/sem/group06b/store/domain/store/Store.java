@@ -17,7 +17,6 @@ import nl.tudelft.sem.group06b.store.domain.Location;
 import nl.tudelft.sem.group06b.store.domain.email.Email;
 
 
-
 @Entity
 @Table(name = "STORES")
 @NoArgsConstructor
@@ -33,7 +32,8 @@ public class Store {
     @Column(name = "location", nullable = false)
     private Location storeLocation;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @Column(name = "manager", nullable = false, unique = true)
     private String manager;
 
@@ -43,7 +43,7 @@ public class Store {
     /**
      * Stores information in a single store.
      *
-     * @param name the name of the store.
+     * @param name          the name of the store.
      * @param storeLocation the location of the store.
      */
     public Store(String name, Location storeLocation) {
@@ -54,9 +54,9 @@ public class Store {
     /**
      * Stores information in a single store.
      *
-     * @param name the name of the store.
+     * @param name          the name of the store.
      * @param storeLocation the location of the store.
-     * @param dummyEmails the dummy emails of the store.
+     * @param dummyEmails   the dummy emails of the store.
      */
     public Store(String name, Location storeLocation, List<Email> dummyEmails, String manager) {
         this.name = name;
@@ -133,8 +133,22 @@ public class Store {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         Store store = (Store) o;
-        return Objects.equals(id, store.id) && name.equals(store.name) && storeLocation.equals(store.storeLocation);
+
+        if (!Objects.equals(id, store.id)) {
+            return false;
+        }
+        if (!Objects.equals(name, store.name)) {
+            return false;
+        }
+        if (!Objects.equals(storeLocation, store.storeLocation)) {
+            return false;
+        }
+        if (!Objects.equals(manager, store.manager)) {
+            return false;
+        }
+        return Objects.equals(dummyEmails, store.dummyEmails);
     }
 
     /**

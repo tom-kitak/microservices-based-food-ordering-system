@@ -20,4 +20,9 @@ public class AuthManager {
     public String getToken() {
         return SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
     }
+
+    public String getRole() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .toArray()[0].toString().split("=")[1].split("}")[0];
+    }
 }
