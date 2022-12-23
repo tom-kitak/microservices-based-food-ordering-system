@@ -153,6 +153,14 @@ public class OrderProcessorImpl implements OrderProcessor {
             throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
         }
 
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new UnsupportedOperationException("No store location is selected");
+        }
+
+        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
+            throw new UnsupportedOperationException("No order time is selected");
+        }
+
         for (Pizza pizza : order.getPizzas()) {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
         }
@@ -167,6 +175,7 @@ public class OrderProcessorImpl implements OrderProcessor {
             }
             order.setPizzas(applyCouponsToResponse.getPizzas());
         }
+
 
         order.calculateTotalPrice();
         order.setStatus(Status.ORDER_PLACED);
