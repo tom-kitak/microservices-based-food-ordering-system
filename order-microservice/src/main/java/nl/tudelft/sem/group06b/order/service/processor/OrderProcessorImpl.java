@@ -54,14 +54,18 @@ public class OrderProcessorImpl implements OrderProcessor {
     @Autowired
     public OrderProcessorImpl(
             OrderRepository orderRepository,
-            TaskScheduler taskScheduler
+            TaskScheduler taskScheduler,
+            MenuCommunication menuCommunication,
+            StoreCommunication storeCommunication,
+            CouponCommunication couponCommunication,
+            TimeValidation timeValidation
     ) {
         this.orderRepository = orderRepository;
-        this.menuCommunication = new MenuCommunication();
-        this.storeCommunication = new StoreCommunication();
-        this.couponCommunication = new CouponCommunication();
+        this.menuCommunication = menuCommunication;
+        this.storeCommunication = storeCommunication;
+        this.couponCommunication = couponCommunication;
         this.taskScheduler = taskScheduler;
-        this.timeValidation = new TimeValidation();
+        this.timeValidation = timeValidation;
 
         orderRepository.findAll().forEach(order -> {
             if (order.getStatus() == Status.ORDER_PLACED) {
