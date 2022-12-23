@@ -1,11 +1,10 @@
-package nl.tudelft.sem.group06b.coupons.integration;
+package nl.tudelft.sem.group06b.coupons.repository;
 
 import java.sql.Date;
 import java.time.Instant;
 import java.util.HashSet;
 import nl.tudelft.sem.group06b.coupons.domain.Coupon;
 import nl.tudelft.sem.group06b.coupons.domain.CouponType;
-import nl.tudelft.sem.group06b.coupons.repository.CouponRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
