@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -547,6 +548,173 @@ public class OrderProcessorTest {
                         .cancelOrder("token", "deity", "regional_manager", 1L),
                 "No active order with this ID");
 
+        verify(mockOrderRepository, never()).save(any());
+        verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
+    }
+
+    @Test
+    public void testCancelOrderSuccessStorePlaced() throws Exception {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_PLACED);
+
+        Order order2 = new Order();
+        order2.setId(1L);
+        order2.setStoreId(1L);
+        order2.setStatus(Status.ORDER_CANCELED);
+
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(true);
+        when(mockStoreCommunication.getStoreIdFromManager("test", "token")).thenReturn(1L);
+        orderProcessor.cancelOrder("token", "test", "customer", 1L);
+        verify(mockOrderRepository).save(order2);
+        verify(mockStoreCommunication).sendEmailToStore(1L, "Order with ID 1 cancelled", "token");
+    }
+
+    @Test
+    public void testCancelOrderSuccessStoreOngoing() throws Exception {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_ONGOING);
+
+        Order order2 = new Order();
+        order2.setId(1L);
+        order2.setStoreId(1L);
+        order2.setStatus(Status.ORDER_CANCELED);
+
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(true);
+        when(mockStoreCommunication.getStoreIdFromManager("test", "token")).thenReturn(1L);
+        orderProcessor.cancelOrder("token", "test", "customer", 1L);
+        verify(mockOrderRepository).save(order2);
+        verify(mockStoreCommunication).sendEmailToStore(1L, "Order with ID 1 cancelled", "token");
+    }
+
+    @Test
+    public void testCancelOrderStoreWrongStore() throws Exception {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_ONGOING);
+
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(true);
+        when(mockStoreCommunication.getStoreIdFromManager("test", "token")).thenReturn(2L);
+        assertThrows(UnsupportedOperationException.class,
+                () -> orderProcessor.cancelOrder("token", "test", "customer", 1L),
+                "Not the store manager of this store");
+        verify(mockOrderRepository, never()).save(any());
+        verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
+    }
+
+    @Test
+    public void testCancelOrderStoreNoOngoing() throws Exception {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_FINISHED);
+
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(true);
+        when(mockStoreCommunication.getStoreIdFromManager("test", "token")).thenReturn(1L);
+        assertThrows(IllegalArgumentException.class,
+                () -> orderProcessor.cancelOrder("token", "test", "customer", 1L),
+                "No active order with this ID");
+        verify(mockOrderRepository, never()).save(any());
+        verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
+    }
+
+    @Test
+    public void testCancelOrderCorrectCustomer() throws Exception {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_ONGOING);
+        order.setMemberId("test");
+
+        Order order2 = new Order();
+        order2.setId(1L);
+        order2.setStoreId(1L);
+        order2.setStatus(Status.ORDER_CANCELED);
+        order2.setMemberId("test");
+
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
+        when(mockTimeValidation.isTimeValid(any(), anyInt())).thenReturn(true);
+        orderProcessor.cancelOrder("token", "test", "customer", 1L);
+        verify(mockOrderRepository).save(order2);
+        verify(mockStoreCommunication).sendEmailToStore(1L, "Order with ID 1 cancelled", "token");
+    }
+
+    @Test
+    public void testCancelOrderInvalidTimeCustomer() throws Exception {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_ONGOING);
+        order.setMemberId("test");
+
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
+        when(mockTimeValidation.isTimeValid(any(), anyInt())).thenReturn(false);
+        assertThrows(Exception.class,
+                () -> orderProcessor.cancelOrder("token", "test", "customer", 1L),
+                "You can no longer cancel the order");
+
+        verify(mockOrderRepository, never()).save(any());
+        verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
+    }
+
+    @Test
+    public void testCancelOrderInvalidStatusCustomer() {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_PLACED);
+        order.setMemberId("test");
+
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
+        assertThrows(IllegalArgumentException.class,
+                () -> orderProcessor.cancelOrder("token", "test", "customer", 1L),
+                "No active order with this ID");
+
+        verify(mockOrderRepository, never()).save(any());
+        verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
+    }
+
+    @Test
+    public void testCancelOrderWrongCustomer() {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_PLACED);
+        order.setMemberId("hmmm");
+
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
+        assertThrows(UnsupportedOperationException.class,
+                () -> orderProcessor.cancelOrder("token", "test", "customer", 1L),
+                "Access denied.");
+
+        verify(mockOrderRepository, never()).save(any());
+        verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
+    }
+
+    @Test
+    public void testCancelOrderIncorrectRole() {
+        Order order = new Order();
+        order.setId(1L);
+        order.setStoreId(1L);
+        order.setStatus(Status.ORDER_PLACED);
+        order.setMemberId("hmmm");
+        when(mockOrderRepository.getOne(1L)).thenReturn(order);
+        when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
+        assertThrows(IllegalArgumentException.class,
+                () -> orderProcessor.cancelOrder("token", "test", "brainbrain", 1L),
+                "Role is not handled");
         verify(mockOrderRepository, never()).save(any());
         verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
     }
