@@ -91,10 +91,12 @@ public class TestCouponsController {
                 .when(mockJwtTokenVerifier).getAuthoritiesFromToken("token");
 
         Date date = Date.from(Instant.now().plusSeconds(120));
-        NewCouponRequestModel newCouponRequestModel = new NewCouponRequestModel("test69", "DISCOUNT", 0.2, date.getTime());
+        NewCouponRequestModel newCouponRequestModel =
+                new NewCouponRequestModel("test69", "DISCOUNT", 0.2, date.getTime());
         ObjectMapper mapper = new ObjectMapper();
 
-        doThrow(new IllegalArgumentException("Invalid coupon type")).when(mockCouponsService).addCoupon("test69", "DISCOUNT", 0.2, date);
+        doThrow(new IllegalArgumentException("Invalid coupon type"))
+                .when(mockCouponsService).addCoupon("test69", "DISCOUNT", 0.2, date);
 
         ResultActions resultActions = mockMvc.perform(post("/api/coupons/addCoupon")
                 .header("Authorization", "Bearer token")
@@ -124,7 +126,8 @@ public class TestCouponsController {
                 .contentType("application/json")
                 .content(mapper.writeValueAsString(newCouponRequestModel)));
 
-        resultActions.andExpect(status().isUnauthorized()).andExpect(status().reason("You are not authorized to add coupons"));
+        resultActions.andExpect(status().isUnauthorized()).andExpect(status()
+                .reason("You are not authorized to add coupons"));
         verify(mockCouponsService, never()).addCoupon("test69", "DISCOUNT", 0.2, date);
     }
 
@@ -180,7 +183,8 @@ public class TestCouponsController {
                 .header("Authorization", "Bearer token")
                 .contentType("application/json"));
 
-        resultActions.andExpect(status().isUnauthorized()).andExpect(status().reason("You are not authorized to remove coupons"));
+        resultActions.andExpect(status().isUnauthorized()).andExpect(status()
+                .reason("You are not authorized to remove coupons"));
         verify(mockCouponsService, never()).removeCoupon("test69");
     }
 
