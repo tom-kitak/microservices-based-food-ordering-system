@@ -26,8 +26,9 @@
 build/
 .gradle/
 .idea/
-*.mv.db
+#*.mv.db
 *.trace.db
+*.bin
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries

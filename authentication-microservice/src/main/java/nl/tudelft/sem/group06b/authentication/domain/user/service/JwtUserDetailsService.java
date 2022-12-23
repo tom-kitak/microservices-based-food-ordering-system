@@ -39,6 +39,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         }
 
         var user = optionalUser.get();
+
         return new User(user.getMemberId().getMemberIdValue(), user.getPassword().toString(),
                 List.of(new SimpleGrantedAuthority(user.getRole().getName().getRoleNameValue())));
     }

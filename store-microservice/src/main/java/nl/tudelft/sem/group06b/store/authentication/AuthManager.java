@@ -13,7 +13,17 @@ public class AuthManager {
      *
      * @return The name of the user.
      */
-    public String getUsername() {
+    public String getMemberId() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    /**
+     * Interfaces with spring security to get the role of the user in the current context.
+     *
+     * @return The name of the user.
+     */
+    public String getRole() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .toArray()[0].toString().split("=")[1].split("}")[0];
     }
 }

@@ -2,9 +2,13 @@ package nl.tudelft.sem.group06b.store.authentication;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 /**
@@ -38,6 +42,12 @@ public class JwtTokenVerifier {
     private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+    public Collection
+            <? extends GrantedAuthority> getRoleFromToken(String token) {
+        String role = getClaims(token).toString().split("\\[")[1].split("\\]")[0];
+        return Collections.singleton(new SimpleGrantedAuthority(role));
     }
 
     private Claims getClaims(String token) {
