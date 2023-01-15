@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class OrderProcessingControllerTest {
+public class OrderControllersTest {
     @MockBean
     private AuthManager mockAuthManager;
 
