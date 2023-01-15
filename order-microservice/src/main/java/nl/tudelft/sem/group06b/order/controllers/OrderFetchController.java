@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/order")
-public class FetchController {
+public class OrderFetchController {
 
     private final transient AuthManager authManager;
 

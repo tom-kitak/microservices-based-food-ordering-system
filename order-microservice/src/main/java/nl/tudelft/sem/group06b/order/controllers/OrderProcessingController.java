@@ -18,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/order")
-public class OrderController {
+public class OrderProcessingController {
 
     private final transient AuthManager authManager;
 
