@@ -5,7 +5,9 @@ import java.util.Optional;
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
 import nl.tudelft.sem.group06b.menu.domain.Allergy;
-import nl.tudelft.sem.group06b.menu.domain.MenuService;
+import nl.tudelft.sem.group06b.menu.domain.MenuAllergyService;
+import nl.tudelft.sem.group06b.menu.domain.MenuPizzaService;
+import nl.tudelft.sem.group06b.menu.domain.MenuToppingService;
 import nl.tudelft.sem.group06b.menu.domain.Pizza;
 import nl.tudelft.sem.group06b.menu.domain.Topping;
 import nl.tudelft.sem.group06b.menu.models.ContainsAllergenModel;
@@ -26,7 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MenuAllergyController {
 
     private final transient AuthManager authManager;
-    private final transient MenuService menuService;
+    private final transient MenuAllergyService menuService;
+
+    private final transient MenuToppingService menuToppingService;
+
+    private final transient MenuPizzaService menuPizzaService;
 
     /**
      * adds an allergy to the repository.
@@ -48,10 +54,10 @@ public class MenuAllergyController {
     @PostMapping("containsAllergen")
     public ResponseEntity<String> containsAllergen(@RequestBody ContainsAllergenModel request) {
         String ret;
-        if (this.menuService.checkForAllergies(
+        if (this.menuPizzaService.checkForAllergies(
                 request.getId(), request.getToppingIds(), menuService.getAllergens(request.getMemberId())).isPresent()) {
             ret = "You might be allergic!: "
-                    + this.menuService.checkForAllergies(
+                    + this.menuPizzaService.checkForAllergies(
                     request.getId(), request.getToppingIds(), menuService.getAllergens(request.getMemberId())).get();
         } else {
             ret = "";
@@ -68,12 +74,12 @@ public class MenuAllergyController {
     @PostMapping("containsAllergenTopping/{itemId}/{memberId}")
     public ResponseEntity<String> containsAllergenTopping(@PathVariable Long itemId, @PathVariable String memberId) {
         Optional<String> ret =
-                this.menuService.checkForAllergiesTopping(itemId, menuService.getAllergens(memberId));
+                this.menuToppingService.checkForAllergiesTopping(itemId, menuService.getAllergens(memberId));
         if (ret.isEmpty()) {
             return ResponseEntity.ok("");
         }
         return ResponseEntity.ok(
-                this.menuService.checkForAllergiesTopping(
+                this.menuToppingService.checkForAllergiesTopping(
                         itemId, menuService.getAllergens(this.authManager.getMemberId())).get());
     }
 
