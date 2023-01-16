@@ -1,12 +1,18 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
-import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
+import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Transactional
 @Service
@@ -22,6 +28,14 @@ public class MenuAllergyService {
 
     private final transient ToppingRepository toppingRepository;
 
+    /**
+     * constructor for menuAllergyService.
+     *
+     * @param ar allergy repo.
+     * @param pr pizza repo.
+     * @param tr topping repo.
+     * @param authManager authmanager.
+     */
     public MenuAllergyService(AllergyRepository ar, PizzaRepository pr, ToppingRepository tr, AuthManager authManager) {
         this.toppingRepository = tr;
         this.pizzaRepository = pr;
@@ -182,5 +196,32 @@ public class MenuAllergyService {
         this.allergyRepository.flush();
         return ret;
     }
+
+    /**
+     * returns a list of allergens for a specific user.
+     *
+     * @param l the user id.
+     * @return list of allergies in a string format.
+     */
+    public List<String> getAllergens(String l) {
+        try {
+            String url = "http://localhost:8082/user/" + l + "/getAllergens";
+
+            final RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", String.format("Bearer %s", authManager.getToken()));
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
+            return (List<String>) response.getBody().stream()
+                    .map(x -> x.toString().split("=")[1].split("}")[0]).collect(Collectors.toList());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
+
+    }
+
 
 }

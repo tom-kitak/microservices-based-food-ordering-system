@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import nl.tudelft.sem.group06b.menu.domain.MenuService;
+import nl.tudelft.sem.group06b.menu.domain.MenuPizzaService;
 import nl.tudelft.sem.group06b.menu.domain.Pizza;
 import nl.tudelft.sem.group06b.menu.models.PriceModel;
 import nl.tudelft.sem.group06b.menu.models.ValidModel;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/menu")
 public class MenuPizzaController {
 
-    private final transient MenuService menuService;
+    private final transient MenuPizzaService menuService;
 
 
     /**

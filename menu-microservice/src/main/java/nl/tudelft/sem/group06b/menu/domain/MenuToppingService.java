@@ -1,9 +1,8 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
-import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
-
 import java.util.List;
 import java.util.Optional;
+import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
 
 public class MenuToppingService {
 
@@ -15,10 +14,18 @@ public class MenuToppingService {
 
     private final transient AllergyRepository allergyRepository;
 
-    private final MenuAllergyService menuAllergyService;
+    private final transient MenuAllergyService menuAllergyService;
 
     private final transient String regionalManager =  "regional_manager";
 
+    /**
+     * Constructor for menu topping service.
+     *
+     * @param tr topping repo.
+     * @param authManager authmanager.
+     * @param ar allergy repo.
+     * @param pr pizza repo.
+     */
     public MenuToppingService(ToppingRepository tr, AuthManager authManager, AllergyRepository ar, PizzaRepository pr) {
         this.menuAllergyService = new MenuAllergyService(ar, pr, tr, authManager);
         this.allergyRepository = ar;

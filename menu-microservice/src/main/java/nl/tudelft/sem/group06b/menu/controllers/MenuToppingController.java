@@ -3,7 +3,7 @@ package nl.tudelft.sem.group06b.menu.controllers;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import nl.tudelft.sem.group06b.menu.domain.MenuService;
+import nl.tudelft.sem.group06b.menu.domain.MenuToppingService;
 import nl.tudelft.sem.group06b.menu.domain.Topping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/menu")
 public class MenuToppingController {
 
-    private final transient MenuService menuService;
+    private final transient MenuToppingService menuService;
 
     /**
      * fetches the topping that has a specific id.

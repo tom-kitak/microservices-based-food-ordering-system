@@ -1,12 +1,11 @@
 package nl.tudelft.sem.group06b.menu.domain;
 
-import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
+import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
+import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
@@ -20,13 +19,21 @@ public class MenuPizzaService {
 
     private final transient ToppingRepository toppingRepository;
 
-    private final MenuAllergyService menuAllergyService;
+    private final transient MenuAllergyService menuAllergyService;
 
-    private final MenuToppingService menuToppingService;
+    private final transient MenuToppingService menuToppingService;
 
 
     private final transient String regionalManager =  "regional_manager";
 
+    /**
+     * constructor for pizza service.
+     *
+     * @param pr pizza repo.
+     * @param authManager authmanager.
+     * @param ar allergy repo.
+     * @param tr topping repo.
+     */
     public MenuPizzaService(PizzaRepository pr, AuthManager authManager, AllergyRepository ar, ToppingRepository tr) {
         this.menuAllergyService = new MenuAllergyService(ar, pr, tr, authManager);
         this.menuToppingService = new MenuToppingService(tr, authManager, ar, pr);
