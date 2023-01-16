@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/order")
-public class OrderContentController {
+public class OrderEditingController {
 
     private final transient AuthManager authManager;
 
