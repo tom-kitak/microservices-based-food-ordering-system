@@ -159,31 +159,9 @@ public class OrderProcessorImpl implements OrderProcessor {
 
     @Override
     public Order placeOrder(String token, Long orderId) throws IllegalArgumentException {
-        if (token.isEmpty()) {
-            throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
-        }
-
-        if (orderId == null) {
-            throw new IllegalArgumentException(INVALID_ORDER_ID_MESSAGE);
-        }
-
         Order order = orderRepository.getOne(orderId);
 
-        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
-            throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
-        }
-
-        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
-            throw new UnsupportedOperationException("No order time is selected");
-        }
-
-        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
-            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-        }
-
-        if (order.getLocation() == null || order.getLocation().isEmpty()) {
-            throw new UnsupportedOperationException("No store location is selected");
-        }
+        validatePlaceOrderParams(token, order);
 
         for (Pizza pizza : order.getPizzas()) {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
@@ -216,6 +194,28 @@ public class OrderProcessorImpl implements OrderProcessor {
         storeCommunication.sendEmailToStore(order.getStoreId(), order.formatEmail(), token);
 
         return order;
+    }
+
+    private void validatePlaceOrderParams(String token, Order order) throws IllegalArgumentException {
+        if (token.isEmpty()) {
+            throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
+        }
+
+        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
+            throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
+        }
+
+        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
+            throw new UnsupportedOperationException("No order time is selected");
+        }
+
+        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
+            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+        }
+
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new UnsupportedOperationException("No store location is selected");
+        }
     }
 
     /**
