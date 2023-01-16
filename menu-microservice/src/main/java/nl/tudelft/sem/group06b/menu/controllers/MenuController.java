@@ -50,12 +50,8 @@ public class MenuController {
      * @return the topping with the specific id.
      */
     @GetMapping("getToppingById/{itemId}")
-    public ResponseEntity<Optional<Topping>> getToppingById(@PathVariable Long itemId) throws ResponseStatusException {
-        try {
-            return ResponseEntity.ok(menuService.getToppingById(itemId));
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Optional<Topping>> getToppingById(@PathVariable Long itemId) {
+        return ResponseEntity.ok(menuService.getToppingById(itemId));
     }
 
     /**
@@ -63,15 +59,10 @@ public class MenuController {
      *
      * @param itemId the id of the item.
      * @return Optional of the pizza.
-     * @throws ResponseStatusException if itemId is null or there is an exception.
      */
     @GetMapping("getPizzaByID/{itemId}")
-    public ResponseEntity<Optional<Pizza>> getPizzaById(@PathVariable Long itemId) throws ResponseStatusException {
-        try {
-            return ResponseEntity.ok(menuService.getPizzaById(itemId));
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Optional<Pizza>> getPizzaById(@PathVariable Long itemId) {
+        return ResponseEntity.ok(menuService.getPizzaById(itemId));
     }
 
     /**
@@ -100,15 +91,10 @@ public class MenuController {
      * @param itemId id of the pizza.
      * @return encapsulated true if item has been successfully deleted.
      *      False if there is no item with that ID.
-     * @throws ResponseStatusException bad request if itemId is null
      */
     @DeleteMapping("remove/pizza/{itemId}")
-    public ResponseEntity<Boolean> removePizza(@PathVariable Long itemId) throws IllegalArgumentException {
-        try {
-            return ResponseEntity.ok(menuService.removePizzaById(itemId));
-        } catch (Exception e) {
-            throw new IllegalArgumentException();
-        }
+    public ResponseEntity<Boolean> removePizza(@PathVariable Long itemId) {
+        return ResponseEntity.ok(menuService.removePizzaById(itemId));
     }
 
     /**
@@ -117,15 +103,10 @@ public class MenuController {
      * @param itemId of the topping to remove.
      * @return encapsulated true if element has been succesfully deleted.
         False if there is no item with that ID.
-     * @throws ResponseStatusException bad request if itemId is null
      */
     @DeleteMapping("remove/topping/{itemId}")
-    public ResponseEntity<Boolean> removeTopping(@PathVariable Long itemId) throws ResponseStatusException {
-        try {
-            return ResponseEntity.ok(menuService.removeToppingById(itemId));
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Boolean> removeTopping(@PathVariable Long itemId) {
+        return ResponseEntity.ok(menuService.removeToppingById(itemId));
     }
 
     /**
@@ -133,17 +114,10 @@ public class MenuController {
      *
      * @param topping to add to the repo.
      * @return encapsulated true if saved/false if another topping with same id.
-     * @throws ResponseStatusException if topping is null
      */
     @PostMapping("add/topping/")
-    public ResponseEntity<Boolean> addTopping(@RequestBody Topping topping) throws ResponseStatusException {
-        try {
-            return ResponseEntity.ok(menuService.addTopping(topping));
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<Boolean> addTopping(@RequestBody Topping topping) {
+        return ResponseEntity.ok(menuService.addTopping(topping));
     }
 
     /**
@@ -151,16 +125,11 @@ public class MenuController {
      *
      * @param pizza to add to the repo.
      * @return encapsulated true if saved/false if another pizza with the same id.
-     * @throws ResponseStatusException if pizza is null.
      */
     @PostMapping("add/pizza/")
-    public ResponseEntity<Boolean> addPizza(@RequestBody Pizza pizza) throws ResponseStatusException {
-        try {
-            System.out.println(pizza.toString());
-            return ResponseEntity.ok(menuService.addPizza(pizza));
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Boolean> addPizza(@RequestBody Pizza pizza) {
+        System.out.println(pizza.toString());
+        return ResponseEntity.ok(menuService.addPizza(pizza));
     }
 
     /**
@@ -168,16 +137,10 @@ public class MenuController {
      *
      * @param allergy to add.
      * @return encapsulated true if added/false if couldn't.
-     * @throws ResponseStatusException if something went wrong.
      */
     @PostMapping("add/allergy")
-    public ResponseEntity<Boolean> addAllergy(@RequestBody Allergy allergy) throws ResponseStatusException {
-        try {
-            return ResponseEntity.ok(menuService.addAllergy(allergy));
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<Boolean> addAllergy(@RequestBody Allergy allergy) {
+        return ResponseEntity.ok(menuService.addAllergy(allergy));
     }
 
     /**
@@ -199,11 +162,7 @@ public class MenuController {
      */
     @PostMapping("isValid")
     public ResponseEntity<Boolean> isValid(@RequestBody ValidModel request) {
-        try {
-            return ResponseEntity.ok(this.menuService.isValidPizzaList(request.getId(), request.getToppingIds()));
-        } catch (Exception e) {
-            return ResponseEntity.ok(false);
-        }
+        return ResponseEntity.ok(this.menuService.isValidPizzaList(request.getId(), request.getToppingIds()));
     }
 
     /**
@@ -214,11 +173,7 @@ public class MenuController {
      */
     @GetMapping("isValidTopping/{itemId}")
     public ResponseEntity<Boolean> isValidTopping(@PathVariable Long itemId) {
-        try {
-            return ResponseEntity.ok(this.menuService.getToppingById(itemId).isPresent());
-        } catch (Exception e) {
-            return ResponseEntity.ok(false);
-        }
+        return ResponseEntity.ok(this.menuService.getToppingById(itemId).isPresent());
     }
 
     /**
@@ -247,20 +202,16 @@ public class MenuController {
      */
     @PostMapping("containsAllergen")
     public ResponseEntity<String> containsAllergen(@RequestBody ContainsAllergenModel request) {
-        try {
-            String ret;
-            if (this.menuService.checkForAllergies(
-                    request.getId(), request.getToppingIds(), getAllergens(request.getMemberId())).isPresent()) {
-                ret = "You might be allergic!: "
-                        + this.menuService.checkForAllergies(
-                                request.getId(), request.getToppingIds(), getAllergens(request.getMemberId())).get();
-            } else {
-                ret = "";
-            }
-            return ResponseEntity.ok(ret);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        String ret;
+        if (this.menuService.checkForAllergies(
+                request.getId(), request.getToppingIds(), getAllergens(request.getMemberId())).isPresent()) {
+            ret = "You might be allergic!: "
+                    + this.menuService.checkForAllergies(
+                            request.getId(), request.getToppingIds(), getAllergens(request.getMemberId())).get();
+        } else {
+            ret = "";
         }
+        return ResponseEntity.ok(ret);
     }
 
     /**
@@ -315,10 +266,6 @@ public class MenuController {
         }
 
     }
-
-
-
-
 }
 
 
