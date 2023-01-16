@@ -8,7 +8,8 @@ import nl.tudelft.sem.group06b.coupons.authentication.AuthManager;
 import nl.tudelft.sem.group06b.coupons.domain.Coupon;
 import nl.tudelft.sem.group06b.coupons.model.ApplyCouponsRequestModel;
 import nl.tudelft.sem.group06b.coupons.model.NewCouponRequestModel;
-import nl.tudelft.sem.group06b.coupons.service.CouponsService;
+import nl.tudelft.sem.group06b.coupons.service.management.CouponManagementService;
+import nl.tudelft.sem.group06b.coupons.service.operations.CouponOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class CouponsController {
 
     private final transient AuthManager authManager;
-    private final transient CouponsService couponsService;
+    private final transient CouponManagementService couponManagementService;
+    private final transient CouponOperationsService couponOperationsService;
 
     /**
      * Adds a new coupon to the database if the user is admin.
@@ -47,7 +49,7 @@ public class CouponsController {
         }
 
         try {
-            couponsService.addCoupon(
+            couponManagementService.addCoupon(
                     coupon.getCouponId(),
                     coupon.getCouponType(),
                     coupon.getDiscount(),
@@ -73,7 +75,7 @@ public class CouponsController {
         }
 
         try {
-            couponsService.removeCoupon(couponId);
+            couponManagementService.removeCoupon(couponId);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -92,7 +94,7 @@ public class CouponsController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to get all coupons");
         }
 
-        List<Coupon> coupons = couponsService.queryAllCoupons();
+        List<Coupon> coupons = couponManagementService.queryAllCoupons();
         return ResponseEntity.ok(coupons);
     }
 
@@ -103,7 +105,7 @@ public class CouponsController {
      */
     @GetMapping("/checkAvailability/{code}")
     public ResponseEntity<?> checkAvailability(@PathVariable String code) {
-        boolean available = couponsService.isCouponAvailable(code, authManager.getMemberId());
+        boolean available = couponOperationsService.isCouponAvailable(code, authManager.getMemberId());
         if (!available) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Coupon is not available");
         }
@@ -118,13 +120,12 @@ public class CouponsController {
     @PostMapping("/calculatePrice")
     public ResponseEntity<ApplyCouponsRequestModel> calculatePrice(@RequestBody ApplyCouponsRequestModel couponsAndPizzas) {
         try {
-            ApplyCouponsRequestModel returnModel = couponsService.calculatePrice(couponsAndPizzas);
-            couponsService.useCoupon(returnModel.getCoupons().get(0), authManager.getMemberId());
+            ApplyCouponsRequestModel returnModel = couponOperationsService.calculatePrice(couponsAndPizzas);
+            couponOperationsService.useCoupon(returnModel.getCoupons().get(0), authManager.getMemberId());
 
             return ResponseEntity.ok(returnModel);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
 }

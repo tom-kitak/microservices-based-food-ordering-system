@@ -1,6 +1,6 @@
 package nl.tudelft.sem.group06b.coupons.profiles;
 
-import nl.tudelft.sem.group06b.coupons.service.CouponsService;
+import nl.tudelft.sem.group06b.coupons.service.operations.CouponOperationsService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,12 +8,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 /**
- * A configuration profile to allow injection of a mock CouponsService.
+ * A configuration profile to allow injection of a mock CouponOperationsService.
  */
-@Profile("mockCouponsService")
+@Profile("mockCouponOperationsService")
 @Configuration
-public class MockCouponsServiceProfile {
-
+public class MockCouponOperationsServiceProfile {
     /**
      * Mocks the CouponsService.
      *
@@ -21,7 +20,7 @@ public class MockCouponsServiceProfile {
      */
     @Bean
     @Primary
-    public CouponsService getCouponsService() {
-        return Mockito.mock(CouponsService.class);
+    public CouponOperationsService getCouponsService() {
+        return Mockito.mock(CouponOperationsService.class);
     }
 }
