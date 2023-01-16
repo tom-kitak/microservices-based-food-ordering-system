@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/menu")
 public class MenuPizzaController {
 
-    private final transient MenuPizzaService menuService;
+    private final transient MenuPizzaService menuPizzaService;
 
 
     /**
@@ -34,7 +34,7 @@ public class MenuPizzaController {
      */
     @GetMapping("getPizzaByID/{itemId}")
     public ResponseEntity<Optional<Pizza>> getPizzaById(@PathVariable Long itemId) {
-        return ResponseEntity.ok(menuService.getPizzaById(itemId));
+        return ResponseEntity.ok(menuPizzaService.getPizzaById(itemId));
     }
 
     /**
@@ -44,7 +44,7 @@ public class MenuPizzaController {
      */
     @GetMapping("getAllPizzas")
     public ResponseEntity<List<Pizza>> getAllPizzas() {
-        return ResponseEntity.ok(menuService.getAllPizzas());
+        return ResponseEntity.ok(menuPizzaService.getAllPizzas());
     }
 
     /**
@@ -56,7 +56,7 @@ public class MenuPizzaController {
      */
     @DeleteMapping("remove/pizza/{itemId}")
     public ResponseEntity<Boolean> removePizza(@PathVariable Long itemId) {
-        return ResponseEntity.ok(menuService.removePizzaById(itemId));
+        return ResponseEntity.ok(menuPizzaService.removePizzaById(itemId));
     }
 
     /**
@@ -68,7 +68,7 @@ public class MenuPizzaController {
     @PostMapping("add/pizza/")
     public ResponseEntity<Boolean> addPizza(@RequestBody Pizza pizza) {
         System.out.println(pizza.toString());
-        return ResponseEntity.ok(menuService.addPizza(pizza));
+        return ResponseEntity.ok(menuPizzaService.addPizza(pizza));
     }
 
     /**
@@ -79,7 +79,7 @@ public class MenuPizzaController {
      */
     @PostMapping("getPrice")
     public ResponseEntity<BigDecimal> getPrice(@RequestBody PriceModel request) {
-        return ResponseEntity.ok(this.menuService.getPrice(request.getId(), request.getToppingIds()));
+        return ResponseEntity.ok(menuPizzaService.getPrice(request.getId(), request.getToppingIds()));
     }
 
     /**
@@ -90,6 +90,6 @@ public class MenuPizzaController {
      */
     @PostMapping("isValid")
     public ResponseEntity<Boolean> isValid(@RequestBody ValidModel request) {
-        return ResponseEntity.ok(this.menuService.isValidPizzaList(request.getId(), request.getToppingIds()));
+        return ResponseEntity.ok(menuPizzaService.isValidPizzaList(request.getId(), request.getToppingIds()));
     }
 }

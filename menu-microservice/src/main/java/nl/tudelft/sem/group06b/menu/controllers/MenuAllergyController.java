@@ -28,10 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MenuAllergyController {
 
     private final transient AuthManager authManager;
-    private final transient MenuAllergyService menuService;
-
+    private final transient MenuAllergyService menuAllergyService;
     private final transient MenuToppingService menuToppingService;
-
     private final transient MenuPizzaService menuPizzaService;
 
     /**
@@ -42,7 +40,7 @@ public class MenuAllergyController {
      */
     @PostMapping("add/allergy")
     public ResponseEntity<Boolean> addAllergy(@RequestBody Allergy allergy) {
-        return ResponseEntity.ok(menuService.addAllergy(allergy));
+        return ResponseEntity.ok(menuAllergyService.addAllergy(allergy));
     }
 
     /**
@@ -55,10 +53,11 @@ public class MenuAllergyController {
     public ResponseEntity<String> containsAllergen(@RequestBody ContainsAllergenModel request) {
         String ret;
         if (this.menuPizzaService.checkForAllergies(
-                request.getId(), request.getToppingIds(), menuService.getAllergens(request.getMemberId())).isPresent()) {
-            ret = "You might be allergic!: "
-                    + this.menuPizzaService.checkForAllergies(
-                    request.getId(), request.getToppingIds(), menuService.getAllergens(request.getMemberId())).get();
+                request.getId(), request.getToppingIds(),
+                menuAllergyService.getAllergens(request.getMemberId())).isPresent()) {
+            ret = "You might be allergic!: " + this.menuPizzaService.checkForAllergies(
+                    request.getId(), request.getToppingIds(),
+                    menuAllergyService.getAllergens(request.getMemberId())).get();
         } else {
             ret = "";
         }
@@ -74,18 +73,18 @@ public class MenuAllergyController {
     @PostMapping("containsAllergenTopping/{itemId}/{memberId}")
     public ResponseEntity<String> containsAllergenTopping(@PathVariable Long itemId, @PathVariable String memberId) {
         Optional<String> ret =
-                this.menuToppingService.checkForAllergiesTopping(itemId, menuService.getAllergens(memberId));
+                this.menuToppingService.checkForAllergiesTopping(itemId, menuAllergyService.getAllergens(memberId));
         if (ret.isEmpty()) {
             return ResponseEntity.ok("");
         }
         return ResponseEntity.ok(
                 this.menuToppingService.checkForAllergiesTopping(
-                        itemId, menuService.getAllergens(this.authManager.getMemberId())).get());
+                        itemId, menuAllergyService.getAllergens(this.authManager.getMemberId())).get());
     }
 
     @DeleteMapping("remove/allergy/{itemId}")
     public ResponseEntity<Boolean> removeAllergyById(@PathVariable Long itemId) {
-        return ResponseEntity.ok(this.menuService.removeAllergyById(itemId));
+        return ResponseEntity.ok(menuAllergyService.removeAllergyById(itemId));
     }
 
     /**
@@ -95,8 +94,8 @@ public class MenuAllergyController {
      */
     @GetMapping("filteredToppingsByAllergens")
     public ResponseEntity<List<Topping>> filterToppingsByAllergens() {
-        return ResponseEntity.ok(this.menuService.filterToppingsByAllergens(
-                menuService.getAllergens(authManager.getMemberId())));
+        return ResponseEntity.ok(menuAllergyService.filterToppingsByAllergens(
+                menuAllergyService.getAllergens(authManager.getMemberId())));
     }
 
     /**
@@ -106,8 +105,8 @@ public class MenuAllergyController {
      */
     @GetMapping("filteredPizzasByAllergens")
     public ResponseEntity<List<Pizza>> filterPizzasByAllergens() {
-        return ResponseEntity.ok(this.menuService.filterPizzasByAllergens(
-                menuService.getAllergens(authManager.getMemberId())));
+        return ResponseEntity.ok(this.menuAllergyService.filterPizzasByAllergens(
+                menuAllergyService.getAllergens(authManager.getMemberId())));
     }
 
 }

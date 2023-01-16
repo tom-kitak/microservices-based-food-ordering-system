@@ -23,7 +23,6 @@ public class MenuPizzaService {
 
     private final transient MenuToppingService menuToppingService;
 
-
     private final transient String regionalManager =  "regional_manager";
 
     /**

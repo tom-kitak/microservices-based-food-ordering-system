@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/menu")
 public class MenuToppingController {
 
-    private final transient MenuToppingService menuService;
+    private final transient MenuToppingService menuToppingService;
 
     /**
      * fetches the topping that has a specific id.
@@ -29,7 +29,7 @@ public class MenuToppingController {
      */
     @GetMapping("getToppingById/{itemId}")
     public ResponseEntity<Optional<Topping>> getToppingById(@PathVariable Long itemId) {
-        return ResponseEntity.ok(menuService.getToppingById(itemId));
+        return ResponseEntity.ok(menuToppingService.getToppingById(itemId));
     }
 
     /**
@@ -39,7 +39,7 @@ public class MenuToppingController {
      */
     @GetMapping("getAllToppings")
     public ResponseEntity<List<Topping>> getAllToppings() {
-        return ResponseEntity.ok(menuService.getAllToppings());
+        return ResponseEntity.ok(menuToppingService.getAllToppings());
     }
 
     /**
@@ -51,7 +51,7 @@ public class MenuToppingController {
      */
     @DeleteMapping("remove/topping/{itemId}")
     public ResponseEntity<Boolean> removeTopping(@PathVariable Long itemId) {
-        return ResponseEntity.ok(menuService.removeToppingById(itemId));
+        return ResponseEntity.ok(menuToppingService.removeToppingById(itemId));
     }
 
     /**
@@ -62,7 +62,7 @@ public class MenuToppingController {
      */
     @PostMapping("add/topping/")
     public ResponseEntity<Boolean> addTopping(@RequestBody Topping topping) {
-        return ResponseEntity.ok(menuService.addTopping(topping));
+        return ResponseEntity.ok(menuToppingService.addTopping(topping));
     }
 
     /**
@@ -73,7 +73,7 @@ public class MenuToppingController {
      */
     @GetMapping("isValidTopping/{itemId}")
     public ResponseEntity<Boolean> isValidTopping(@PathVariable Long itemId) {
-        return ResponseEntity.ok(this.menuService.getToppingById(itemId).isPresent());
+        return ResponseEntity.ok(menuToppingService.getToppingById(itemId).isPresent());
     }
 
 }
