@@ -695,7 +695,7 @@ public class OrderProcessorTest {
 
         when(mockOrderRepository.getOne(1L)).thenReturn(order);
         when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(UnsupportedOperationException.class,
                 () -> orderProcessor.cancelOrder("token", "test", "customer", 1L),
                 "Access denied.");
 
