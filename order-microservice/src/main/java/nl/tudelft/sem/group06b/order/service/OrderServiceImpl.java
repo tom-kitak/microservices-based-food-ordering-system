@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.group06b.order.domain.Allergens;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
+import nl.tudelft.sem.group06b.order.model.Identification;
+import nl.tudelft.sem.group06b.order.model.editing.OrderPizza;
 import nl.tudelft.sem.group06b.order.service.coupon.OrderCoupon;
 import nl.tudelft.sem.group06b.order.service.editing.OrderEditor;
 import nl.tudelft.sem.group06b.order.service.processor.OrderProcessor;
@@ -71,9 +73,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Allergens addTopping(String token, String memberId, Long orderId,
-                                Pizza pizza, Long toppingId) throws Exception {
-        return orderEditor.addTopping(token, memberId, orderId, pizza, toppingId);
+    public Allergens addTopping(Identification identification, OrderPizza orderPizza, Long toppingId) throws Exception {
+        return orderEditor.addTopping(identification, orderPizza, toppingId);
     }
 
     @Override
