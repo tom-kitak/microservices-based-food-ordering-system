@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class CouponOperationsServiceImpl implements CouponOperationsService {
     private final transient CouponRepository couponRepository;
+    private final transient BasketValidationService basketValidationService;
 
     /**
      * Checks if a coupon is in the repository and is available.
@@ -65,8 +66,8 @@ public class CouponOperationsServiceImpl implements CouponOperationsService {
     public ApplyCouponsRequestModel calculatePrice(ApplyCouponsRequestModel pizzasAndCoupons) {
         List<Pizza> pizzas = pizzasAndCoupons.getPizzas();
         List<Coupon> couponsList = couponRepository.findAllById(pizzasAndCoupons.getCoupons());
-        throwEmptyBasket(pizzas.isEmpty());
-        throwNoCoupons(couponsList.isEmpty());
+        basketValidationService.throwEmptyBasket(pizzas.isEmpty());
+        basketValidationService.throwNoCoupons(couponsList.isEmpty());
 
         Coupon discountCoupon = couponsList.stream().filter(coupon -> coupon.getType() == CouponType.DISCOUNT)
                 .max(Comparator.comparing(Coupon::getDiscount)).orElse(new Coupon());
@@ -79,7 +80,7 @@ public class CouponOperationsServiceImpl implements CouponOperationsService {
         List<Coupon> coupons = List.of(discountCoupon, oneOffCoupon);
         List<List<Pizza>> pizzasList = List.of(calculateDiscountBasket(pizzas, discountCoupon),
                 calculateOneOffBasket(pizzas, oneOffCoupon, maxIndex));
-        int bestIndex = minimumBasket(pizzasList.get(0), pizzasList.get(1));
+        int bestIndex = basketValidationService.minimumBasket(pizzasList.get(0), pizzasList.get(1));
 
         return new ApplyCouponsRequestModel(pizzasList.get(bestIndex), List.of(coupons.get(bestIndex).getCode()));
     }
@@ -104,29 +105,6 @@ public class CouponOperationsServiceImpl implements CouponOperationsService {
             return pizzasWithOneOff;
         }
         return pizzas;
-    }
-
-    private int minimumBasket(List<Pizza> pizzasWithDiscount, List<Pizza> pizzasWithOneOff) {
-        BigDecimal discountPrice = pizzasWithDiscount.stream().map(Pizza::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal oneOffPrice = pizzasWithOneOff.stream().map(Pizza::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (discountPrice.compareTo(oneOffPrice) < 0) {
-            return 0;
-        }
-        return 1;
-    }
-
-    private void throwEmptyBasket(boolean emptyBasket) {
-        if (emptyBasket) {
-            throw new IllegalArgumentException("The basket is empty");
-        }
-    }
-
-    private void throwNoCoupons(boolean noCoupons) {
-        if (noCoupons) {
-            throw new IllegalArgumentException("No coupons found");
-        }
     }
 }
 
