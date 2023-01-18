@@ -1,5 +1,6 @@
 package nl.tudelft.sem.group06b.coupons.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -296,10 +297,10 @@ public class TestCouponsService {
                                 new HashSet<>())
                 ));
         ApplyCouponsRequestModel responseModel = couponsService.calculatePrice(requestModel);
-        assert responseModel.getCoupons().get(0).equals("test2");
-        assert responseModel.getPizzas().get(0).getPrice().setScale(3, RoundingMode.HALF_UP).toString().equals("8.000");
-        assert responseModel.getPizzas().get(1).getPrice().setScale(3, RoundingMode.HALF_UP).toString().equals("8.000");
-        assert responseModel.getPizzas().get(2).getPrice().setScale(3, RoundingMode.HALF_UP).toString().equals("8.000");
+        assertEquals(responseModel.getCoupons().get(0), "test2");
+        assertEquals(responseModel.getPizzas().get(0).getPrice().setScale(3, RoundingMode.HALF_UP).toString(), "8.000");
+        assertEquals(responseModel.getPizzas().get(1).getPrice().setScale(3, RoundingMode.HALF_UP).toString(), "8.000");
+        assertEquals(responseModel.getPizzas().get(2).getPrice().setScale(3, RoundingMode.HALF_UP).toString(), "8.000");
     }
 
     @Test
