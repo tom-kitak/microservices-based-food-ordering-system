@@ -19,6 +19,7 @@ import nl.tudelft.sem.group06b.coupons.domain.CouponType;
 import nl.tudelft.sem.group06b.coupons.model.ApplyCouponsRequestModel;
 import nl.tudelft.sem.group06b.coupons.model.Pizza;
 import nl.tudelft.sem.group06b.coupons.repository.CouponRepository;
+import nl.tudelft.sem.group06b.coupons.service.operations.CouponOperationsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,98 +31,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
-public class TestCouponsService {
+public class TestCouponOperationsService {
     @MockBean
     private transient CouponRepository mockCouponRepository;
 
     @Autowired
-    private transient CouponsService couponsService;
-
-    @Test
-    public void testAddCouponCorrectDiscount() {
-        Date date = Date.from(Instant.now().plusSeconds(30));
-        couponsService
-                .addCoupon(
-                        "test99",
-                        "DISCOUNT",
-                        0.5,
-                        date);
-        // Verify mock calls
-        verify(mockCouponRepository, times(1))
-                .save(new Coupon("test99", CouponType.DISCOUNT, 0.5,
-                        date, new HashSet<>()
-                ));
-    }
-
-    @Test
-    public void testAddCouponCorrectOneOff() {
-        Date date = Date.from(Instant.now().plusSeconds(30));
-        couponsService
-                .addCoupon(
-                        "test99",
-                        "ONEOFF",
-                        0.5,
-                        date);
-        // Verify mock calls
-        verify(mockCouponRepository, times(1))
-                .save(new Coupon("test99", CouponType.ONE_OFF, 0,
-                        date, new HashSet<>()
-                ));
-    }
-
-    @Test
-    public void testAddCouponIncorrectType() {
-        Date date = Date.from(Instant.now().plusSeconds(30));
-        assertThrows(IllegalArgumentException.class, () -> couponsService
-                .addCoupon(
-                        "test99",
-                        "INCORRECT",
-                        0.5,
-                        date), "Invalid coupon type");
-        // Verify mock calls
-        verify(mockCouponRepository, never())
-                .save(new Coupon("test99", CouponType.DISCOUNT, 0.5,
-                        date, new HashSet<>()
-                ));
-    }
-
-    @Test
-    public void testAddCouponIncorrectCode() {
-        Date date = Date.from(Instant.now().plusSeconds(30));
-        assertThrows(IllegalArgumentException.class, () -> couponsService
-                .addCoupon(
-                        "test9900",
-                        "DISCOUNT",
-                        0.5,
-                        date), "Invalid coupon id");
-        // Verify mock calls
-        verify(mockCouponRepository, never())
-                .save(new Coupon("test9900", CouponType.DISCOUNT, 0.5,
-                        date, new HashSet<>()
-                ));
-    }
-
-    @Test
-    public void testRemoveExistingCoupon() {
-        when(mockCouponRepository.existsById("test99")).thenReturn(true);
-        couponsService.removeCoupon("test99");
-        verify(mockCouponRepository, times(1))
-                .deleteById("test99");
-    }
-
-    @Test
-    public void testRemoveNonExistentCoupon() {
-        when(mockCouponRepository.existsById("test99")).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> couponsService
-                .removeCoupon("test99"), "Coupon does not exist");
-        verify(mockCouponRepository, never()).deleteById("test99");
-    }
-
-    @Test
-    public void testQueryAllCoupons() {
-        couponsService.queryAllCoupons();
-        verify(mockCouponRepository, times(1)).findAll();
-    }
+    private transient CouponOperationsService couponOperationsService;
 
     @Test
     public void testIsCouponAvailable() {
@@ -130,7 +45,7 @@ public class TestCouponsService {
                 CouponType.DISCOUNT, 0.5, Date.from(Instant.now().plusSeconds(60)),
                 new HashSet<>()
         ));
-        assert couponsService.isCouponAvailable("test99", "test");
+        assert couponOperationsService.isCouponAvailable("test99", "test");
         verify(mockCouponRepository, times(1)).existsById("test99");
         verify(mockCouponRepository, times(1)).getOne("test99");
     }
@@ -142,7 +57,7 @@ public class TestCouponsService {
                 CouponType.DISCOUNT, 0.5, Date.from(Instant.now().minusSeconds(60)),
                 new HashSet<>()
         ));
-        assert !couponsService.isCouponAvailable("test99", "test");
+        assert !couponOperationsService.isCouponAvailable("test99", "test");
         verify(mockCouponRepository, times(1)).existsById("test99");
         verify(mockCouponRepository, times(1)).getOne("test99");
     }
@@ -154,7 +69,7 @@ public class TestCouponsService {
                 CouponType.DISCOUNT, 0.5, Date.from(Instant.now().plusSeconds(60)),
                 new HashSet<>(List.of("test"))
         ));
-        assert !couponsService.isCouponAvailable("test99", "test");
+        assert !couponOperationsService.isCouponAvailable("test99", "test");
         verify(mockCouponRepository, times(1)).existsById("test99");
         verify(mockCouponRepository, times(1)).getOne("test99");
     }
@@ -162,7 +77,7 @@ public class TestCouponsService {
     @Test
     public void testIsCouponAvailableNonExistent() {
         when(mockCouponRepository.existsById("test99")).thenReturn(false);
-        assert !couponsService.isCouponAvailable("test99", "test");
+        assert !couponOperationsService.isCouponAvailable("test99", "test");
         verify(mockCouponRepository, times(1)).existsById("test99");
         verify(mockCouponRepository, never()).getOne("test99");
     }
@@ -175,7 +90,7 @@ public class TestCouponsService {
                 CouponType.DISCOUNT, 0.5, date,
                 new HashSet<>()
         ));
-        couponsService.useCoupon("test99", "test");
+        couponOperationsService.useCoupon("test99", "test");
         verify(mockCouponRepository, times(1)).existsById("test99");
         verify(mockCouponRepository, times(1)).getOne("test99");
         verify(mockCouponRepository, times(1)).save(new Coupon("test99",
@@ -192,7 +107,7 @@ public class TestCouponsService {
                 CouponType.DISCOUNT, 0.5, date,
                 new HashSet<>(List.of("test"))
         ));
-        assertThrows(IllegalArgumentException.class, () -> couponsService
+        assertThrows(IllegalArgumentException.class, () -> couponOperationsService
                 .useCoupon("test99", "test"), "Coupon already used");
         verify(mockCouponRepository, times(1)).existsById("test99");
         verify(mockCouponRepository, times(1)).getOne("test99");
@@ -201,7 +116,7 @@ public class TestCouponsService {
     @Test
     public void testUseCouponNonExistent() {
         when(mockCouponRepository.existsById("test99")).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> couponsService
+        assertThrows(IllegalArgumentException.class, () -> couponOperationsService
                 .useCoupon("test99", "test"), "Coupon does not exist");
         verify(mockCouponRepository, times(1)).existsById("test99");
         verify(mockCouponRepository, never()).getOne("test99");
@@ -210,7 +125,7 @@ public class TestCouponsService {
     @Test
     public void testCalculatePriceEmpty() {
         ApplyCouponsRequestModel requestModel = new ApplyCouponsRequestModel(new ArrayList<>(), List.of("test"));
-        assertThrows(IllegalArgumentException.class, () -> couponsService
+        assertThrows(IllegalArgumentException.class, () -> couponOperationsService
                 .calculatePrice(requestModel), "The basket is empty");
     }
 
@@ -221,7 +136,7 @@ public class TestCouponsService {
                 new Pizza(31L, List.of(), new BigDecimal("30.00")),
                 new Pizza(11L, List.of(), new BigDecimal("40.00")));
         ApplyCouponsRequestModel requestModel = new ApplyCouponsRequestModel(pizzas, new ArrayList<>());
-        assertThrows(IllegalArgumentException.class, () -> couponsService
+        assertThrows(IllegalArgumentException.class, () -> couponOperationsService
                 .calculatePrice(requestModel), "No coupons found");
     }
 
@@ -244,7 +159,7 @@ public class TestCouponsService {
                         new Coupon("test3", CouponType.DISCOUNT, 0.3, Date.from(Instant.now().plusSeconds(60)),
                                 new HashSet<>())
                 ));
-        ApplyCouponsRequestModel responseModel = couponsService.calculatePrice(requestModel);
+        ApplyCouponsRequestModel responseModel = couponOperationsService.calculatePrice(requestModel);
         assert responseModel.getCoupons().get(0).equals("test2");
         assert responseModel.getPizzas().get(0).getPrice().toString().equals("5.000");
         assert responseModel.getPizzas().get(1).getPrice().toString().equals("15.000");
@@ -270,7 +185,7 @@ public class TestCouponsService {
                         new Coupon("test3", CouponType.ONE_OFF, 0.3, Date.from(Instant.now().plusSeconds(60)),
                                 new HashSet<>())
                 ));
-        ApplyCouponsRequestModel responseModel = couponsService.calculatePrice(requestModel);
+        ApplyCouponsRequestModel responseModel = couponOperationsService.calculatePrice(requestModel);
         assert responseModel.getCoupons().get(0).equals("test");
         assert responseModel.getPizzas().get(0).getPrice().toString().equals("10.00");
         assert responseModel.getPizzas().get(1).getPrice().toString().equals("30.00");
@@ -296,7 +211,7 @@ public class TestCouponsService {
                         new Coupon("test3", CouponType.ONE_OFF, 0.3, Date.from(Instant.now().plusSeconds(60)),
                                 new HashSet<>())
                 ));
-        ApplyCouponsRequestModel responseModel = couponsService.calculatePrice(requestModel);
+        ApplyCouponsRequestModel responseModel = couponOperationsService.calculatePrice(requestModel);
         assertEquals(responseModel.getCoupons().get(0), "test2");
         assertEquals(responseModel.getPizzas().get(0).getPrice().setScale(3, RoundingMode.HALF_UP).toString(), "8.000");
         assertEquals(responseModel.getPizzas().get(1).getPrice().setScale(3, RoundingMode.HALF_UP).toString(), "8.000");
@@ -322,7 +237,7 @@ public class TestCouponsService {
                         new Coupon("test3", CouponType.ONE_OFF, 0.3, Date.from(Instant.now().plusSeconds(60)),
                                 new HashSet<>())
                 ));
-        ApplyCouponsRequestModel responseModel = couponsService.calculatePrice(requestModel);
+        ApplyCouponsRequestModel responseModel = couponOperationsService.calculatePrice(requestModel);
         assert responseModel.getCoupons().get(0).equals("test");
         assert responseModel.getPizzas().get(0).getPrice().setScale(3, RoundingMode.HALF_UP).toString().equals("40.000");
         assert responseModel.getPizzas().get(1).getPrice().setScale(3, RoundingMode.HALF_UP).toString().equals("40.000");
