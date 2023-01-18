@@ -25,6 +25,13 @@ import nl.tudelft.sem.group06b.order.communication.StoreCommunication;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidMemberIdException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidOrderContentsException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidOrderIdException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidOrderLocationException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidOrderTimeException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidTokenException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.NoActiveOrderException;
 import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import nl.tudelft.sem.group06b.order.service.processor.OrderProcessor;
@@ -90,7 +97,7 @@ public class OrderProcessorTest {
     @Test
     public void testStartOrderIncorrect() throws Exception {
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidMemberIdException.class,
                 () -> orderProcessor.startOrder(""), "Invalid member ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -121,7 +128,7 @@ public class OrderProcessorTest {
     @Test
     public void testSetOrderTimeOrderIdException() throws Exception {
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidOrderIdException.class,
                 () -> orderProcessor.setOrderTime(null, "20/12/2022 16:11:30"), "Invalid order ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -130,7 +137,7 @@ public class OrderProcessorTest {
     public void testSetOrderTimeInvalidTime() {
         Long orderId = 1L;
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidOrderTimeException.class,
                 () -> orderProcessor.setOrderTime(orderId, ""),
                 "Invalid time. The time should be at least 30 minutes after the current time");
         verify(mockOrderRepository, never()).save(any(Order.class));
@@ -141,7 +148,7 @@ public class OrderProcessorTest {
         Long orderId = 1L;
         when(mockTimeValidation.isTimeValid("11", 30)).thenReturn(false);
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidOrderTimeException.class,
                 () -> orderProcessor.setOrderTime(orderId, "11"),
                 "Invalid time. The time should be at least 30 minutes after the current time");
         verify(mockOrderRepository, never()).save(any(Order.class));
@@ -160,7 +167,7 @@ public class OrderProcessorTest {
         when(mockOrderRepository.getOne(orderId)).thenReturn(order);
         when(mockTimeValidation.isTimeValid(time, 30)).thenReturn(true);
         assertThrows(
-                IllegalArgumentException.class,
+                NoActiveOrderException.class,
                 () -> orderProcessor.setOrderTime(orderId, time), "No active order with this ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -194,7 +201,7 @@ public class OrderProcessorTest {
     @Test
     public void testSetOrderLocationEmptyToken() {
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidTokenException.class,
                 () -> orderProcessor.setOrderLocation("", 1L, "Drebbelweg 40"),
                 "Invalid token");
         verify(mockOrderRepository, never()).save(any(Order.class));
@@ -203,7 +210,7 @@ public class OrderProcessorTest {
     @Test
     public void testSetOrderLocationInvalidEmptyLocationException() throws Exception {
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidOrderLocationException.class,
                 () -> orderProcessor.setOrderLocation("token", 1L, ""), "Invalid store location");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -213,7 +220,7 @@ public class OrderProcessorTest {
 
         when(mockStoreCommunication.validateLocation("not valid location", "token")).thenReturn(false);
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidOrderLocationException.class,
                 () -> orderProcessor.setOrderLocation("token", 1L, "not valid location"), "Invalid store location");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -233,7 +240,7 @@ public class OrderProcessorTest {
         when(mockOrderRepository.getOne(id)).thenReturn(order);
 
         assertThrows(
-                IllegalArgumentException.class,
+                NoActiveOrderException.class,
                 () -> orderProcessor.setOrderLocation("token", id, location), "No active order with this ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -241,7 +248,7 @@ public class OrderProcessorTest {
     @Test
     public void testPlaceOrderInvalidToken() throws Exception {
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidTokenException.class,
                 () -> orderProcessor.placeOrder("", 1L), "Invalid token");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -249,7 +256,7 @@ public class OrderProcessorTest {
     @Test
     public void testPlaceOrderInvalidOrderId() throws Exception {
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidOrderIdException.class,
                 () -> orderProcessor.placeOrder("token", null), "Invalid order ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -263,13 +270,13 @@ public class OrderProcessorTest {
         when(mockOrderRepository.getOne(orderId)).thenReturn(order);
 
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidOrderContentsException.class,
                 () -> orderProcessor.placeOrder("token", orderId), "Invalid order contents");
         verify(mockOrderRepository, never()).save(any(Order.class));
 
         order.setPizzas(List.of());
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidOrderContentsException.class,
                 () -> orderProcessor.placeOrder("token", orderId), "Invalid order contents");
         verify(mockOrderRepository, never()).save(any(Order.class));
 
@@ -287,13 +294,13 @@ public class OrderProcessorTest {
         when(mockOrderRepository.getOne(orderId)).thenReturn(order);
 
         assertThrows(
-                UnsupportedOperationException.class,
+                InvalidOrderTimeException.class,
                 () -> orderProcessor.placeOrder("token", orderId), "No order time is selected");
         verify(mockOrderRepository, never()).save(any(Order.class));
 
         order.setSelectedTime("");
         assertThrows(
-                UnsupportedOperationException.class,
+                InvalidOrderTimeException.class,
                 () -> orderProcessor.placeOrder("token", orderId), "No order time is selected");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -312,13 +319,13 @@ public class OrderProcessorTest {
         when(mockOrderRepository.getOne(orderId)).thenReturn(order);
 
         assertThrows(
-                IllegalArgumentException.class,
+                NoActiveOrderException.class,
                 () -> orderProcessor.placeOrder("token", orderId), "No active order with this ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
 
         order.setStatus(Status.ORDER_PLACED);
         assertThrows(
-                IllegalArgumentException.class,
+                NoActiveOrderException.class,
                 () -> orderProcessor.placeOrder("token", orderId), "No active order with this ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -339,13 +346,13 @@ public class OrderProcessorTest {
         when(mockOrderRepository.getOne(orderId)).thenReturn(order);
 
         assertThrows(
-                UnsupportedOperationException.class,
+                InvalidOrderLocationException.class,
                 () -> orderProcessor.placeOrder("token", orderId), "No store location is selected");
         verify(mockOrderRepository, never()).save(any(Order.class));
 
         order.setLocation("");
         assertThrows(
-                UnsupportedOperationException.class,
+                InvalidOrderLocationException.class,
                 () -> orderProcessor.placeOrder("token", orderId), "No store location is selected");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -492,7 +499,7 @@ public class OrderProcessorTest {
 
     @Test
     public void testCancelOrderEmptyOrderId() {
-        assertThrows(IllegalArgumentException.class, () -> orderProcessor
+        assertThrows(InvalidOrderIdException.class, () -> orderProcessor
                         .cancelOrder("token", "deity", "regional_manager", null),
                 "Invalid order ID");
     }
@@ -695,7 +702,7 @@ public class OrderProcessorTest {
 
         when(mockOrderRepository.getOne(1L)).thenReturn(order);
         when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> orderProcessor.cancelOrder("token", "test", "customer", 1L),
                 "Access denied.");
 
@@ -714,7 +721,7 @@ public class OrderProcessorTest {
         when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
         assertThrows(IllegalArgumentException.class,
                 () -> orderProcessor.cancelOrder("token", "test", "brainbrain", 1L),
-                "Role is not handled");
+                "Role is not handled or in authorized to perform this operation");
         verify(mockOrderRepository, never()).save(any());
         verify(mockStoreCommunication, never()).sendEmailToStore(anyLong(), anyString(), anyString());
     }

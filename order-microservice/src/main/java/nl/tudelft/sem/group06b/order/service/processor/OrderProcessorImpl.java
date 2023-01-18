@@ -17,6 +17,13 @@ import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.OrderBuilder;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidMemberIdException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidOrderContentsException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidOrderIdException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidOrderLocationException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidOrderTimeException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.InvalidTokenException;
+import nl.tudelft.sem.group06b.order.domain.exceptions.NoActiveOrderException;
 import nl.tudelft.sem.group06b.order.model.ApplyCouponsToOrderModel;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import nl.tudelft.sem.group06b.order.util.TimeValidation;
@@ -26,16 +33,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OrderProcessorImpl implements OrderProcessor {
-
-    private static final transient String INVALID_MEMBER_ID_MESSAGE = "Invalid member ID";
-    private static final transient String INVALID_ORDER_ID_MESSAGE = "Invalid order ID";
-    private static final transient String INVALID_ORDER_CONTENTS_MESSAGE = "Invalid order contents";
-    private static final transient String INVALID_TIME_MESSAGE =
-            "Invalid time. The time should be at least 30 minutes after the current time";
-    private static final transient String INVALID_LOCATION_MESSAGE = "Invalid store location";
-    private static final transient String NO_ACTIVE_ORDER_MESSAGE = "No active order with this ID";
-    private static final transient String INVALID_TOKEN_MESSAGE = "Invalid token";
-
     private static final transient int DEADLINE_OFFSET = 30;
 
     private final transient OrderRepository orderRepository;
@@ -87,9 +84,9 @@ public class OrderProcessorImpl implements OrderProcessor {
      * @throws IllegalArgumentException if the member ID is invalid
      */
     @Override
-    public Long startOrder(String memberId) throws IllegalArgumentException {
+    public Long startOrder(String memberId) throws InvalidMemberIdException {
         if (memberId.isEmpty()) {
-            throw new IllegalArgumentException(INVALID_MEMBER_ID_MESSAGE);
+            throw new InvalidMemberIdException();
         }
 
         OrderBuilder orderBuilder = new OrderBuilder();
@@ -112,17 +109,17 @@ public class OrderProcessorImpl implements OrderProcessor {
     @Override
     public void setOrderTime(Long orderId, String selectedTime) throws Exception {
         if (orderId == null) {
-            throw new IllegalArgumentException(INVALID_ORDER_ID_MESSAGE);
+            throw new InvalidOrderIdException();
         }
 
         if (selectedTime.isEmpty() || !timeValidation.isTimeValid(selectedTime, DEADLINE_OFFSET)) {
-            throw new IllegalArgumentException(INVALID_TIME_MESSAGE);
+            throw new InvalidOrderTimeException();
         }
 
         Order order = orderRepository.getOne(orderId);
 
         if (order.getStatus() != Status.ORDER_ONGOING) {
-            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+            throw new NoActiveOrderException();
         }
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
@@ -135,18 +132,18 @@ public class OrderProcessorImpl implements OrderProcessor {
     @Override
     public void setOrderLocation(String token, Long orderId, String location) throws Exception {
         if (token.isEmpty()) {
-            throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
+            throw new InvalidTokenException();
         }
 
         if (location.isEmpty() || !storeCommunication.validateLocation(location, token)) {
-            throw new IllegalArgumentException(INVALID_LOCATION_MESSAGE);
+            throw new InvalidOrderLocationException();
         }
 
         Long storeId = storeCommunication.getStoreIdFromLocation(location, token);
         Order order = orderRepository.getOne(orderId);
 
         if (order.getStatus() != Status.ORDER_ONGOING) {
-            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+            throw new NoActiveOrderException();
         }
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
@@ -158,32 +155,17 @@ public class OrderProcessorImpl implements OrderProcessor {
     }
 
     @Override
-    public Order placeOrder(String token, Long orderId) throws IllegalArgumentException {
+    public Order placeOrder(String token, Long orderId) throws Exception {
         if (token.isEmpty()) {
-            throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
+            throw new InvalidTokenException();
         }
-
         if (orderId == null) {
-            throw new IllegalArgumentException(INVALID_ORDER_ID_MESSAGE);
+            throw new InvalidOrderIdException();
         }
 
         Order order = orderRepository.getOne(orderId);
 
-        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
-            throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
-        }
-
-        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
-            throw new UnsupportedOperationException("No order time is selected");
-        }
-
-        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
-            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-        }
-
-        if (order.getLocation() == null || order.getLocation().isEmpty()) {
-            throw new UnsupportedOperationException("No store location is selected");
-        }
+        validateOrderAttributes(order);
 
         for (Pizza pizza : order.getPizzas()) {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
@@ -191,19 +173,7 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
 
-        if (order.getCoupons() != null && !order.getCoupons().isEmpty()) {
-            ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
-                    new ArrayList<>(order.getCoupons()), token);
-            if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
-                orderBuilder.setAppliedCoupon(null);
-                order.setAppliedCoupon(null);
-            } else {
-                orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
-                order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
-            }
-            orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
-            order.setPizzas(applyCouponsToResponse.getPizzas());
-        }
+        applyValidCoupons(order, orderBuilder, token);
 
         orderBuilder.setPrice(order.calculateTotalPrice());
         orderBuilder.setOrderStatus(Status.ORDER_PLACED);
@@ -243,7 +213,7 @@ public class OrderProcessorImpl implements OrderProcessor {
     @Override
     public void cancelOrder(String token, String memberId, String roleName, Long orderId) throws Exception {
         if (orderId == null) {
-            throw new IllegalArgumentException(INVALID_ORDER_ID_MESSAGE);
+            throw new InvalidOrderIdException();
         }
 
         Order order = orderRepository.getOne(orderId);
@@ -252,34 +222,16 @@ public class OrderProcessorImpl implements OrderProcessor {
             roleName = "store_admin";
         }
 
-        switch (roleName) {
-            case "regional_manager":
-                if (order.getStatus() != Status.ORDER_ONGOING && order.getStatus() != Status.ORDER_PLACED) {
-                    throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-                }
-                break;
-            case "store_admin":
-                if (order.getStatus() != Status.ORDER_ONGOING && order.getStatus() != Status.ORDER_PLACED) {
-                    throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-                }
-                if (!orderRepository.getOne(orderId).getStoreId()
-                        .equals(storeCommunication.getStoreIdFromManager(memberId, token))) {
-                    throw new UnsupportedOperationException("Not the store manager of this store");
-                }
-                break;
-            case "customer":
-                if (!order.getMemberId().equals(memberId)) {
-                    throw new UnsupportedOperationException("Access denied.");
-                }
-                if (order.getStatus() != Status.ORDER_ONGOING) {
-                    throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-                }
-                if (!timeValidation.isTimeValid(order.getSelectedTime(), DEADLINE_OFFSET)) {
-                    throw new Exception("You can no longer cancel the order");
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Role is not handled");
+        if (!checkRoleAndOrderStatus(roleName, memberId, order)) {
+            throw new IllegalArgumentException("Role is not handled or in authorized to perform this operation");
+        }
+
+        if (roleName.equals("store_admin") && !checkStoreManager(memberId, token, orderId)) {
+            throw new UnsupportedOperationException("Not the store manager of this store");
+        }
+
+        if (roleName.equals("customer") && !checkCancelTime(order)) {
+            throw new Exception("You can no longer cancel the order");
         }
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
@@ -293,15 +245,33 @@ public class OrderProcessorImpl implements OrderProcessor {
         storeCommunication.sendEmailToStore(order.getStoreId(), email, token);
     }
 
+    private boolean checkRoleAndOrderStatus(String roleName, String memberId, Order order) {
+        if (roleName.equals("regional_manager") || roleName.equals("store_admin")) {
+            return order.getStatus() == Status.ORDER_ONGOING || order.getStatus() == Status.ORDER_PLACED;
+        } else if (roleName.equals("customer") && order.getMemberId().equals(memberId)) {
+            return order.getStatus() == Status.ORDER_ONGOING;
+        }
+        return false;
+    }
+
+    private boolean checkStoreManager(String memberId, String token, Long orderId) throws Exception {
+        return orderRepository.getOne(orderId).getStoreId()
+                .equals(storeCommunication.getStoreIdFromManager(memberId, token));
+    }
+
+    private boolean checkCancelTime(Order order) throws Exception {
+        return timeValidation.isTimeValid(order.getSelectedTime(), DEADLINE_OFFSET);
+    }
+
     @Override
     public Order fetchOrder(Long orderId) throws Exception {
         if (orderId == null) {
-            throw new Exception(INVALID_ORDER_ID_MESSAGE);
+            throw new InvalidOrderIdException();
         }
         if (orderRepository.existsById(orderId)) {
             return orderRepository.getOne(orderId);
         }
-        throw new Exception(INVALID_ORDER_ID_MESSAGE);
+        throw new InvalidOrderIdException();
     }
 
     @Override
@@ -330,5 +300,39 @@ public class OrderProcessorImpl implements OrderProcessor {
             return orderRepository.findAll();
         }
         throw new Exception("Only regional managers can view all orders");
+    }
+
+    private void validateOrderAttributes(Order order) throws Exception {
+        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
+            throw new InvalidOrderContentsException();
+        }
+
+        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
+            throw new InvalidOrderTimeException();
+        }
+
+        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
+            throw new NoActiveOrderException();
+        }
+
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new InvalidOrderLocationException();
+        }
+    }
+
+    private void applyValidCoupons(Order order, OrderBuilder orderBuilder, String token) {
+        if (order.getCoupons() != null && !order.getCoupons().isEmpty()) {
+            ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
+                    new ArrayList<>(order.getCoupons()), token);
+            if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
+                orderBuilder.setAppliedCoupon(null);
+                order.setAppliedCoupon(null);
+            } else {
+                orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
+                order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
+            }
+            orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
+            order.setPizzas(applyCouponsToResponse.getPizzas());
+        }
     }
 }
