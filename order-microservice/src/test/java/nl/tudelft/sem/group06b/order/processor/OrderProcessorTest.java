@@ -249,7 +249,7 @@ public class OrderProcessorTest {
     @Test
     public void testPlaceOrderInvalidOrderId() throws Exception {
         assertThrows(
-                NullPointerException.class,
+                IllegalArgumentException.class,
                 () -> orderProcessor.placeOrder("token", null), "Invalid order ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
