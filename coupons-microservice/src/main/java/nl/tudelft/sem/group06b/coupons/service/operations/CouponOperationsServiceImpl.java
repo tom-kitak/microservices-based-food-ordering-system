@@ -1,10 +1,9 @@
-package nl.tudelft.sem.group06b.coupons.service;
+package nl.tudelft.sem.group06b.coupons.service.operations;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -20,55 +19,9 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @Transactional
-public class CouponsServiceImpl implements CouponsService {
+public class CouponOperationsServiceImpl implements CouponOperationsService {
     private final transient CouponRepository couponRepository;
-
-
-    /**
-     * Adds a new coupon to the database.
-     *
-     * @param couponId       the id of the coupon
-     * @param couponType     the type of the coupon
-     * @param discount       the discount of the coupon
-     * @param expirationDate the expiration date of the coupon
-     */
-    public void addCoupon(String couponId, String couponType, double discount, Date expirationDate) {
-        if (couponId.matches("(([a-z]|[A-Z]){4}[0-9]{2})")) {
-            if (couponType.equals("DISCOUNT")) {
-                couponRepository.save(new Coupon(couponId, CouponType.DISCOUNT, discount, expirationDate, new HashSet<>()));
-            } else if (couponType.equals("ONEOFF")) {
-                couponRepository.save(new Coupon(couponId, CouponType.ONE_OFF, 0, expirationDate, new HashSet<>()));
-            } else {
-                throw new IllegalArgumentException("Invalid coupon type");
-            }
-            return;
-        }
-
-        throw new IllegalArgumentException("Invalid coupon id");
-    }
-
-    /**
-     * Removes the coupon from the database if it exists.
-     *
-     * @param couponId the id of the coupon
-     */
-    public void removeCoupon(String couponId) {
-        if (couponRepository.existsById(couponId)) {
-            couponRepository.deleteById(couponId);
-        } else {
-            throw new IllegalArgumentException("Coupon does not exist");
-        }
-    }
-
-    /**
-     * Queries the database for all coupons.
-     *
-     * @return all the coupons
-     */
-    @Override
-    public List<Coupon> queryAllCoupons() {
-        return couponRepository.findAll();
-    }
+    private final transient BasketValidationService basketValidationService;
 
     /**
      * Checks if a coupon is in the repository and is available.
@@ -113,8 +66,8 @@ public class CouponsServiceImpl implements CouponsService {
     public ApplyCouponsRequestModel calculatePrice(ApplyCouponsRequestModel pizzasAndCoupons) {
         List<Pizza> pizzas = pizzasAndCoupons.getPizzas();
         List<Coupon> couponsList = couponRepository.findAllById(pizzasAndCoupons.getCoupons());
-        throwEmptyBasket(pizzas.isEmpty());
-        throwNoCoupons(couponsList.isEmpty());
+        basketValidationService.throwEmptyBasket(pizzas.isEmpty());
+        basketValidationService.throwNoCoupons(couponsList.isEmpty());
 
         Coupon discountCoupon = couponsList.stream().filter(coupon -> coupon.getType() == CouponType.DISCOUNT)
                 .max(Comparator.comparing(Coupon::getDiscount)).orElse(new Coupon());
@@ -127,7 +80,7 @@ public class CouponsServiceImpl implements CouponsService {
         List<Coupon> coupons = List.of(discountCoupon, oneOffCoupon);
         List<List<Pizza>> pizzasList = List.of(calculateDiscountBasket(pizzas, discountCoupon),
                 calculateOneOffBasket(pizzas, oneOffCoupon, maxIndex));
-        int bestIndex = minimumBasket(pizzasList.get(0), pizzasList.get(1));
+        int bestIndex = basketValidationService.minimumBasket(pizzasList.get(0), pizzasList.get(1));
 
         return new ApplyCouponsRequestModel(pizzasList.get(bestIndex), List.of(coupons.get(bestIndex).getCode()));
     }
@@ -153,27 +106,5 @@ public class CouponsServiceImpl implements CouponsService {
         }
         return pizzas;
     }
-
-    private int minimumBasket(List<Pizza> pizzasWithDiscount, List<Pizza> pizzasWithOneOff) {
-        BigDecimal discountPrice = pizzasWithDiscount.stream().map(Pizza::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal oneOffPrice = pizzasWithOneOff.stream().map(Pizza::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (discountPrice.compareTo(oneOffPrice) < 0) {
-            return 0;
-        }
-        return 1;
-    }
-
-    private void throwEmptyBasket(boolean emptyBasket) {
-        if (emptyBasket) {
-            throw new IllegalArgumentException("The basket is empty");
-        }
-    }
-
-    private void throwNoCoupons(boolean noCoupons) {
-        if (noCoupons) {
-            throw new IllegalArgumentException("No coupons found");
-        }
-    }
 }
+
