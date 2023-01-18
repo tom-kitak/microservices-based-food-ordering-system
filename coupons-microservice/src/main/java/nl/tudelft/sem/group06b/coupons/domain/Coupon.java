@@ -1,6 +1,5 @@
 package nl.tudelft.sem.group06b.coupons.domain;
 
-
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.ElementCollection;
@@ -9,6 +8,7 @@ import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 /**
  * Class representing a coupon and its effects.

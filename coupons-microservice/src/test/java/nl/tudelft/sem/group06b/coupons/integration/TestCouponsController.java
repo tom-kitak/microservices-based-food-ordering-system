@@ -27,7 +27,8 @@ import nl.tudelft.sem.group06b.coupons.domain.CouponType;
 import nl.tudelft.sem.group06b.coupons.model.ApplyCouponsRequestModel;
 import nl.tudelft.sem.group06b.coupons.model.NewCouponRequestModel;
 import nl.tudelft.sem.group06b.coupons.model.Pizza;
-import nl.tudelft.sem.group06b.coupons.service.CouponsService;
+import nl.tudelft.sem.group06b.coupons.service.management.CouponManagementService;
+import nl.tudelft.sem.group06b.coupons.service.operations.CouponOperationsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,10 @@ public class TestCouponsController {
     private transient AuthManager mockAuthManager;
 
     @MockBean
-    private transient CouponsService mockCouponsService;
+    private transient CouponManagementService mockCouponManagementService;
+
+    @MockBean
+    private transient CouponOperationsService mockCouponOperationsService;
 
     @Test
     public void testAddCouponAsRegional() throws Exception {
@@ -77,7 +81,7 @@ public class TestCouponsController {
                 .content(mapper.writeValueAsString(newCouponRequestModel)));
 
         resultActions.andExpect(status().isOk());
-        verify(mockCouponsService).addCoupon("test69", "DISCOUNT", 0.2, date);
+        verify(mockCouponManagementService).addCoupon("test69", "DISCOUNT", 0.2, date);
     }
 
     @Test
@@ -96,7 +100,7 @@ public class TestCouponsController {
         ObjectMapper mapper = new ObjectMapper();
 
         doThrow(new IllegalArgumentException("Invalid coupon type"))
-                .when(mockCouponsService).addCoupon("test69", "DISCOUNT", 0.2, date);
+                .when(mockCouponManagementService).addCoupon("test69", "DISCOUNT", 0.2, date);
 
         ResultActions resultActions = mockMvc.perform(post("/api/coupons/addCoupon")
                 .header("Authorization", "Bearer token")
@@ -104,7 +108,7 @@ public class TestCouponsController {
                 .content(mapper.writeValueAsString(newCouponRequestModel)));
 
         resultActions.andExpect(status().isBadRequest()).andExpect(status().reason("Invalid coupon type"));
-        verify(mockCouponsService).addCoupon("test69", "DISCOUNT", 0.2, date);
+        verify(mockCouponManagementService).addCoupon("test69", "DISCOUNT", 0.2, date);
     }
 
     @Test
@@ -128,7 +132,7 @@ public class TestCouponsController {
 
         resultActions.andExpect(status().isUnauthorized()).andExpect(status()
                 .reason("You are not authorized to add coupons"));
-        verify(mockCouponsService, never()).addCoupon("test69", "DISCOUNT", 0.2, date);
+        verify(mockCouponManagementService, never()).addCoupon("test69", "DISCOUNT", 0.2, date);
     }
 
     @Test
@@ -146,7 +150,7 @@ public class TestCouponsController {
                 .contentType("application/json"));
 
         resultActions.andExpect(status().isOk());
-        verify(mockCouponsService).removeCoupon("test69");
+        verify(mockCouponManagementService).removeCoupon("test69");
     }
 
     @Test
@@ -159,14 +163,15 @@ public class TestCouponsController {
         doReturn(new SimpleGrantedAuthority("regional_manager"))
                 .when(mockJwtTokenVerifier).getAuthoritiesFromToken("token");
 
-        doThrow(new IllegalArgumentException("Coupon does not exist")).when(mockCouponsService).removeCoupon("test69");
+        doThrow(new IllegalArgumentException("Coupon does not exist")).when(mockCouponManagementService)
+                .removeCoupon("test69");
 
         ResultActions resultActions = mockMvc.perform(delete("/api/coupons/removeCoupon/test69")
                 .header("Authorization", "Bearer token")
                 .contentType("application/json"));
 
         resultActions.andExpect(status().isBadRequest()).andExpect(status().reason("Coupon does not exist"));
-        verify(mockCouponsService).removeCoupon("test69");
+        verify(mockCouponManagementService).removeCoupon("test69");
     }
 
     @Test
@@ -185,7 +190,7 @@ public class TestCouponsController {
 
         resultActions.andExpect(status().isUnauthorized()).andExpect(status()
                 .reason("You are not authorized to remove coupons"));
-        verify(mockCouponsService, never()).removeCoupon("test69");
+        verify(mockCouponManagementService, never()).removeCoupon("test69");
     }
 
     @Test
@@ -198,7 +203,7 @@ public class TestCouponsController {
         doReturn(new SimpleGrantedAuthority("regional_manager"))
                 .when(mockJwtTokenVerifier).getAuthoritiesFromToken("token");
 
-        when(mockCouponsService.queryAllCoupons())
+        when(mockCouponManagementService.queryAllCoupons())
                 .thenReturn(List.of(new Coupon(
                         "test69",
                         CouponType.DISCOUNT,
@@ -219,7 +224,7 @@ public class TestCouponsController {
 
         assertEquals(1, coupons.size());
         assertEquals("test69", coupons.get(0).getCode());
-        verify(mockCouponsService, times(1)).queryAllCoupons();
+        verify(mockCouponManagementService, times(1)).queryAllCoupons();
     }
 
     @Test
@@ -238,7 +243,7 @@ public class TestCouponsController {
 
         resultActions.andExpect(status().isUnauthorized()).andExpect(status()
                 .reason("You are not authorized to get all coupons"));
-        verify(mockCouponsService, never()).queryAllCoupons();
+        verify(mockCouponManagementService, never()).queryAllCoupons();
     }
 
     @Test
@@ -252,14 +257,14 @@ public class TestCouponsController {
         doReturn(new SimpleGrantedAuthority("regional_manager"))
                 .when(mockJwtTokenVerifier).getAuthoritiesFromToken("token");
 
-        when(mockCouponsService.isCouponAvailable("died11", "user")).thenReturn(true);
+        when(mockCouponOperationsService.isCouponAvailable("died11", "user")).thenReturn(true);
 
         ResultActions resultActions = mockMvc.perform(get("/api/coupons/checkAvailability/died11")
                 .header("Authorization", "Bearer token")
                 .contentType("application/json"));
 
         resultActions.andExpect(status().isOk());
-        verify(mockCouponsService, times(1)).isCouponAvailable("died11", "user");
+        verify(mockCouponOperationsService, times(1)).isCouponAvailable("died11", "user");
     }
 
     @Test
@@ -273,7 +278,7 @@ public class TestCouponsController {
         doReturn(new SimpleGrantedAuthority("regional_manager"))
                 .when(mockJwtTokenVerifier).getAuthoritiesFromToken("token");
 
-        when(mockCouponsService.isCouponAvailable("died11", "user")).thenReturn(false);
+        when(mockCouponOperationsService.isCouponAvailable("died11", "user")).thenReturn(false);
 
         ResultActions resultActions = mockMvc.perform(get("/api/coupons/checkAvailability/died11")
                 .header("Authorization", "Bearer token")
@@ -309,7 +314,7 @@ public class TestCouponsController {
         ApplyCouponsRequestModel responseModel = new ApplyCouponsRequestModel(pizzas2, List.of(
                 "test"));
 
-        when(mockCouponsService.calculatePrice(requestModel)).thenReturn(responseModel);
+        when(mockCouponOperationsService.calculatePrice(requestModel)).thenReturn(responseModel);
 
         ObjectMapper mapper = new ObjectMapper();
         ResultActions resultActions = mockMvc.perform(post("/api/coupons/calculatePrice")
@@ -324,8 +329,8 @@ public class TestCouponsController {
                         ApplyCouponsRequestModel.class);
 
         assertEquals(responseModel, response);
-        verify(mockCouponsService, times(1)).calculatePrice(requestModel);
-        verify(mockCouponsService, times(1)).useCoupon("test", "user");
+        verify(mockCouponOperationsService, times(1)).calculatePrice(requestModel);
+        verify(mockCouponOperationsService, times(1)).useCoupon("test", "user");
     }
 
     @Test
@@ -349,7 +354,8 @@ public class TestCouponsController {
                 "test3"));
         ObjectMapper mapper = new ObjectMapper();
 
-        when(mockCouponsService.calculatePrice(requestModel)).thenThrow(new IllegalArgumentException("No coupons found"));
+        when(mockCouponOperationsService.calculatePrice(requestModel))
+                .thenThrow(new IllegalArgumentException("No coupons found"));
 
         ResultActions resultActions = mockMvc.perform(post("/api/coupons/calculatePrice")
                 .header("Authorization", "Bearer token")
@@ -358,6 +364,6 @@ public class TestCouponsController {
 
         resultActions.andExpect(status().isBadRequest()).andExpect(status().reason("No coupons found"));
 
-        verify(mockCouponsService, times(1)).calculatePrice(requestModel);
+        verify(mockCouponOperationsService, times(1)).calculatePrice(requestModel);
     }
 }
