@@ -2,8 +2,12 @@ package nl.tudelft.sem.group06b.menu.domain;
 
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
+import org.springframework.stereotype.Service;
 
+@Transactional
+@Service
 public class MenuToppingService {
 
     private final transient AuthManager authManager;
