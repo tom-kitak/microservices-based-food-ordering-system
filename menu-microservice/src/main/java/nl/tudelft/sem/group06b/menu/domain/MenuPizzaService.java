@@ -15,8 +15,6 @@ public class MenuPizzaService {
 
     private final transient AuthManager authManager;
 
-    private final transient AllergyRepository allergyRepository;
-
     private final transient ToppingRepository toppingRepository;
 
     private final transient MenuAllergyService menuAllergyService;
@@ -37,7 +35,6 @@ public class MenuPizzaService {
         this.menuAllergyService = new MenuAllergyService(ar, pr, tr, authManager);
         this.menuToppingService = new MenuToppingService(tr, authManager, ar, pr);
         this.pizzaRepository = pr;
-        this.allergyRepository = ar;
         this.toppingRepository = tr;
         this.authManager = authManager;
     }
