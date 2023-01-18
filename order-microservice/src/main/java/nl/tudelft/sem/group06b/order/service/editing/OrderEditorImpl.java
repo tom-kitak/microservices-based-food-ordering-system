@@ -9,6 +9,8 @@ import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.OrderBuilder;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
+import nl.tudelft.sem.group06b.order.model.Identification;
+import nl.tudelft.sem.group06b.order.model.editing.OrderPizza;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -94,37 +96,46 @@ public class OrderEditorImpl implements OrderEditor {
     }
 
     @Override
-    public Allergens addTopping(String token, String memberId,
-                                Long orderId, Pizza pizza, Long toppingId) throws Exception {
-        if (orderId == null) {
+    public Allergens addTopping(Identification identification, OrderPizza orderPizza, Long toppingId) throws Exception {
+        if (orderPizza.getOrderId() == null) {
             throw new Exception(invalidOrderId);
-        } else if (orderRepository.getOne(orderId) == null
-                || orderRepository.getOne(orderId).getStatus() != Status.ORDER_ONGOING) {
+        }
+
+        if (orderRepository.getOne(orderPizza.getOrderId()) == null
+                || orderRepository.getOne(orderPizza.getOrderId()).getStatus() != Status.ORDER_ONGOING) {
             throw new Exception(noActiveOrderMessage);
-        } else if (toppingId == null) {
+        }
+
+        if (toppingId == null) {
             throw new Exception("Invalid topping");
-        } else if (pizza == null) {
+        }
+
+        if (orderPizza.getPizza() == null) {
             throw new Exception(invalidPizza);
-        } else if (token == null) {
+        }
+
+        if (identification.getToken() == null) {
             throw new Exception(invalidToken);
         }
+
         Allergens allergens = new Allergens("No allergens");
 
         // Query the Menu to see if topping is valid
-        menuCommunication.validateTopping(toppingId, token);
+        menuCommunication.validateTopping(toppingId, identification.getToken());
 
         // Query the Menu to see if topping contains allergens and store the response to inform the user
-        String responseMessage = menuCommunication.containsAllergenTopping(toppingId, memberId, token);
+        String responseMessage = menuCommunication.containsAllergenTopping(toppingId, identification.getMemberId(),
+                identification.getToken());
         if (responseMessage != null && !responseMessage.equals("")) {
             allergens.setAllergensContent(responseMessage);
         }
 
-        Order order = orderRepository.getOne(orderId);
-        if (!order.getPizzas().contains(pizza)) {
+        Order order = orderRepository.getOne(orderPizza.getOrderId());
+        if (!order.getPizzas().contains(orderPizza.getPizza())) {
             throw new Exception(invalidPizza);
         }
         OrderBuilder orderBuilder = Builder.toBuilder(order);
-        orderBuilder.addTopping(pizza, toppingId);
+        orderBuilder.addTopping(orderPizza.getPizza(), toppingId);
 
         Order newOrder = orderBuilder.build();
         orderRepository.save(newOrder);
