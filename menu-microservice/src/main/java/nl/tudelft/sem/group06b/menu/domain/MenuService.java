@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
 import org.springframework.stereotype.Service;
@@ -70,27 +71,9 @@ public class MenuService {
      * @return list of pizzas without the allergens in the list.
      */
     public List<Pizza> filterPizzasByAllergens(List<String> strings) {
-        ArrayList<Allergy> allergyList = new ArrayList<>();
-        for (String s : strings) {
-            if (getAllergyByName(s).isPresent()) {
-                allergyList.add(getAllergyByName(s).get());
-            }
-        }
-
-        ArrayList<Pizza> ret = new ArrayList<>();
-        for (Pizza p : getAllPizzas()) {
-            boolean add = true;
-            for (Allergy a : allergyList) {
-                if (p.containsAllergen(a).isPresent()) {
-                    add = false;
-                }
-            }
-            if (add) {
-                ret.add(p);
-            }
-        }
-        this.allergyRepository.flush();
-        return ret;
+        return getAllPizzas().stream().filter(pizza -> strings.stream()
+                        .filter(x -> getAllergyByName(x).isPresent()).map(x -> getAllergyByName(x).get())
+                        .noneMatch(allergy -> pizza.containsAllergen(allergy).isPresent())).collect(Collectors.toList());
     }
 
     /**
