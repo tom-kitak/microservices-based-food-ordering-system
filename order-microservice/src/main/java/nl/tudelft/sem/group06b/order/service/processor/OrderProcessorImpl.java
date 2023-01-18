@@ -162,28 +162,13 @@ public class OrderProcessorImpl implements OrderProcessor {
         if (token.isEmpty()) {
             throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
         }
-
         if (orderId == null) {
             throw new IllegalArgumentException(INVALID_ORDER_ID_MESSAGE);
         }
 
         Order order = orderRepository.getOne(orderId);
 
-        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
-            throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
-        }
-
-        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
-            throw new UnsupportedOperationException("No order time is selected");
-        }
-
-        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
-            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-        }
-
-        if (order.getLocation() == null || order.getLocation().isEmpty()) {
-            throw new UnsupportedOperationException("No store location is selected");
-        }
+        validateOrderAttributes(order);
 
         for (Pizza pizza : order.getPizzas()) {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
@@ -191,19 +176,7 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
 
-        if (order.getCoupons() != null && !order.getCoupons().isEmpty()) {
-            ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
-                    new ArrayList<>(order.getCoupons()), token);
-            if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
-                orderBuilder.setAppliedCoupon(null);
-                order.setAppliedCoupon(null);
-            } else {
-                orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
-                order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
-            }
-            orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
-            order.setPizzas(applyCouponsToResponse.getPizzas());
-        }
+        applyValidCoupons(order, orderBuilder, token);
 
         orderBuilder.setPrice(order.calculateTotalPrice());
         orderBuilder.setOrderStatus(Status.ORDER_PLACED);
@@ -252,34 +225,16 @@ public class OrderProcessorImpl implements OrderProcessor {
             roleName = "store_admin";
         }
 
-        switch (roleName) {
-            case "regional_manager":
-                if (order.getStatus() != Status.ORDER_ONGOING && order.getStatus() != Status.ORDER_PLACED) {
-                    throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-                }
-                break;
-            case "store_admin":
-                if (order.getStatus() != Status.ORDER_ONGOING && order.getStatus() != Status.ORDER_PLACED) {
-                    throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-                }
-                if (!orderRepository.getOne(orderId).getStoreId()
-                        .equals(storeCommunication.getStoreIdFromManager(memberId, token))) {
-                    throw new UnsupportedOperationException("Not the store manager of this store");
-                }
-                break;
-            case "customer":
-                if (!order.getMemberId().equals(memberId)) {
-                    throw new UnsupportedOperationException("Access denied.");
-                }
-                if (order.getStatus() != Status.ORDER_ONGOING) {
-                    throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-                }
-                if (!timeValidation.isTimeValid(order.getSelectedTime(), DEADLINE_OFFSET)) {
-                    throw new Exception("You can no longer cancel the order");
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Role is not handled");
+        if (!checkRoleAndOrderStatus(roleName, memberId, order)) {
+            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+        }
+
+        if (roleName.equals("store_admin") && !checkStoreManager(memberId, token, orderId)) {
+            throw new UnsupportedOperationException("Not the store manager of this store");
+        }
+
+        if (roleName.equals("customer") && !checkCancelTime(order)) {
+            throw new Exception("You can no longer cancel the order");
         }
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
@@ -291,6 +246,24 @@ public class OrderProcessorImpl implements OrderProcessor {
         // notify the store about the cancellation
         String email = "Order with ID " + order.getId() + " cancelled";
         storeCommunication.sendEmailToStore(order.getStoreId(), email, token);
+    }
+
+    private boolean checkRoleAndOrderStatus(String roleName, String memberId, Order order) {
+        if (roleName.equals("regional_manager") || roleName.equals("store_admin")) {
+            return order.getStatus() == Status.ORDER_ONGOING || order.getStatus() == Status.ORDER_PLACED;
+        } else if (roleName.equals("customer") && order.getMemberId().equals(memberId)) {
+            return order.getStatus() == Status.ORDER_ONGOING;
+        }
+        return false;
+    }
+
+    private boolean checkStoreManager(String memberId, String token, Long orderId) throws Exception {
+        return orderRepository.getOne(orderId).getStoreId()
+                .equals(storeCommunication.getStoreIdFromManager(memberId, token));
+    }
+
+    private boolean checkCancelTime(Order order) throws Exception {
+        return timeValidation.isTimeValid(order.getSelectedTime(), DEADLINE_OFFSET);
     }
 
     @Override
@@ -330,5 +303,39 @@ public class OrderProcessorImpl implements OrderProcessor {
             return orderRepository.findAll();
         }
         throw new Exception("Only regional managers can view all orders");
+    }
+
+    private void validateOrderAttributes(Order order) {
+        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
+            throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
+        }
+
+        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
+            throw new UnsupportedOperationException("No order time is selected");
+        }
+
+        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
+            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+        }
+
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new UnsupportedOperationException("No store location is selected");
+        }
+    }
+
+    private void applyValidCoupons(Order order, OrderBuilder orderBuilder, String token) {
+        if (order.getCoupons() != null && !order.getCoupons().isEmpty()) {
+            ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
+                    new ArrayList<>(order.getCoupons()), token);
+            if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
+                orderBuilder.setAppliedCoupon(null);
+                order.setAppliedCoupon(null);
+            } else {
+                orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
+                order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
+            }
+            orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
+            order.setPizzas(applyCouponsToResponse.getPizzas());
+        }
     }
 }
