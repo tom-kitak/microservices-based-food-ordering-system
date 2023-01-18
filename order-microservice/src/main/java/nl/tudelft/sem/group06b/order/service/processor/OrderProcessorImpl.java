@@ -159,9 +159,16 @@ public class OrderProcessorImpl implements OrderProcessor {
 
     @Override
     public Order placeOrder(String token, Long orderId) throws IllegalArgumentException {
+        if (token.isEmpty()) {
+            throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
+        }
+        if (orderId == null) {
+            throw new IllegalArgumentException(INVALID_ORDER_ID_MESSAGE);
+        }
+
         Order order = orderRepository.getOne(orderId);
 
-        validatePlaceOrderParams(token, order);
+        validateOrderAttributes(order);
 
         for (Pizza pizza : order.getPizzas()) {
             pizza.setPrice(menuCommunication.getPizzaPriceFromMenu(pizza, token));
@@ -169,19 +176,7 @@ public class OrderProcessorImpl implements OrderProcessor {
 
         OrderBuilder orderBuilder = Builder.toBuilder(order);
 
-        if (order.getCoupons() != null && !order.getCoupons().isEmpty()) {
-            ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
-                    new ArrayList<>(order.getCoupons()), token);
-            if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
-                orderBuilder.setAppliedCoupon(null);
-                order.setAppliedCoupon(null);
-            } else {
-                orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
-                order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
-            }
-            orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
-            order.setPizzas(applyCouponsToResponse.getPizzas());
-        }
+        applyValidCoupons(order, orderBuilder, token);
 
         orderBuilder.setPrice(order.calculateTotalPrice());
         orderBuilder.setOrderStatus(Status.ORDER_PLACED);
@@ -194,28 +189,6 @@ public class OrderProcessorImpl implements OrderProcessor {
         storeCommunication.sendEmailToStore(order.getStoreId(), order.formatEmail(), token);
 
         return order;
-    }
-
-    private void validatePlaceOrderParams(String token, Order order) throws IllegalArgumentException {
-        if (token.isEmpty()) {
-            throw new IllegalArgumentException(INVALID_TOKEN_MESSAGE);
-        }
-
-        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
-            throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
-        }
-
-        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
-            throw new UnsupportedOperationException("No order time is selected");
-        }
-
-        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
-            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
-        }
-
-        if (order.getLocation() == null || order.getLocation().isEmpty()) {
-            throw new UnsupportedOperationException("No store location is selected");
-        }
     }
 
     /**
@@ -330,5 +303,39 @@ public class OrderProcessorImpl implements OrderProcessor {
             return orderRepository.findAll();
         }
         throw new Exception("Only regional managers can view all orders");
+    }
+
+    private void validateOrderAttributes(Order order) {
+        if (order.getPizzas() == null || order.getPizzas().isEmpty()) {
+            throw new IllegalArgumentException(INVALID_ORDER_CONTENTS_MESSAGE);
+        }
+
+        if (order.getSelectedTime() == null || order.getSelectedTime().isEmpty()) {
+            throw new UnsupportedOperationException("No order time is selected");
+        }
+
+        if (order.getStatus() == null || order.getStatus() != Status.ORDER_ONGOING) {
+            throw new IllegalArgumentException(NO_ACTIVE_ORDER_MESSAGE);
+        }
+
+        if (order.getLocation() == null || order.getLocation().isEmpty()) {
+            throw new UnsupportedOperationException("No store location is selected");
+        }
+    }
+
+    private void applyValidCoupons(Order order, OrderBuilder orderBuilder, String token) {
+        if (order.getCoupons() != null && !order.getCoupons().isEmpty()) {
+            ApplyCouponsToOrderModel applyCouponsToResponse = couponCommunication.applyCouponsToOrder(order.getPizzas(),
+                    new ArrayList<>(order.getCoupons()), token);
+            if (applyCouponsToResponse.getCoupons() == null || applyCouponsToResponse.getCoupons().isEmpty()) {
+                orderBuilder.setAppliedCoupon(null);
+                order.setAppliedCoupon(null);
+            } else {
+                orderBuilder.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
+                order.setAppliedCoupon(applyCouponsToResponse.getCoupons().get(0));
+            }
+            orderBuilder.setPizzas(applyCouponsToResponse.getPizzas());
+            order.setPizzas(applyCouponsToResponse.getPizzas());
+        }
     }
 }
