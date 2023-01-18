@@ -1,10 +1,16 @@
-package nl.tudelft.sem.group06b.menu.domain;
+package nl.tudelft.sem.group06b.menu.service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
+import nl.tudelft.sem.group06b.menu.domain.Allergy;
+import nl.tudelft.sem.group06b.menu.domain.AllergyRepository;
+import nl.tudelft.sem.group06b.menu.domain.Pizza;
+import nl.tudelft.sem.group06b.menu.domain.PizzaRepository;
+import nl.tudelft.sem.group06b.menu.domain.Topping;
+import nl.tudelft.sem.group06b.menu.domain.ToppingRepository;
 import org.springframework.stereotype.Service;
 
 @Service
