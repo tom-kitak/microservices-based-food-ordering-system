@@ -2,10 +2,12 @@ package nl.tudelft.sem.group06b.order.controllers;
 
 import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.group06b.order.authentication.AuthManager;
+import nl.tudelft.sem.group06b.order.model.Identification;
 import nl.tudelft.sem.group06b.order.model.editing.AddPizzaRequestModel;
 import nl.tudelft.sem.group06b.order.model.editing.AddPizzaResponseModel;
 import nl.tudelft.sem.group06b.order.model.editing.AddToppingRequestModel;
 import nl.tudelft.sem.group06b.order.model.editing.AddToppingResponseModel;
+import nl.tudelft.sem.group06b.order.model.editing.OrderPizza;
 import nl.tudelft.sem.group06b.order.model.editing.RemovePizzaRequestModel;
 import nl.tudelft.sem.group06b.order.model.editing.RemoveToppingRequestModel;
 import nl.tudelft.sem.group06b.order.model.processor.CancelOrderRequestModel;
@@ -211,8 +213,9 @@ public class OrderController {
     public ResponseEntity<AddToppingResponseModel> addTopping(@RequestBody AddToppingRequestModel request) {
         try {
             return ResponseEntity.ok(new AddToppingResponseModel(
-                    orderService.addTopping(authManager.getToken(), authManager.getMemberId(),
-                                            request.getOrderId(), request.getPizza(), request.getToppingId())));
+                    orderService.addTopping(new Identification(authManager.getToken(), authManager.getMemberId()),
+                                            new OrderPizza(request.getOrderId(), request.getPizza()),
+                            request.getToppingId())));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, e.getMessage());
         }

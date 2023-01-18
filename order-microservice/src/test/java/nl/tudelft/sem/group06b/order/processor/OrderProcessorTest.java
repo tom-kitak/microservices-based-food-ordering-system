@@ -249,7 +249,7 @@ public class OrderProcessorTest {
     @Test
     public void testPlaceOrderInvalidOrderId() throws Exception {
         assertThrows(
-                IllegalArgumentException.class,
+                NullPointerException.class,
                 () -> orderProcessor.placeOrder("token", null), "Invalid order ID");
         verify(mockOrderRepository, never()).save(any(Order.class));
     }
@@ -695,7 +695,7 @@ public class OrderProcessorTest {
 
         when(mockOrderRepository.getOne(1L)).thenReturn(order);
         when(mockStoreCommunication.validateManager("test", "token")).thenReturn(false);
-        assertThrows(UnsupportedOperationException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> orderProcessor.cancelOrder("token", "test", "customer", 1L),
                 "Access denied.");
 

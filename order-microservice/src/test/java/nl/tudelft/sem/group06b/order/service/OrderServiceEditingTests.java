@@ -10,6 +10,8 @@ import java.util.List;
 import nl.tudelft.sem.group06b.order.domain.Order;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import nl.tudelft.sem.group06b.order.domain.Status;
+import nl.tudelft.sem.group06b.order.model.Identification;
+import nl.tudelft.sem.group06b.order.model.editing.OrderPizza;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
 import nl.tudelft.sem.group06b.order.service.editing.OrderEditorImpl;
 import org.assertj.core.api.Assertions;
@@ -129,45 +131,46 @@ public class OrderServiceEditingTests {
     public void addTopping() {
         Exception a = assertThrows(
                 Exception.class,
-                () -> ordEdit.addTopping(null, null, null, null, null)
+                () -> ordEdit.addTopping(new Identification(null, null), new OrderPizza(null, null), null)
         );
         Assertions.assertThat(a.getMessage()).isEqualTo("Invalid order ID");
 
         Exception b = assertThrows(
                 Exception.class,
-                () -> ordEdit.addTopping(null, null, 5L, null, null)
+                () -> ordEdit.addTopping(new Identification(null, null), new OrderPizza(5L, null), null)
         );
         Assertions.assertThat(b.getMessage()).isEqualTo("No active order with this ID");
 
         Exception c = assertThrows(
                 Exception.class,
-                () -> ordEdit.addTopping(null, null, 6L, null, null)
+                () -> ordEdit.addTopping(new Identification(null, null), new OrderPizza(6L, null), null)
         );
         Assertions.assertThat(c.getMessage()).isEqualTo("No active order with this ID");
 
         Exception d = assertThrows(
                 Exception.class,
-                () -> ordEdit.addTopping(null, null, 7L, null, null)
+                () -> ordEdit.addTopping(new Identification(null, null),
+                        new OrderPizza(7L, null), null)
         );
         Assertions.assertThat(d.getMessage()).isEqualTo("Invalid topping");
 
         Exception e = assertThrows(
                 Exception.class,
-                () -> ordEdit.addTopping(null, null, 7L,
-                        null, 4L));
+                () -> ordEdit.addTopping(new Identification(null, null),
+                        new OrderPizza(7L, null), 4L));
         Assertions.assertThat(e.getMessage()).isEqualTo("Invalid pizza");
 
         Exception f = assertThrows(
                 Exception.class,
-                () -> ordEdit.addTopping(null, null, 7L,
-                        new Pizza(25L, List.of(11L, 12L), new BigDecimal("11.29")), 4L)
+                () -> ordEdit.addTopping(new Identification(null, null), new OrderPizza(7L,
+                        new Pizza(25L, List.of(11L, 12L), new BigDecimal("11.29"))), 4L)
         );
         Assertions.assertThat(f.getMessage()).isEqualTo("Invalid token");
 
         Exception g = assertThrows(
                 Exception.class,
-                () -> ordEdit.addTopping("null", null, 7L,
-                        new Pizza(25L, List.of(11L, 12L), new BigDecimal("11.29")), 4L)
+                () -> ordEdit.addTopping(new Identification("null", null), new OrderPizza(7L,
+                        new Pizza(25L, List.of(11L, 12L), new BigDecimal("11.29"))), 4L)
         );
         System.out.println(g.getMessage());
         Assertions.assertThat(g.getClass()).isEqualTo(ResourceAccessException.class);
