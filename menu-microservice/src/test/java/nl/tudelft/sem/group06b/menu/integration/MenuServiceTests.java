@@ -106,7 +106,7 @@ public class MenuServiceTests {
     }
 
     @Test
-    public void addPizza() {
+    public void addPizzaTest() {
         Assertions.assertThat(this.menuPizzaService.addPizza(this.p1)).isFalse();
         Pizza p = new Pizza(43L, List.of(t1, t2, t3), "Depperoni", new BigDecimal("78.99"));
         Assertions.assertThat(this.menuPizzaService.addPizza(p)).isTrue();
