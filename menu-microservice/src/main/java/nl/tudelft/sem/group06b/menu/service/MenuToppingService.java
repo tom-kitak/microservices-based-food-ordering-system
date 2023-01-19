@@ -59,7 +59,7 @@ public class MenuToppingService {
      * @param id of the topping.
      * @return topping object that has the id.
      */
-    public Optional<Topping> getToppingById(Long id) throws Exception{
+    public Optional<Topping> getToppingById(Long id) throws Exception {
         Optional<Topping> ret = this.toppingRepository.findToppingById(id);
         this.toppingRepository.flush();
         return ret;
@@ -120,7 +120,7 @@ public class MenuToppingService {
      * @param allergies the allergies in strings.
      * @return string of allergies/empty if none.
      */
-    public Optional<String> checkForAllergiesTopping(Long id, List<String> allergies) throws Exception{
+    public Optional<String> checkForAllergiesTopping(Long id, List<String> allergies) throws Exception {
         String ret = "";
         List<Allergy> allergyList = menuAllergyService.getAllergiesFromStrings(allergies);
         Optional<Topping> curr = getToppingById(id);

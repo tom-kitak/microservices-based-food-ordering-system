@@ -77,7 +77,7 @@ public class MenuServiceTests {
      * sets up the tests.
      */
     @BeforeEach
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         this.toppingRepository = Mockito.mock(ToppingRepository.class);
         this.pizzaRepository = Mockito.mock(PizzaRepository.class);
         this.allergyRepository = Mockito.mock(AllergyRepository.class);

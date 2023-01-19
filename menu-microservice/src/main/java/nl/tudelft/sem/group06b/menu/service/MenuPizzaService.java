@@ -153,7 +153,7 @@ public class MenuPizzaService {
      * @param toppingIds ids of toppings.
      * @return price.
      */
-    public BigDecimal getPrice(Long id, List<Long> toppingIds) throws Exception{
+    public BigDecimal getPrice(Long id, List<Long> toppingIds) throws Exception {
         Optional<Pizza> p = getPizzaById(id);
         if (p.isEmpty()) {
             return new BigDecimal("0.0");
