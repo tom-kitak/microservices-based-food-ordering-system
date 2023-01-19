@@ -11,6 +11,7 @@ import nl.tudelft.sem.group06b.menu.models.ContainsAllergenModel;
 import nl.tudelft.sem.group06b.menu.service.MenuAllergyService;
 import nl.tudelft.sem.group06b.menu.service.MenuPizzaService;
 import nl.tudelft.sem.group06b.menu.service.MenuToppingService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,17 +52,21 @@ public class MenuAllergyController {
      */
     @PostMapping("containsAllergen")
     public ResponseEntity<String> containsAllergen(@RequestBody ContainsAllergenModel request) {
-        String ret;
-        if (this.menuPizzaService.checkForAllergies(
-                request.getId(), request.getToppingIds(),
-                menuAllergyService.getAllergens(request.getMemberId())).isPresent()) {
-            ret = "You might be allergic!: " + this.menuPizzaService.checkForAllergies(
+        try {
+            String ret;
+            if (this.menuPizzaService.checkForAllergies(
                     request.getId(), request.getToppingIds(),
-                    menuAllergyService.getAllergens(request.getMemberId())).get();
-        } else {
-            ret = "";
+                    menuAllergyService.getAllergens(request.getMemberId())).isPresent()) {
+                ret = "You might be allergic!: " + this.menuPizzaService.checkForAllergies(
+                        request.getId(), request.getToppingIds(),
+                        menuAllergyService.getAllergens(request.getMemberId())).get();
+            } else {
+                ret = "";
+            }
+            return ResponseEntity.ok(ret);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
         }
-        return ResponseEntity.ok(ret);
     }
 
     /**
@@ -72,14 +77,19 @@ public class MenuAllergyController {
      */
     @PostMapping("containsAllergenTopping/{itemId}/{memberId}")
     public ResponseEntity<String> containsAllergenTopping(@PathVariable Long itemId, @PathVariable String memberId) {
-        Optional<String> ret =
-                this.menuToppingService.checkForAllergiesTopping(itemId, menuAllergyService.getAllergens(memberId));
-        if (ret.isEmpty()) {
-            return ResponseEntity.ok("");
+        try {
+            Optional<String> ret =
+                    this.menuToppingService.checkForAllergiesTopping(itemId, menuAllergyService.getAllergens(memberId));
+            if (ret.isEmpty()) {
+                return ResponseEntity.ok("");
+            }
+            return ResponseEntity.ok(
+                    this.menuToppingService.checkForAllergiesTopping(
+                            itemId, menuAllergyService.getAllergens(this.authManager.getMemberId())).get());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
         }
-        return ResponseEntity.ok(
-                this.menuToppingService.checkForAllergiesTopping(
-                        itemId, menuAllergyService.getAllergens(this.authManager.getMemberId())).get());
+
     }
 
     @DeleteMapping("remove/allergy/{itemId}")

@@ -8,6 +8,7 @@ import nl.tudelft.sem.group06b.menu.domain.Pizza;
 import nl.tudelft.sem.group06b.menu.models.PriceModel;
 import nl.tudelft.sem.group06b.menu.models.ValidModel;
 import nl.tudelft.sem.group06b.menu.service.MenuPizzaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,8 +68,11 @@ public class MenuPizzaController {
      */
     @PostMapping("add/pizza/")
     public ResponseEntity<Boolean> addPizza(@RequestBody Pizza pizza) {
-        System.out.println(pizza.toString());
-        return ResponseEntity.ok(menuPizzaService.addPizza(pizza));
+        try {
+            return ResponseEntity.ok(menuPizzaService.addPizza(pizza));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        }
     }
 
     /**
@@ -79,7 +83,11 @@ public class MenuPizzaController {
      */
     @PostMapping("getPrice")
     public ResponseEntity<BigDecimal> getPrice(@RequestBody PriceModel request) {
-        return ResponseEntity.ok(menuPizzaService.getPrice(request.getId(), request.getToppingIds()));
+        try {
+            return ResponseEntity.ok(menuPizzaService.getPrice(request.getId(), request.getToppingIds()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        }
     }
 
     /**

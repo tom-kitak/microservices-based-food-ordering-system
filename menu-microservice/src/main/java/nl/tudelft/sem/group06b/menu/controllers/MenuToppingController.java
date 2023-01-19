@@ -5,6 +5,7 @@ import java.util.Optional;
 import lombok.AllArgsConstructor;
 import nl.tudelft.sem.group06b.menu.domain.Topping;
 import nl.tudelft.sem.group06b.menu.service.MenuToppingService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,11 @@ public class MenuToppingController {
      */
     @GetMapping("getToppingById/{itemId}")
     public ResponseEntity<Optional<Topping>> getToppingById(@PathVariable Long itemId) {
-        return ResponseEntity.ok(menuToppingService.getToppingById(itemId));
+        try {
+            return ResponseEntity.ok(menuToppingService.getToppingById(itemId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        }
     }
 
     /**
@@ -51,7 +56,11 @@ public class MenuToppingController {
      */
     @DeleteMapping("remove/topping/{itemId}")
     public ResponseEntity<Boolean> removeTopping(@PathVariable Long itemId) {
-        return ResponseEntity.ok(menuToppingService.removeToppingById(itemId));
+        try {
+            return ResponseEntity.ok(menuToppingService.removeToppingById(itemId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        }
     }
 
     /**
@@ -73,7 +82,11 @@ public class MenuToppingController {
      */
     @GetMapping("isValidTopping/{itemId}")
     public ResponseEntity<Boolean> isValidTopping(@PathVariable Long itemId) {
-        return ResponseEntity.ok(menuToppingService.getToppingById(itemId).isPresent());
+        try {
+            return ResponseEntity.ok(menuToppingService.getToppingById(itemId).isPresent());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        }
     }
 
 }
