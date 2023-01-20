@@ -2,6 +2,7 @@ package nl.tudelft.sem.group06b.order.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -104,6 +105,13 @@ public class OrderServiceEditingTests {
         assertThat(f.getMessage()).isEqualTo("Invalid member ID");
     }
 
+    @Test
+    public void testAddValidPizza() throws Exception {
+        Pizza pizza = new Pizza(666L, List.of(10L, 12L), new BigDecimal("11.29"));
+        when(menuCommunication.containsAllergen(pizza, "human", "userToken")).thenReturn("");
+        ordEdit.addPizza("userToken", "human", 7L, pizza);
+        verify(menuCommunication).validatePizza(pizza, "userToken");
+    }
 
     @Test
     public void removePizza() {
