@@ -12,6 +12,7 @@ import nl.tudelft.sem.group06b.order.domain.Status;
 import nl.tudelft.sem.group06b.order.model.Identification;
 import nl.tudelft.sem.group06b.order.model.editing.OrderPizza;
 import nl.tudelft.sem.group06b.order.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,11 +34,13 @@ public class OrderEditorImpl implements OrderEditor {
      *
      * @param orderRepository repository of Orders
      */
-    public OrderEditorImpl(OrderRepository orderRepository) {
+    @Autowired
+    public OrderEditorImpl(OrderRepository orderRepository, MenuCommunication menuCommunication,
+                           StoreCommunication storeCommunication, CouponCommunication couponCommunication) {
         this.orderRepository = orderRepository;
-        this.menuCommunication = new MenuCommunication();
-        this.storeCommunication = new StoreCommunication();
-        this.couponCommunication = new CouponCommunication();
+        this.menuCommunication = menuCommunication;
+        this.storeCommunication = storeCommunication;
+        this.couponCommunication = couponCommunication;
     }
 
     @Override
