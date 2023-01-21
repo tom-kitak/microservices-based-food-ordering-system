@@ -1,9 +1,10 @@
-package nl.tudelft.sem.group06b.order.Communication;
+package nl.tudelft.sem.group06b.order.communication;
+
+import static org.mockito.Mockito.doReturn;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import nl.tudelft.sem.group06b.order.communication.MenuCommunication;
 import nl.tudelft.sem.group06b.order.domain.Pizza;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import static org.mockito.Mockito.doReturn;
-
 @SpringBootTest
 public class MenuCommunicationTests {
 
@@ -23,6 +22,7 @@ public class MenuCommunicationTests {
     private RestTemplate restTemplate;
 
     public final Pizza pizza = new Pizza(2L, List.of(3L), new BigDecimal("10.99"));
+
     @Test
     public void validatePizzaTest() {
 
@@ -31,7 +31,7 @@ public class MenuCommunicationTests {
 
         MenuCommunication mc = new MenuCommunication(restTemplate);
 
-        Assertions.assertThatNoException().isThrownBy(() ->mc.validatePizza(pizza, "token"));
+        Assertions.assertThatNoException().isThrownBy(() -> mc.validatePizza(pizza, "token"));
 
     }
 
