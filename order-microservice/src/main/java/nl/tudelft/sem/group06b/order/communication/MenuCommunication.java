@@ -23,7 +23,6 @@ public class MenuCommunication {
     public MenuCommunication() {
         this.restTemplate = new RestTemplate();
     }
-
     public MenuCommunication(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
