@@ -23,6 +23,10 @@ public class StoreCommunication {
         this.restTemplate = new RestTemplate();
     }
 
+    public StoreCommunication(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     /**
      * Checks if the location is valid.
      *
