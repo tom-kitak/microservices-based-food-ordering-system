@@ -110,6 +110,21 @@ public class MenuServiceTests {
     }
 
     @Test
+    public void addAllergyTest_wrongRole_returnsFalse() {
+        when(authManager.getRole()).thenReturn("customer");
+        Allergy allergy = new Allergy(2L, "allergy");
+        when(allergyRepository.findAllergyById(3L)).thenReturn(Optional.of(allergy));
+        Assertions.assertThat(menuAllergyService.addAllergy(allergy)).isFalse();
+    }
+
+    @Test
+    public void addAllergyTest_notPresent_returnsFalse() {
+        when(authManager.getRole()).thenReturn("regional_manager");
+        when(allergyRepository.findAllergyById(3L)).thenReturn(Optional.empty());
+        Assertions.assertThat(menuAllergyService.addAllergy(new Allergy(2L, "allergy"))).isFalse();
+    }
+
+    @Test
     public void priceTest() throws Exception {
         Assertions.assertThat(this.menuPizzaService.getPrice(40L, List.of(11L, 12L))).isEqualTo(new BigDecimal("39.37"));
     }
@@ -148,6 +163,7 @@ public class MenuServiceTests {
         Assertions.assertThat(
                 this.menuAllergyService.filterPizzasByAllergens(
                         List.of("Peanuts", "Hawaii", "Food"))).hasSameElementsAs(List.of(p2));
+        verify(allergyRepository, times(15)).flush();
     }
 
     @Test
@@ -156,6 +172,7 @@ public class MenuServiceTests {
                 this.menuAllergyService.filterToppingsByAllergens(List.of("Peanuts"))).hasSameElementsAs(List.of(t3));
         Assertions.assertThat(
                 this.menuAllergyService.filterToppingsByAllergens(List.of("Sugar"))).hasSameElementsAs(List.of(t1, t2, t3));
+        verify(allergyRepository, times(5)).flush();
     }
 
     @Test
@@ -213,6 +230,7 @@ public class MenuServiceTests {
     @Test
     public void getAllergyById() {
         Assertions.assertThat(this.menuAllergyService.getAllergyById(null)).isEmpty();
+        verify(allergyRepository, times(1)).flush();
     }
 
     @Test
@@ -246,6 +264,7 @@ public class MenuServiceTests {
         Assertions.assertThat(this.menuAllergyService.removeAllergyById(null)).isFalse();
         Assertions.assertThat(this.menuAllergyService.removeAllergyById(3948793L)).isFalse();
         Assertions.assertThat(this.menuAllergyService.removeAllergyById(1L)).isTrue();
+        verify(allergyRepository, times(4)).flush();
     }
 
 
