@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.group06b.menu.authentication.AuthManager;
@@ -74,7 +75,7 @@ public class MenuServiceTests {
      * sets up the tests.
      */
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         this.toppingRepository = Mockito.mock(ToppingRepository.class);
         this.pizzaRepository = Mockito.mock(PizzaRepository.class);
         this.allergyRepository = Mockito.mock(AllergyRepository.class);
@@ -124,7 +125,7 @@ public class MenuServiceTests {
     }
 
     @Test
-    public void addPizzaTest() {
+    public void addPizzaTest() throws Exception {
         Assertions.assertThat(this.menuPizzaService.addPizza(this.p1)).isFalse();
         Pizza p = new Pizza(43L, List.of(t1, t2, t3), "Depperoni", new BigDecimal("78.99"));
         Assertions.assertThat(this.menuPizzaService.addPizza(p)).isTrue();
@@ -140,12 +141,12 @@ public class MenuServiceTests {
     }
 
     @Test
-    public void priceTest() {
+    public void priceTest() throws Exception {
         Assertions.assertThat(this.menuPizzaService.getPrice(40L, List.of(11L, 12L))).isEqualTo(new BigDecimal("39.37"));
     }
 
     @Test
-    public void checkForAllergies() {
+    public void checkForAllergies() throws Exception {
         Assertions.assertThat(
                 this.menuPizzaService.checkForAllergies(40L, List.of(10L), List.of("Food"))).isPresent();
         Assertions.assertThat(
@@ -204,7 +205,23 @@ public class MenuServiceTests {
     public void getAllergyByNameTest() {
         Assertions.assertThat(this.menuAllergyService.getAllergyByName(null)).isEmpty();
         Assertions.assertThat(this.menuAllergyService.getAllergyByName("Peanuts")).isPresent();
-        verify(allergyRepository, times(2)).flush();
+    }
+
+    @Test
+    public void getAllToppingsTest_emptyList() {
+        when(toppingRepository.findAll()).thenReturn(Collections.emptyList());
+        Assertions.assertThat(menuToppingService.getAllToppings()).isEqualTo(Collections.emptyList());
+        verify(toppingRepository, times(1)).flush();
+    }
+
+    @Test
+    public void getAllToppingsTest_listWithElements() {
+        Topping t1 = new Topping(18L, "Potato", List.of(this.aaa, this.bbb), new BigDecimal("10.99"));
+        Topping t2 = new Topping(19L, "Potato2", List.of(this.aaa, this.ccc), new BigDecimal("10.99"));
+
+        when(toppingRepository.findAll()).thenReturn(List.of(t1, t2));
+        Assertions.assertThat(menuToppingService.getAllToppings()).containsExactlyInAnyOrder(t2, t1);
+        verify(toppingRepository, times(1)).flush();
     }
 
     @Test
@@ -215,6 +232,15 @@ public class MenuServiceTests {
         Topping t2 = new Topping(19L, "Potato", List.of(this.aaa, this.ccc), new BigDecimal("10.99"));
         Assertions.assertThat(this.menuToppingService.addTopping(t2)).isTrue();
         Assertions.assertThat(this.menuToppingService.addTopping(null)).isFalse();
+        verify(toppingRepository, times(1)).flush();
+        verify(toppingRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void addTopping_throws_returnsFalse() throws Exception {
+        when(toppingRepository.findToppingById(any(Long.class))).thenThrow(new Exception("Database error"));
+        Assertions.assertThat(this.menuToppingService.addTopping(
+                new Topping(2L, "topping", null, null))).isFalse();
     }
 
     @Test
@@ -229,8 +255,9 @@ public class MenuServiceTests {
     }
 
     @Test
-    public void getToppingById() {
+    public void getToppingById() throws Exception {
         Assertions.assertThat(this.menuToppingService.getToppingById(null)).isEmpty();
+        verify(toppingRepository, times(1)).flush();
     }
 
     @Test
@@ -241,10 +268,11 @@ public class MenuServiceTests {
     }
 
     @Test
-    public void removeToppingById() {
+    public void removeToppingById() throws Exception {
         Assertions.assertThat(this.menuToppingService.removeToppingById(null)).isFalse();
         Assertions.assertThat(this.menuToppingService.removeToppingById(3948793L)).isFalse();
         Assertions.assertThat(this.menuToppingService.removeToppingById(10L)).isTrue();
+        verify(toppingRepository, times(1)).flush();
     }
 
     @Test

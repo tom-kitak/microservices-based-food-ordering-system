@@ -15,7 +15,7 @@ public interface ToppingRepository extends JpaRepository<Topping, Long> {
      * @return the Optional value of the topping, blank if there is no topping with that id
      */
     @Query
-    Optional<Topping> findToppingById(Long id);
+    Optional<Topping> findToppingById(Long id) throws Exception;
 
     void deleteToppingById(Long id);
 }
