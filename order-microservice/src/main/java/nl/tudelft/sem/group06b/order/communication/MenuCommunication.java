@@ -24,6 +24,10 @@ public class MenuCommunication {
         this.restTemplate = new RestTemplate();
     }
 
+    public MenuCommunication(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     /**
      * Validates the pizza.
      *
