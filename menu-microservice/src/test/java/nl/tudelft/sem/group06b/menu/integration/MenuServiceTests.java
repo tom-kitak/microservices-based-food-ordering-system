@@ -125,6 +125,22 @@ public class MenuServiceTests {
     }
 
     @Test
+    public void addPizzaTest() {
+        Assertions.assertThat(this.menuPizzaService.addPizza(this.p1)).isFalse();
+        Pizza p = new Pizza(43L, List.of(t1, t2, t3), "Depperoni", new BigDecimal("78.99"));
+        Assertions.assertThat(this.menuPizzaService.addPizza(p)).isTrue();
+        Pizza p1 = new Pizza(44L, List.of(t1, t2, t3), "Fepperoni", new BigDecimal("78.99"));
+        when(this.toppingRepository.findToppingById(10L)).thenReturn(Optional.empty());
+        Assertions.assertThat(this.menuPizzaService.addPizza(p1)).isFalse();
+        when(authManager.getRole()).thenReturn("customer");
+        when(this.toppingRepository.findToppingById(10L)).thenReturn(Optional.ofNullable(t1));
+        Assertions.assertThat(this.menuPizzaService.addPizza(p)).isFalse();
+        when(authManager.getRole()).thenReturn("regional_manager");
+        when(this.toppingRepository.findToppingById(10L)).thenReturn(Optional.ofNullable(t2));
+        Assertions.assertThat(this.menuPizzaService.addPizza(p)).isFalse();
+    }
+
+    @Test
     public void priceTest() throws Exception {
         Assertions.assertThat(this.menuPizzaService.getPrice(40L, List.of(11L, 12L))).isEqualTo(new BigDecimal("39.37"));
     }

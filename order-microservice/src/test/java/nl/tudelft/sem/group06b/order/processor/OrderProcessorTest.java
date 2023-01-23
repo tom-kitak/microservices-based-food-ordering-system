@@ -427,6 +427,27 @@ public class OrderProcessorTest {
     }
 
     @Test
+    public void testFetchAllStoreOrdersKillingMutant() throws Exception {
+        Order order1 = new Order();
+        order1.setStoreId(1L);
+        order1.setId(1L);
+        Order order2 = new Order();
+        order2.setStoreId(2L);
+        order2.setId(2L);
+        Order order3 = new Order();
+        order3.setStoreId(1L);
+        order3.setId(3L);
+        List<Order> orders = List.of(order1, order2, order3);
+
+        when(mockOrderRepository.findAll()).thenReturn(orders);
+        when(mockStoreCommunication.validateManager("man", "token")).thenReturn(true);
+        when(mockStoreCommunication.getStoreIdFromManager("man", "token")).thenReturn(1L);
+
+        Collection<Order> res = orderProcessor.fetchAllStoreOrders("token", "man", "customer", 1L);
+        assertThat(res).containsExactlyInAnyOrder(order1, order3);
+    }
+
+    @Test
     public void testFetchAllStoreOrdersAsWrongStore() throws Exception {
         Order order1 = new Order();
         order1.setStoreId(1L);
