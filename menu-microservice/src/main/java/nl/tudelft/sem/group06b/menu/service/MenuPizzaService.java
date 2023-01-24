@@ -51,7 +51,7 @@ public class MenuPizzaService {
      * @param p the pizza to add.
      * @return true if saved/false if there is a pizza with that id.
      */
-    public boolean addPizza(Pizza p) {
+    public boolean addPizza(Pizza p) throws Exception {
         if (!authManager.getRole().equals(regionalManager)) {
             return false;
         }
@@ -153,7 +153,7 @@ public class MenuPizzaService {
      * @param toppingIds ids of toppings.
      * @return price.
      */
-    public BigDecimal getPrice(Long id, List<Long> toppingIds) {
+    public BigDecimal getPrice(Long id, List<Long> toppingIds) throws Exception {
         Optional<Pizza> p = getPizzaById(id);
         if (p.isEmpty()) {
             return new BigDecimal("0.0");
@@ -179,7 +179,8 @@ public class MenuPizzaService {
      * @param allergies the allergies to check for.
      * @return formatted string if found/empty if not.
      */
-    public Optional<String> checkForAllergies(Long pizzaId, List<Long> toppingList, List<String> allergies) {
+    public Optional<String> checkForAllergies(Long pizzaId, List<Long> toppingList, List<String> allergies)
+            throws Exception {
         String ret = "";
         List<Allergy> allergyList = menuAllergyService.getAllergiesFromStrings(allergies);
         System.out.println(allergyList);
